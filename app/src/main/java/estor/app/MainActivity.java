@@ -1,12 +1,11 @@
 package estor.app;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
         button3.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, PaydeptActivity.class);
+            Intent intent = new Intent(MainActivity.this,  PaydeptActivity.class);
             startActivity(intent);
         });
         button4.setOnClickListener(v -> {
