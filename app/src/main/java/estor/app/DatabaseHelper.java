@@ -29,6 +29,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_NAME = "name";
     // The name of the customer phone column.
     public static final String COLUMN_PHONE = "phone";
+    // The Amount of dept
+    public static final String COLUMN_TOTAL = "amount";
+
+    public static final String COLUMN_DATE = "date";
+
+    public static final String COLUMN_TIME = "time";
+
     // Constructor of the DatabaseHelper class.
     // The Context is needed to create/open the database.
     public DatabaseHelper(Context context) {
@@ -48,12 +55,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // SQL command used to create the customers table.
-        String createTable = "CREATE TABLE " + TABLE_CUSTOMERS + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_NAME +
-                " TEXT NOT NULL, " + COLUMN_PHONE + " TEXT NOT NULL" + ")";
+        String createTable = "CREATE TABLE " + TABLE_CUSTOMERS + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                                                                        + COLUMN_NAME + " TEXT NOT NULL, "
+                                                                        + COLUMN_PHONE + " TEXT NOT NULL,"
+                                                                        + COLUMN_TOTAL + " INTEGER NOT NULL,"
+                                                                        + COLUMN_DATE + " DATE NOT NULL,"
+                                                                        + COLUMN_TIME + " TIME NOT NULL" + ")";
         // Executes the SQL command and creates the table.
         db.execSQL(createTable);
     }
-
     // This method runs when the database version is changed.
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

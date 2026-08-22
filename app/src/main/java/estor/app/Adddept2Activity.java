@@ -15,12 +15,8 @@ public class Adddept2Activity extends AppCompatActivity {
 
         // Get the customer information
         // that was sent from AdddeptActivity.
-        String customerName =
-                getIntent().getStringExtra("customer_name");
-
-        String customerPhone =
-                getIntent().getStringExtra("customer_phone");
-
+        String customerName = getIntent().getStringExtra("customer_name");
+        String customerPhone = getIntent().getStringExtra("customer_phone");
         // You can use customerName and customerPhone
         // later when you add TextViews to adddept.xml.
     }
