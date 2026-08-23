@@ -58,7 +58,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createTable = "CREATE TABLE " + TABLE_CUSTOMERS + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                                                                         + COLUMN_NAME + " TEXT NOT NULL, "
                                                                         + COLUMN_PHONE + " TEXT NOT NULL,"
-                                                                        + COLUMN_TOTAL + " INTEGER NOT NULL,"
                                                                         + COLUMN_DATE + " DATE NOT NULL,"
                                                                         + COLUMN_TIME + " TIME NOT NULL" + ")";
         // Executes the SQL command and creates the table.
