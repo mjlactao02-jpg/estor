@@ -1,9 +1,12 @@
 package estor.app;
 
+import android.Manifest;
 import android.content.ContentValues;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -43,6 +47,11 @@ public class Adddept2Activity extends AppCompatActivity {
     // ListView that displays the products added by the user.
     private ListView listViewDebt;
 
+    // NEW: Customer card views (name, phone, total).
+    private TextView txtCustomerName;
+    private TextView txtCustomerPhone;
+    private TextView txtTotalAmount;
+
     // Database helper used to access SQLite.
     private DatabaseHelper databaseHelper;
 
@@ -57,6 +66,9 @@ public class Adddept2Activity extends AppCompatActivity {
 
     // Adapter that displays debtItems inside the ListView.
     private DebtAdapter adapter;
+
+    // NEW: SMS permission request code.
+    private static final int SMS_PERMISSION_CODE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +107,15 @@ public class Adddept2Activity extends AppCompatActivity {
         // ListView.
         listViewDebt = findViewById(R.id.listViewDebt);
 
+        // NEW: Bind customer card views.
+        txtCustomerName = findViewById(R.id.txtCustomerName);
+        txtCustomerPhone = findViewById(R.id.txtCustomerPhone);
+        txtTotalAmount = findViewById(R.id.txtTotalAmount);
+
+        // NEW: Show customer name and phone in the card.
+        txtCustomerName.setText(customerName != null ? customerName : "Unknown");
+        txtCustomerPhone.setText(customerPhone != null ? customerPhone : "");
+
         // Create an empty list. Products are stored here temporarily.
         debtItems = new ArrayList<>();
 
@@ -103,6 +124,12 @@ public class Adddept2Activity extends AppCompatActivity {
 
         // Connect the adapter to the ListView.
         listViewDebt.setAdapter(adapter);
+
+        // NEW: Card total starts at 0 and reflects only items currently in the ListView.
+        updateTotalDisplay();
+
+        // NEW: Make sure we have SMS permission before Confirm is tapped.
+        checkSmsPermission();
 
         // Back button listener.
         btnBack.setOnClickListener(v -> finish());
@@ -172,12 +199,24 @@ public class Adddept2Activity extends AppCompatActivity {
         debtItems.add(item);
         adapter.notifyDataSetChanged();
 
+        // NEW: Refresh the card total to match what's currently in the ListView.
+        updateTotalDisplay();
+
         edtProduct.setText("");
         edtQuantity.setText("");
         edtAmount.setText("");
         edtProduct.requestFocus();
 
         Toast.makeText(Adddept2Activity.this, "Debt item added", Toast.LENGTH_SHORT).show();
+    }
+
+    // NEW: Sums quantity*amount for every item currently in the ListView and shows it in the card.
+    private void updateTotalDisplay() {
+        double total = 0.0;
+        for (DebtItem item : debtItems) {
+            total += item.getQuantity() * item.getAmount();
+        }
+        txtTotalAmount.setText(String.format(Locale.getDefault(), "₱ %.2f", total));
     }
 
     // Confirm all debt items.
@@ -250,9 +289,81 @@ public class Adddept2Activity extends AppCompatActivity {
         }
 
         Toast.makeText(Adddept2Activity.this, "Debt saved successfully", Toast.LENGTH_SHORT).show();
+
+        // NEW: Send SMS with product, quantity, and total to the customer's number.
+        sendDebtSms(customerPhone, debtItems);
+
         debtItems.clear();
         adapter.notifyDataSetChanged();
+        updateTotalDisplay();
         finish();
+    }
+
+    // =====================================================
+    // NEW: SMS PERMISSION
+    // =====================================================
+
+    private void checkSmsPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.SEND_SMS},
+                    SMS_PERMISSION_CODE
+            );
+        }
+    }
+
+    // =====================================================
+    // NEW: BUILD AND SEND DEBT SUMMARY SMS
+    // =====================================================
+
+    private void sendDebtSms(String phoneNumber, ArrayList<DebtItem> items) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            return;
+        }
+
+        // Check permission before attempting to send.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "SMS permission not granted", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Build the message body: greeting + each item + total.
+        StringBuilder message = new StringBuilder();
+        message.append("Hello ")
+                .append(customerName != null ? customerName : "")
+                .append(", here is your debt summary:\n");
+
+        double total = 0.0;
+        for (DebtItem item : items) {
+            double lineTotal = item.getQuantity() * item.getAmount();
+            total += lineTotal;
+
+            message.append(item.getProduct())
+                    .append(" x")
+                    .append(item.getQuantity())
+                    .append(" - ₱")
+                    .append(String.format(Locale.getDefault(), "%.2f", lineTotal))
+                    .append("\n");
+        }
+
+        message.append("Total: ₱")
+                .append(String.format(Locale.getDefault(), "%.2f", total));
+
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+
+            // Split into multiple parts if the message is longer than one SMS segment.
+            ArrayList<String> parts = smsManager.divideMessage(message.toString());
+            smsManager.sendMultipartTextMessage(phoneNumber, null, parts, null, null);
+
+            Toast.makeText(this, "SMS Sent!", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Failed to send SMS", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // Debt item class.

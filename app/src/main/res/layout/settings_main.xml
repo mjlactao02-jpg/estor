@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F2F2F7">
+
+
+    <!-- ========================================================= -->
+    <!-- HEADER -->
+    <!-- ========================================================= -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header"
+        android:layout_width="0dp"
+        android:layout_height="90dp"
+        android:background="@drawable/bg_header"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+
+    <!-- BACK BUTTON -->
+
+
+        <!-- TITLE -->
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="4dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="Back"
+            android:padding="9dp"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.872" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    <!-- ========================================================= -->
+    <!-- MAIN CONTENT -->
+    <!-- ========================================================= -->
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:overScrollMode="ifContentScrolls"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+        <!--
+            IMPORTANT:
+            match_parent + fillViewport allows this layout
+            to occupy the complete available screen.
+        -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
+
+
+            <!-- ================================================= -->
+            <!-- CHANGE PIN -->
+            <!-- ================================================= -->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cardChangePin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="105dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/bg_input_field"
+                android:backgroundTint="#FFFFFF"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="16dp">
+
+
+                <!-- LOCK CIRCLE -->
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/iconLockBg"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    app:cardBackgroundColor="#EDEBFF"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <ImageView
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_lock"
+                        app:tint="#6C63FF" />
+
+                </androidx.cardview.widget.CardView>
+
+
+                <!-- TITLE -->
+
+                <TextView
+                    android:id="@+id/txtChangePinTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Change PIN"
+                    android:textColor="#222222"
+                    android:textSize="19sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    app:layout_constraintStart_toEndOf="@id/iconLockBg"
+                    app:layout_constraintEnd_toStartOf="@id/imgChevron"
+                    app:layout_constraintTop_toTopOf="@id/iconLockBg" />
+
+
+                <!-- SUBTITLE -->
+
+                <TextView
+                    android:id="@+id/txtChangePinSubtitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Update your 4-digit security PIN"
+                    android:textColor="#888888"
+                    android:textSize="16sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    app:layout_constraintStart_toEndOf="@id/iconLockBg"
+                    app:layout_constraintEnd_toStartOf="@id/imgChevron"
+                    app:layout_constraintTop_toBottomOf="@id/txtChangePinTitle"
+                    app:layout_constraintBottom_toBottomOf="@id/iconLockBg" />
+
+
+                <!-- CHEVRON -->
+
+                <ImageView
+                    android:id="@+id/imgChevron"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="#BBBBBB"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/iconLockBg"
+                    app:layout_constraintBottom_toBottomOf="@id/iconLockBg" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+            <!-- ================================================= -->
+            <!-- PAYMENT REMINDERS LABEL -->
+            <!-- ================================================= -->
+
+            <TextView
+                android:id="@+id/lblPaymentReminders"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="20dp"
+                android:text="PAYMENT REMINDERS"
+                android:textColor="#999999"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.05" />
+
+
+
+            <!-- ================================================= -->
+            <!-- ENABLE REMINDERS -->
+            <!-- ================================================= -->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cardReminders"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="105dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_input_field"
+                android:backgroundTint="#FFFFFF"
+                android:padding="16dp">
+
+
+                <!-- BELL CIRCLE -->
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/iconBellBg"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    app:cardBackgroundColor="#EDEBFF"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <ImageView
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_bell"
+                        app:tint="#6C63FF" />
+
+                </androidx.cardview.widget.CardView>
+
+
+                <!-- TITLE -->
+
+                <TextView
+                    android:id="@+id/txtEnableRemindersTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Enable reminders"
+                    android:textColor="#222222"
+                    android:textSize="19sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    app:layout_constraintStart_toEndOf="@id/iconBellBg"
+                    app:layout_constraintEnd_toStartOf="@id/switchReminders"
+                    app:layout_constraintTop_toTopOf="@id/iconBellBg" />
+
+
+                <!-- SUBTITLE -->
+
+                <TextView
+                    android:id="@+id/txtEnableRemindersSubtitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Notify debtors automatically"
+                    android:textColor="#888888"
+                    android:textSize="16sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    app:layout_constraintStart_toEndOf="@id/iconBellBg"
+                    app:layout_constraintEnd_toStartOf="@id/switchReminders"
+                    app:layout_constraintTop_toBottomOf="@id/txtEnableRemindersTitle"
+                    app:layout_constraintBottom_toBottomOf="@id/iconBellBg" />
+
+
+                <!-- SWITCH -->
+
+                <Switch
+                    android:id="@+id/switchReminders"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:scaleX="1.15"
+                    android:scaleY="1.15"
+                    android:thumbTint="#FFFFFF"
+                    android:trackTint="#6C63FF"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/iconBellBg"
+                    app:layout_constraintBottom_toBottomOf="@id/iconBellBg" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+            <!-- ================================================= -->
+            <!-- FREQUENCY LABEL -->
+            <!-- ================================================= -->
+
+            <TextView
+                android:id="@+id/lblFrequency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="20dp"
+                android:text="FREQUENCY"
+                android:textColor="#6C63FF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.05" />
+
+
+
+            <!-- ================================================= -->
+            <!-- FREQUENCY CARD -->
+            <!-- ================================================= -->
+
+            <!--
+                weight = 1
+                makes this card expand and occupy the
+                remaining screen space.
+            -->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_input_field"
+                android:backgroundTint="#FFFFFF"
+                android:padding="7dp">
+
+
+                <!-- ================================================= -->
+                <!-- RADIO GROUP -->
+                <!-- ================================================= -->
+
+                <RadioGroup
+                    android:id="@+id/radioGroupFrequency"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+
+                    <!-- DAILY -->
+
+                    <!-- TWICE A WEEK -->
+
+                    <RadioButton
+                        android:id="@+id/radioDaily"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_frequency_item"
+                        android:backgroundTint="@null"
+                        android:buttonTint="@drawable/radio_button_color"
+                        android:checked="true"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="Daily"
+                        android:textColor="#222222"
+                        android:textSize="18sp" />
+
+                    <RadioButton
+                        android:id="@+id/radioTwiceWeek"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_frequency_item"
+                        android:buttonTint="#6E84EF"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="Twice a week"
+                        android:textColor="#222222"
+                        android:textSize="18sp" />
+
+
+                    <!-- THRICE A WEEK -->
+
+                    <RadioButton
+                        android:id="@+id/radioThriceWeek"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_frequency_item"
+                        android:buttonTint="#6E84EF"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="Thrice a week"
+                        android:textColor="#222222"
+                        android:textSize="18sp" />
+
+
+                    <!-- 4 TIMES A WEEK -->
+
+                    <RadioButton
+                        android:id="@+id/radioFourTimesWeek"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_frequency_item"
+                        android:buttonTint="#6E84EF"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="4 times a week"
+                        android:textColor="#222222"
+                        android:textSize="18sp" />
+
+
+                    <!-- 5 TIMES A WEEK -->
+
+                    <RadioButton
+                        android:id="@+id/radioFiveTimesWeek"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_frequency_item"
+                        android:buttonTint="#6E84EF"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="5 times a week"
+                        android:textColor="#222222"
+                        android:textSize="18sp" />
+
+
+                    <!-- EVERY WEEKEND -->
+
+                    <RadioButton
+                        android:id="@+id/radioEveryWeekend"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_frequency_item"
+                        android:buttonTint="#6E84EF"
+                        android:gravity="center_vertical"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="Every weekend"
+                        android:textColor="#222222"
+                        android:textSize="18sp" />
+
+                </RadioGroup>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -53,6 +53,10 @@
         <activity
             android:name=".Adddept2Activity"
             android:exported="false" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+
 
     </application>
 
