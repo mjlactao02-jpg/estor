@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Permission for sending SMS -->
-    <uses-permission android:name="android.permission.SEND_SMS" />
+    <!-- ========================================================= -->
+    <!-- SMS PERMISSION                                            -->
+    <!-- Required to send payment reminder SMS                     -->
+    <!-- ========================================================= -->
 
-    <!-- SMS is optional; app can run on tablets/Wi-Fi devices -->
+    <uses-permission
+        android:name="android.permission.SEND_SMS" />
+
+
+    <!-- ========================================================= -->
+    <!-- SMS IS OPTIONAL                                            -->
+    <!-- Allows the app to run on tablets/Wi-Fi devices            -->
+    <!-- ========================================================= -->
+
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
+
+
+    <!-- ========================================================= -->
+    <!-- APPLICATION                                                -->
+    <!-- ========================================================= -->
 
     <application
         android:allowBackup="true"
@@ -17,44 +33,102 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Estor">
 
-        <!-- Main Activity -->
+
+        <!-- ===================================================== -->
+        <!-- PIN ACTIVITY                                           -->
+        <!-- First screen when the app opens                       -->
+        <!-- ===================================================== -->
+
         <activity
-            android:name=".MainActivity"
+            android:name=".PinActivity"
             android:exported="true">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+
+                <action
+                    android:name="android.intent.action.MAIN" />
+
+                <category
+                    android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
 
         </activity>
 
-        <!-- Add Debt -->
+
+        <!-- ===================================================== -->
+        <!-- ADD DEBT                                               -->
+        <!-- ===================================================== -->
+
         <activity
             android:name=".AdddeptActivity"
             android:exported="false" />
 
-        <!-- Pay Debt -->
+
+        <!-- ===================================================== -->
+        <!-- PAY DEBT                                               -->
+        <!-- ===================================================== -->
+
         <activity
             android:name=".PaydeptActivity"
             android:exported="false" />
 
-        <!-- Transactions -->
+
+        <!-- ===================================================== -->
+        <!-- TRANSACTIONS                                           -->
+        <!-- ===================================================== -->
+
         <activity
             android:name=".TransactionActivity"
             android:exported="false" />
 
-        <!-- History -->
+
+        <!-- ===================================================== -->
+        <!-- HISTORY                                                -->
+        <!-- ===================================================== -->
+
         <activity
             android:name=".HistoryActivity"
             android:exported="false" />
 
-        <!-- Add Debt 2 -->
+
+        <!-- ===================================================== -->
+        <!-- ADD DEBT 2                                             -->
+        <!-- ===================================================== -->
+
         <activity
             android:name=".Adddept2Activity"
             android:exported="false" />
+
+
+        <!-- ===================================================== -->
+        <!-- SETTINGS                                               -->
+        <!-- Change Recovery PIN / Payment Reminders               -->
+        <!-- ===================================================== -->
+
         <activity
             android:name=".SettingsActivity"
+            android:exported="false" />
+
+
+        <!-- ===================================================== -->
+        <!-- MAIN ACTIVITY                                          -->
+        <!-- Dashboard                                              -->
+        <!-- ===================================================== -->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+
+        <!-- ===================================================== -->
+        <!-- PAYMENT REMINDER RECEIVER                              -->
+        <!-- Receives the scheduled alarm and sends SMS reminders  -->
+        <!-- ===================================================== -->
+
+        <receiver
+            android:name=".ReminderReceiver"
+            android:enabled="true"
             android:exported="false" />
 
 

@@ -2,4 +2,17 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gray">#F9F9F9</color>
+
+    <!-- PIN screen -->
+    <color name="blue_gradient_top">#3B6BFF</color>
+    <color name="blue_gradient_bottom">#5B8CFF</color>
+    <color name="screen_bg">#EEF1F8</color>
+    <color name="dot_filled">#3B6BFF</color>
+    <color name="dot_empty_stroke">#3B6BFF</color>
+    <color name="key_bg">#FFFFFF</color>
+    <color name="key_text">#1A1F36</color>
+    <color name="title_text">#1A1F36</color>
+    <color name="subtitle_text">#8A93A6</color>
+    <color name="link_text">#3B6BFF</color>
 </resources>

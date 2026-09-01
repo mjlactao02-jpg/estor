@@ -1,7 +1,9 @@
 package estor.app;
 
 
-// ================= IMPORTS =================
+// ============================================================
+// IMPORTS
+// ============================================================
 
 import android.Manifest;
 import android.content.Intent;
@@ -27,61 +29,86 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-// ================= ACTIVITY =================
+// ============================================================
+// ACTIVITY
+// ============================================================
 
 public class AdddeptActivity extends AppCompatActivity {
 
 
-    // ================= VARIABLES =================
+    // ========================================================
+    // VARIABLES
+    // ========================================================
 
+    // Customer ListView
     ListView listCustomers;
 
+    // Displays number of customers
     TextView txtCustomerCount;
 
+    // Main Add Customer button
     Button btnAddDebt;
 
+    // Back button
     ImageButton btnBack;
 
+    // Database
     DatabaseHelper databaseHelper;
 
+    // Customer data
     ArrayList<HashMap<String, String>> customerList;
 
+    // List adapter
     CustomerAdapter adapter;
 
-    // NEW: Error message shown above the Add Debt bottom sheet inputs.
+    // Error message inside bottom sheet
     TextView txtError;
 
 
-    // SMS permission code
+    // ========================================================
+    // SMS
+    // ========================================================
+
     private static final int SMS_PERMISSION_CODE = 1;
 
-    // NEW: Handles auto-dismissing the error message after a delay.
-    private final Handler errorHandler = new Handler(Looper.getMainLooper());
 
-    // NEW: Hides the error message when it runs.
+    // ========================================================
+    // ERROR HANDLER
+    // ========================================================
+
+    private final Handler errorHandler =
+            new Handler(Looper.getMainLooper());
+
     private Runnable hideErrorRunnable;
 
-    // NEW: How long the error message stays visible.
     private static final long ERROR_DISPLAY_DURATION_MS = 3000;
 
 
-    // ================= ON CREATE =================
+    // ========================================================
+    // ON CREATE
+    // ========================================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-        // Open the Add Debt screen
+
+        // Open Add Debt screen
         setContentView(R.layout.adddept_main);
 
 
-        // ================= DATABASE =================
+        // ====================================================
+        // DATABASE
+        // ====================================================
 
-        databaseHelper = new DatabaseHelper(this);
+        databaseHelper =
+                new DatabaseHelper(this);
 
 
-        // ================= FIND VIEWS =================
+        // ====================================================
+        // FIND MAIN VIEWS
+        // ====================================================
 
         listCustomers =
                 findViewById(R.id.listCustomers);
@@ -96,7 +123,10 @@ public class AdddeptActivity extends AppCompatActivity {
                 findViewById(R.id.btnBack);
 
 
-        // Bottom sheet
+        // ====================================================
+        // BOTTOM SHEET
+        // ====================================================
+
         View overlayDim =
                 findViewById(R.id.overlayDim);
 
@@ -104,63 +134,97 @@ public class AdddeptActivity extends AppCompatActivity {
                 findViewById(R.id.includeAddDebtSheet);
 
 
-        // Inputs inside bottom sheet
+        // ====================================================
+        // BOTTOM SHEET INPUTS
+        // ====================================================
+
         EditText etName =
-                addDebtSheet.findViewById(R.id.etName);
+                addDebtSheet.findViewById(
+                        R.id.etName
+                );
 
         EditText etPhone =
-                addDebtSheet.findViewById(R.id.etPhone);
+                addDebtSheet.findViewById(
+                        R.id.etPhone
+                );
 
         Button btnConfirm =
-                addDebtSheet.findViewById(R.id.btnConfirm);
+                addDebtSheet.findViewById(
+                        R.id.btnConfirm
+                );
 
-        // NEW: Error message shown above the inputs.
         txtError =
-                addDebtSheet.findViewById(R.id.txtError);
+                addDebtSheet.findViewById(
+                        R.id.txtError
+                );
 
 
-        // ================= CUSTOMER LIST =================
+        // ====================================================
+        // CUSTOMER LIST
+        // ====================================================
 
         customerList =
                 new ArrayList<>();
 
 
+        // Create adapter
         adapter =
                 new CustomerAdapter();
 
 
+        // Connect adapter
         listCustomers.setAdapter(adapter);
 
 
-        // Load customers from database
+        // Load customers
         loadCustomers();
 
 
-        // Show customer count
+        // Update customer count
         updateCustomerCount();
 
 
-        // ================= CLICK CUSTOMER =================
+        // ====================================================
+        // CUSTOMER CLICK
+        // ====================================================
 
         listCustomers.setOnItemClickListener(
                 (parent, view, position, id) -> {
+
 
                     // Get selected customer
                     HashMap<String, String> customer =
                             customerList.get(position);
 
 
-                    // Get name
+                    // =================================================
+                    // GET CUSTOMER ID
+                    // =================================================
+
+                    String customerId =
+                            customer.get("id");
+
+
+                    // =================================================
+                    // GET CUSTOMER NAME
+                    // =================================================
+
                     String name =
                             customer.get("name");
 
 
-                    // Get phone
+                    // =================================================
+                    // GET CUSTOMER PHONE
+                    // =================================================
+
                     String phone =
                             customer.get("phone");
 
 
-                    // Open Adddept2Activity
+                    // =================================================
+                    // OPEN ADDDEPT2ACTIVITY
+                    // =================================================
+
                     Intent intent =
                             new Intent(
                                     AdddeptActivity.this,
@@ -168,29 +232,39 @@ public class AdddeptActivity extends AppCompatActivity {
                             );
 
 
-                    // Send name
+                    // Send customer ID
+                    intent.putExtra(
+                            "customer_id",
+                            customerId
+                    );
+
+
+                    // Send customer name
                     intent.putExtra(
                             "customer_name",
                             name
                     );
 
 
-                    // Send phone
+                    // Send customer phone
                     intent.putExtra(
                             "customer_phone",
                             phone
                     );
 
 
-                    // Open next screen
+                    // Open screen
                     startActivity(intent);
                 }
         );
 
 
-        // ================= ADD DEBT BUTTON =================
+        // ====================================================
+        // ADD CUSTOMER BUTTON
+        // ====================================================
 
         btnAddDebt.setOnClickListener(v -> {
+
 
             // Show dark background
             overlayDim.setVisibility(
@@ -203,39 +277,53 @@ public class AdddeptActivity extends AppCompatActivity {
                     View.VISIBLE
             );
 
-            // NEW: Hide any leftover error message from a previous attempt.
+
+            // Hide previous error
             hideError();
+
+
+            // Focus name
+            etName.requestFocus();
         });
 
 
-        // ================= CLOSE BOTTOM SHEET =================
+        // ====================================================
+        // CLOSE BOTTOM SHEET
+        // ====================================================
 
         overlayDim.setOnClickListener(v -> {
 
-            // Hide dark background
+
+            // Hide background
             overlayDim.setVisibility(
                     View.GONE
             );
 
 
-            // Hide bottom sheet
+            // Hide sheet
             addDebtSheet.setVisibility(
                     View.GONE
             );
 
-            // NEW: Hide the error message so it doesn't linger next time.
+
+            // Hide error
             hideError();
         });
 
 
-        // ================= SMS PERMISSION =================
+        // ====================================================
+        // SMS PERMISSION
+        // ====================================================
 
         checkSmsPermission();
 
 
-        // ================= CONFIRM BUTTON =================
+        // ====================================================
+        // CONFIRM CUSTOMER
+        // ====================================================
 
         btnConfirm.setOnClickListener(v -> {
+
 
             // Get name
             String name =
@@ -251,43 +339,58 @@ public class AdddeptActivity extends AppCompatActivity {
                             .trim();
 
 
-            // ================= CHECK EMPTY =================
+            // =================================================
+            // EMPTY CHECK
+            // =================================================
 
             if (name.isEmpty() ||
                     phone.isEmpty()) {
 
-                showError("Please fill in all fields");
+                showError(
+                        "Please fill in all fields"
+                );
 
                 return;
             }
 
 
-            // ================= CHECK NAME =================
+            // =================================================
+            // NAME LENGTH
+            // =================================================
 
             if (name.length() > 20) {
 
-                showError("Name must not exceed 20 characters");
+                showError(
+                        "Name must not exceed 20 characters"
+                );
 
                 return;
             }
 
 
-            // ================= CHECK PHONE =================
+            // =================================================
+            // PHONE VALIDATION
+            // =================================================
 
-            // Philippine number example:
+            // Philippine format:
+            //
             // 09123456789
 
             if (!phone.matches(
                     "^09\\d{9}$"
             )) {
 
-                showError("Enter a valid phone number");
+                showError(
+                        "Enter a valid phone number"
+                );
 
                 return;
             }
 
 
-            // ================= SAVE CUSTOMER =================
+            // =================================================
+            // SAVE CUSTOMER
+            // =================================================
 
             long result =
                     databaseHelper.addCustomer(
@@ -296,11 +399,14 @@ public class AdddeptActivity extends AppCompatActivity {
                     );
 
 
-            // ================= CHECK RESULT =================
+            // =================================================
+            // CHECK RESULT
+            // =================================================
 
             if (result != -1) {
 
-                // Customer saved
+
+                // Customer successfully saved
                 Toast.makeText(
                         AdddeptActivity.this,
                         "Customer added successfully",
@@ -308,34 +414,44 @@ public class AdddeptActivity extends AppCompatActivity {
                 ).show();
 
 
-                // ================= SEND SMS =================
+                // =================================================
+                // SEND SMS
+                // =================================================
 
                 sendSms(
                         phone,
-                        "Hello " + name +
+
+                        "Hello " +
+                                name +
                                 ", your customer account has been created in estor."
                 );
 
 
-                // ================= CLEAR INPUTS =================
+                // =================================================
+                // CLEAR INPUTS
+                // =================================================
 
                 etName.setText("");
 
                 etPhone.setText("");
 
 
-                // ================= REFRESH LIST =================
+                // =================================================
+                // REFRESH CUSTOMER LIST
+                // =================================================
 
                 loadCustomers();
 
                 updateCustomerCount();
 
 
-                // NEW: Hide the error message.
+                // Hide error
                 hideError();
 
 
-                // ================= CLOSE SHEET =================
+                // =================================================
+                // CLOSE BOTTOM SHEET
+                // =================================================
 
                 overlayDim.setVisibility(
                         View.GONE
@@ -345,75 +461,123 @@ public class AdddeptActivity extends AppCompatActivity {
                         View.GONE
                 );
 
+
             } else {
 
-                // Database failed
-                showError("Failed to save customer");
-            }
 
+                // Database failed
+                showError(
+                        "Failed to save customer"
+                );
+            }
         });
 
 
-        // ================= BACK BUTTON =================
+        // ====================================================
+        // BACK BUTTON
+        // ====================================================
 
         btnBack.setOnClickListener(v -> {
 
-            // Open MainActivity
-            Intent intent =
-                    new Intent(
-                            AdddeptActivity.this,
-                            MainActivity.class
-                    );
+            // Simply close this Activity.
+            //
+            // This returns to MainActivity instead of
+            // creating another MainActivity.
 
-            startActivity(intent);
-
-
-            // Close this Activity
             finish();
         });
     }
 
 
-    // =====================================================
-    // NEW: SHOW ERROR MESSAGE WITH AUTO-DISMISS TIMER
-    // =====================================================
+    // ========================================================
+    // ON RESUME
+    // ========================================================
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+
+        // Refresh customers whenever we return
+        // from Adddept2Activity.
+
+        if (databaseHelper != null) {
+
+            loadCustomers();
+
+            updateCustomerCount();
+        }
+    }
+
+
+    // ========================================================
+    // SHOW ERROR
+    // ========================================================
 
     private void showError(String message) {
 
-        // Cancel any previously scheduled hide so timers don't stack.
+
+        // Cancel previous timer
         if (hideErrorRunnable != null) {
-            errorHandler.removeCallbacks(hideErrorRunnable);
+
+            errorHandler.removeCallbacks(
+                    hideErrorRunnable
+            );
         }
 
-        txtError.setText(message);
-        txtError.setVisibility(View.VISIBLE);
 
-        // Schedule the message to hide itself after the delay.
-        hideErrorRunnable = () -> txtError.setVisibility(View.GONE);
-        errorHandler.postDelayed(hideErrorRunnable, ERROR_DISPLAY_DURATION_MS);
+        // Show error
+        txtError.setText(message);
+
+        txtError.setVisibility(
+                View.VISIBLE
+        );
+
+
+        // Automatically hide after 3 seconds
+        hideErrorRunnable =
+                () -> txtError.setVisibility(
+                        View.GONE
+                );
+
+
+        errorHandler.postDelayed(
+                hideErrorRunnable,
+                ERROR_DISPLAY_DURATION_MS
+        );
     }
 
 
-    // =====================================================
-    // NEW: HIDE ERROR MESSAGE IMMEDIATELY
-    // =====================================================
+    // ========================================================
+    // HIDE ERROR
+    // ========================================================
 
     private void hideError() {
 
-        // Cancel any pending auto-hide since we're hiding it now.
+
+        // Cancel timer
         if (hideErrorRunnable != null) {
-            errorHandler.removeCallbacks(hideErrorRunnable);
+
+            errorHandler.removeCallbacks(
+                    hideErrorRunnable
+            );
         }
 
-        txtError.setVisibility(View.GONE);
+
+        // Hide error
+        txtError.setVisibility(
+                View.GONE
+        );
     }
 
 
-    // =====================================================
+    // ========================================================
     // CHECK SMS PERMISSION
-    // =====================================================
+    // ========================================================
 
     private void checkSmsPermission() {
+
 
         if (checkSelfPermission(
                 Manifest.permission.SEND_SMS
@@ -421,6 +585,7 @@ public class AdddeptActivity extends AppCompatActivity {
 
 
             requestPermissions(
+
                     new String[]{
                             Manifest.permission.SEND_SMS
                     },
@@ -431,19 +596,21 @@ public class AdddeptActivity extends AppCompatActivity {
     }
 
 
-    // =====================================================
+    // ========================================================
     // SEND SMS
-    // =====================================================
+    // ========================================================
 
     private void sendSms(
             String phoneNumber,
             String message
     ) {
 
+
         // Check permission
         if (checkSelfPermission(
                 Manifest.permission.SEND_SMS
         ) != PackageManager.PERMISSION_GRANTED) {
+
 
             Toast.makeText(
                     AdddeptActivity.this,
@@ -457,7 +624,8 @@ public class AdddeptActivity extends AppCompatActivity {
 
         try {
 
-            // Get SMS manager
+
+            // Get SMS Manager
             SmsManager smsManager =
                     SmsManager.getDefault();
 
@@ -472,7 +640,6 @@ public class AdddeptActivity extends AppCompatActivity {
             );
 
 
-            // Show message
             Toast.makeText(
                     AdddeptActivity.this,
                     "SMS Sent!",
@@ -481,6 +648,7 @@ public class AdddeptActivity extends AppCompatActivity {
 
 
         } catch (Exception e) {
+
 
             Toast.makeText(
                     AdddeptActivity.this,
@@ -491,26 +659,35 @@ public class AdddeptActivity extends AppCompatActivity {
     }
 
 
-    // =====================================================
+    // ========================================================
     // LOAD CUSTOMERS
-    // =====================================================
+    // ========================================================
 
     private void loadCustomers() {
 
-        // Remove old list data
+
+        // Remove old data
         customerList.clear();
 
 
-        // Get database data
+        // Get customers
         Cursor cursor =
                 databaseHelper.getAllCustomers();
 
 
-        // Make sure cursor exists
+        // Check cursor
         if (cursor != null) {
 
 
-            // Get column positions
+            // =================================================
+            // GET COLUMN INDEXES
+            // =================================================
+
+            int idIndex =
+                    cursor.getColumnIndex(
+                            DatabaseHelper.COLUMN_ID
+                    );
+
 
             int nameIndex =
                     cursor.getColumnIndex(
@@ -536,25 +713,65 @@ public class AdddeptActivity extends AppCompatActivity {
                     );
 
 
-            // Read every customer
+            // =================================================
+            // READ CUSTOMERS
+            // =================================================
+
             while (cursor.moveToNext()) {
 
 
-                // Get name
-                String name =
-                        cursor.getString(
-                                nameIndex
-                        );
+                // ---------------------------------------------
+                // CUSTOMER ID
+                // ---------------------------------------------
+
+                String id = "";
+
+                if (idIndex != -1 &&
+                        !cursor.isNull(idIndex)) {
+
+                    id =
+                            cursor.getString(
+                                    idIndex
+                            );
+                }
 
 
-                // Get phone
-                String phone =
-                        cursor.getString(
-                                phoneIndex
-                        );
+                // ---------------------------------------------
+                // NAME
+                // ---------------------------------------------
+
+                String name = "";
+
+                if (nameIndex != -1 &&
+                        !cursor.isNull(nameIndex)) {
+
+                    name =
+                            cursor.getString(
+                                    nameIndex
+                            );
+                }
 
 
-                // Get date
+                // ---------------------------------------------
+                // PHONE
+                // ---------------------------------------------
+
+                String phone = "";
+
+                if (phoneIndex != -1 &&
+                        !cursor.isNull(phoneIndex)) {
+
+                    phone =
+                            cursor.getString(
+                                    phoneIndex
+                            );
+                }
+
+
+                // ---------------------------------------------
+                // DATE
+                // ---------------------------------------------
+
                 String date = "";
 
                 if (dateIndex != -1 &&
@@ -567,7 +784,10 @@ public class AdddeptActivity extends AppCompatActivity {
                 }
 
 
-                // Get time
+                // ---------------------------------------------
+                // TIME
+                // ---------------------------------------------
+
                 String time = "";
 
                 if (timeIndex != -1 &&
@@ -580,26 +800,37 @@ public class AdddeptActivity extends AppCompatActivity {
                 }
 
 
-                // Create customer
+                // =================================================
+                // CREATE CUSTOMER MAP
+                // =================================================
+
                 HashMap<String, String> customer =
                         new HashMap<>();
 
 
-                // Save values
+                customer.put(
+                        "id",
+                        id
+                );
+
+
                 customer.put(
                         "name",
                         name
                 );
+
 
                 customer.put(
                         "phone",
                         phone
                 );
 
+
                 customer.put(
                         "date",
                         date
                 );
+
 
                 customer.put(
                         "time",
@@ -607,7 +838,7 @@ public class AdddeptActivity extends AppCompatActivity {
                 );
 
 
-                // Add customer to list
+                // Add customer
                 customerList.add(
                         customer
                 );
@@ -624,64 +855,72 @@ public class AdddeptActivity extends AppCompatActivity {
     }
 
 
-    // =====================================================
+    // ========================================================
     // UPDATE CUSTOMER COUNT
-    // =====================================================
+    // ========================================================
 
     private void updateCustomerCount() {
 
-        // Get number of customers
+
+        // Get customer count
         int count =
                 databaseHelper.getCustomerCount();
 
 
-        // Display number
+        // Show count
         txtCustomerCount.setText(
                 String.valueOf(count)
         );
     }
 
 
-    // =====================================================
-    // NEW: CLEAN UP TIMER ON DESTROY
-    // =====================================================
+    // ========================================================
+    // DESTROY
+    // ========================================================
 
     @Override
     protected void onDestroy() {
+
         super.onDestroy();
 
-        // Cancel any pending auto-hide callback to avoid leaking the Activity.
+
+        // Cancel error timer
         if (hideErrorRunnable != null) {
-            errorHandler.removeCallbacks(hideErrorRunnable);
+
+            errorHandler.removeCallbacks(
+                    hideErrorRunnable
+            );
         }
     }
 
 
-    // =====================================================
+    // ========================================================
     // CUSTOMER ADAPTER
-    // =====================================================
+    // ========================================================
 
     private class CustomerAdapter
             extends ArrayAdapter<HashMap<String, String>> {
 
 
-        // ================= CONSTRUCTOR =================
+        // ====================================================
+        // CONSTRUCTOR
+        // ====================================================
 
         CustomerAdapter() {
 
             super(
                     AdddeptActivity.this,
 
-                    // XML row
                     R.layout.item_customer,
 
-                    // Customer data
                     customerList
             );
         }
 
 
-        // ================= GET VIEW =================
+        // ====================================================
+        // GET VIEW
+        // ====================================================
 
         @Override
         public View getView(
@@ -691,7 +930,7 @@ public class AdddeptActivity extends AppCompatActivity {
         ) {
 
 
-            // Create row
+            // Create row if necessary
             if (convertView == null) {
 
                 convertView =
@@ -704,7 +943,9 @@ public class AdddeptActivity extends AppCompatActivity {
             }
 
 
-            // ================= FIND TEXTVIEWS =================
+            // =================================================
+            // FIND TEXTVIEWS
+            // =================================================
 
             TextView txtName =
                     convertView.findViewById(
@@ -730,13 +971,17 @@ public class AdddeptActivity extends AppCompatActivity {
                     );
 
 
-            // ================= GET CUSTOMER =================
+            // =================================================
+            // GET CUSTOMER
+            // =================================================
 
             HashMap<String, String> customer =
                     customerList.get(position);
 
 
-            // ================= SHOW DATA =================
+            // =================================================
+            // DISPLAY CUSTOMER
+            // =================================================
 
             txtName.setText(
                     customer.get("name")
@@ -758,7 +1003,6 @@ public class AdddeptActivity extends AppCompatActivity {
             );
 
 
-            // Return row
             return convertView;
         }
     }

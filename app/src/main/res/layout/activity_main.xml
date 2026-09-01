@@ -1,56 +1,624 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    tools:layout_editor_absoluteX="-20dp"
-    android:background="@color/white">
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="92dp"
-        android:layout_height="88dp"
-        android:layout_marginTop="280dp"
-        android:text="Add Dept"
-        app:layout_constraintEnd_toStartOf="@+id/button3"
-        app:layout_constraintHorizontal_bias="0.456"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:orientation="vertical"
+    android:background="#F9F9F9">
 
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="92dp"
-        android:layout_height="88dp"
-        android:layout_marginStart="68dp"
-        android:text="Transaction"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2"
-        app:layout_constraintVertical_bias="0.268" />
 
-    <Button
-        android:id="@+id/button5"
-        android:layout_width="92dp"
-        android:layout_height="88dp"
-        android:text="History"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.522"
-        app:layout_constraintStart_toEndOf="@+id/button4"
-        app:layout_constraintTop_toBottomOf="@+id/button3"
-        app:layout_constraintVertical_bias="0.268" />
+    <!-- ================================================= -->
+    <!-- MAIN CONTENT                                      -->
+    <!-- ================================================= -->
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="92dp"
-        android:layout_height="88dp"
-        android:layout_marginTop="280dp"
-        android:layout_marginEnd="76dp"
-        android:text="Pay Dept"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:fillViewport="true"
+        android:clipToPadding="false"
+
+        android:paddingBottom="16dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="50dp"
+            android:paddingBottom="16dp">
+
+
+            <!-- ================================================= -->
+            <!-- TOTAL DEBT / WALLET                                -->
+            <!-- ================================================= -->
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="190dp"
+
+                android:background="@drawable/bg_wallet"
+
+                android:clipToOutline="true">
+
+
+                <!-- ================================================= -->
+                <!-- WALLET PICTURE                                   -->
+                <!-- ================================================= -->
+                <!--
+                    Put wallet.png inside:
+
+                    app/src/main/res/drawable/wallet.png
+
+                    The image should preferably have a
+                    transparent background.
+                -->
+
+                <ImageView
+                    android:id="@+id/imgWalletDecoration"
+                    android:layout_width="155dp"
+                    android:layout_height="155dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginBottom="-5dp"
+                    android:src="@drawable/wallet"
+                    android:alpha="0.15"
+                    android:scaleType="centerInside"
+                    android:contentDescription="Wallet decoration" />
+
+
+                <!-- ================================================= -->
+                <!-- WALLET CONTENT                                    -->
+                <!-- ================================================= -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingStart="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="22dp"
+                    android:paddingBottom="22dp">
+
+
+                    <!-- ============================================= -->
+                    <!-- SETTINGS                                       -->
+                    <!-- ============================================= -->
+
+
+                    <!-- ============================================= -->
+                    <!-- TOTAL DEBT LABEL                              -->
+                    <!-- ============================================= -->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:gravity="end|center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/btnSettings"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:background="@android:color/transparent"
+                            android:clickable="true"
+                            android:contentDescription="Settings"
+                            android:focusable="true"
+                            android:padding="6dp"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/ic_settings" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginTop="4dp"
+
+                        android:text="Total debt:"
+
+                        android:textColor="#DDE7FF"
+
+                        android:textSize="20sp"
+
+                        android:textStyle="bold" />
+
+
+                    <!-- ============================================= -->
+                    <!-- TOTAL DEBT AMOUNT                             -->
+                    <!-- ============================================= -->
+
+                    <TextView
+                        android:id="@+id/txtBalance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:maxLines="1"
+                        android:text="₱420.00"
+                        android:textColor="#FFFFFF"
+                        android:textSize="40sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </FrameLayout>
+
+
+            <!-- ================================================= -->
+            <!-- SUMMARY CARDS                                      -->
+            <!-- ================================================= -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26dp"
+                android:orientation="horizontal">
+                <!-- ================================================= -->
+                <!-- UNPAID CUSTOMER                                  -->
+                <!-- ================================================= -->
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="140dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:background="@drawable/bg_unpaid">
+
+
+                    <!-- TITLE -->
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:text="Unpaid Customer"
+
+                        android:textColor="#172033"
+
+                        android:textSize="15sp"
+
+                        android:textStyle="bold"
+
+                        android:maxLines="2" />
+
+
+                    <!-- CUSTOMER COUNT -->
+
+                    <TextView
+                        android:id="@+id/txtUnpaidCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="0 Customers"
+                        android:textColor="#D81B4E"
+                        android:textSize="16sp" />
+
+
+                    <!-- UNPAID AMOUNT -->
+
+                    <TextView
+                        android:id="@+id/txtUnpaidAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="₱0.00"
+                        android:textColor="#D81B4E"
+                        android:textSize="21sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+
+                <!-- ================================================= -->
+                <!-- SPACE                                             -->
+                <!-- ================================================= -->
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" />
+
+
+                <!-- ================================================= -->
+                <!-- PARTIAL CUSTOMER                                  -->
+                <!-- ================================================= -->
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:minHeight="140dp"
+
+                    android:layout_weight="1"
+
+                    android:orientation="vertical"
+
+                    android:padding="16dp"
+
+                    android:background="@drawable/bg_partial">
+
+
+                    <!-- TITLE -->
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:text="Partial Customer"
+
+                        android:textColor="#172033"
+
+                        android:textSize="15sp"
+
+                        android:textStyle="bold"
+
+                        android:maxLines="2" />
+
+
+                    <!-- CUSTOMER COUNT -->
+
+                    <TextView
+                        android:id="@+id/txtPartialCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="0 Customers"
+                        android:textColor="#149447"
+                        android:textSize="16sp" />
+
+                    <!-- PARTIAL AMOUNT -->
+
+                    <TextView
+                        android:id="@+id/txtPartialAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="₱0.00"
+                        android:textColor="#149447"
+                        android:textSize="21sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <!-- ================================================= -->
+            <!-- ACTION BUTTONS ROW 1                               -->
+            <!-- ================================================= -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="26dp"
+                android:orientation="horizontal">
+
+
+                <!-- ================================================= -->
+                <!-- ADD DEBT                                          -->
+                <!-- ================================================= -->
+
+                <LinearLayout
+                    android:id="@+id/btnAddDebt"
+
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+
+                    android:layout_weight="1"
+
+                    android:orientation="vertical"
+
+                    android:gravity="center"
+
+                    android:padding="8dp"
+
+                    android:clickable="true"
+                    android:focusable="true"
+
+                    android:background="@drawable/bg_add_debt">
+
+
+                    <!-- WHITE CIRCLE -->
+
+                    <FrameLayout
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+
+                        android:background="@drawable/bg_white_circle"
+
+                        android:elevation="4dp">
+
+
+                        <ImageView
+                            android:id="@+id/imgAddDebt"
+
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+
+                            android:layout_gravity="center"
+
+                            android:src="@drawable/ic_adddept"
+
+                            android:contentDescription="Add Debt"
+
+                            android:scaleType="centerInside" />
+
+                    </FrameLayout>
+
+
+                    <!-- ADD DEBT TEXT -->
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginTop="8dp"
+
+                        android:text="Add Debt"
+
+                        android:textColor="#FFFFFF"
+
+                        android:textSize="17sp"
+
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+
+                <!-- ================================================= -->
+                <!-- SPACE                                             -->
+                <!-- ================================================= -->
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" />
+
+
+                <!-- ================================================= -->
+                <!-- PAY DEBT                                          -->
+                <!-- ================================================= -->
+
+                <LinearLayout
+                    android:id="@+id/btnPayDebt"
+
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+
+                    android:layout_weight="1"
+
+                    android:orientation="vertical"
+
+                    android:gravity="center"
+
+                    android:padding="8dp"
+
+                    android:clickable="true"
+                    android:focusable="true"
+
+                    android:background="@drawable/bg_add_debt">
+
+
+                    <!-- WHITE CIRCLE -->
+
+                    <FrameLayout
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+
+                        android:background="@drawable/bg_white_circle"
+
+                        android:elevation="4dp">
+
+
+                        <ImageView
+                            android:id="@+id/imgPayDebt"
+
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+
+                            android:layout_gravity="center"
+
+                            android:src="@drawable/ic_paydept"
+
+                            android:contentDescription="Pay Debt"
+
+                            android:scaleType="centerInside" />
+
+                    </FrameLayout>
+
+
+                    <!-- PAY DEBT TEXT -->
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginTop="8dp"
+
+                        android:text="Pay Debt"
+
+                        android:textColor="#FFFFFF"
+
+                        android:textSize="17sp"
+
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <!-- ================================================= -->
+            <!-- ACTION BUTTONS ROW 2                               -->
+            <!-- ================================================= -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+
+                android:layout_marginTop="10dp"
+
+                android:orientation="horizontal">
+
+
+                <!-- ================================================= -->
+                <!-- TRANSACTION                                      -->
+                <!-- ================================================= -->
+
+                <LinearLayout
+                    android:id="@+id/btnTransaction"
+
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+
+                    android:layout_weight="1"
+
+                    android:orientation="vertical"
+
+                    android:gravity="center"
+
+                    android:padding="8dp"
+
+                    android:clickable="true"
+                    android:focusable="true"
+
+                    android:background="@drawable/bg_add_debt">
+
+
+                    <!-- WHITE CIRCLE -->
+
+                    <FrameLayout
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@drawable/bg_white_circle"
+                        android:elevation="4dp">
+
+
+                        <ImageView
+                            android:id="@+id/imgTransaction"
+
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+
+                            android:layout_gravity="center"
+
+                            android:src="@drawable/ic_transaction"
+
+                            android:contentDescription="Transaction"
+
+                            android:scaleType="centerInside" />
+
+                    </FrameLayout>
+
+
+                    <!-- TRANSACTION TEXT -->
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginTop="8dp"
+
+                        android:text="Transaction"
+
+                        android:textColor="#FFFFFF"
+
+                        android:textSize="17sp"
+
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+
+                <!-- ================================================= -->
+                <!-- SPACE                                             -->
+                <!-- ================================================= -->
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="1dp" />
+
+
+                <!-- ================================================= -->
+                <!-- HISTORY                                           -->
+                <!-- ================================================= -->
+
+                <LinearLayout
+                    android:id="@+id/btnHistory"
+
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+
+                    android:layout_weight="1"
+
+                    android:orientation="vertical"
+
+                    android:gravity="center"
+
+                    android:padding="8dp"
+
+                    android:clickable="true"
+                    android:focusable="true"
+
+                    android:background="@drawable/bg_add_debt">
+
+
+                    <!-- WHITE CIRCLE -->
+
+                    <FrameLayout
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+
+                        android:background="@drawable/bg_white_circle"
+
+                        android:elevation="4dp">
+
+
+                        <ImageView
+                            android:id="@+id/imgHistory"
+
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+
+                            android:layout_gravity="center"
+
+                            android:src="@drawable/ic_history"
+
+                            android:contentDescription="History"
+
+                            android:scaleType="centerInside" />
+
+                    </FrameLayout>
+
+
+                    <!-- HISTORY TEXT -->
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginTop="8dp"
+
+                        android:text="History"
+
+                        android:textColor="#FFFFFF"
+
+                        android:textSize="17sp"
+
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

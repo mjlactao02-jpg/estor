@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:width="155dp"
+    android:height="155dp"
+
+    android:viewportWidth="155"
+    android:viewportHeight="155">
+
+    <!-- Wallet -->
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="
+            M18,42
+            L112,42
+            C124,42 134,52 134,64
+            L134,119
+            C134,131 124,140 112,140
+            L18,140
+            C10,140 5,134 5,126
+            L5,56
+            C5,48 10,42 18,42
+            Z" />
+
+    <!-- Wallet inner -->
+
+    <path
+        android:fillColor="#7188EE"
+        android:pathData="
+            M19,52
+            L111,52
+            C118,52 123,57 123,64
+            L123,116
+            C123,123 118,129 111,129
+            L19,129
+            C15,129 14,126 14,122
+            L14,59
+            C14,55 15,52 19,52
+            Z" />
+
+    <!-- Wallet top -->
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="
+            M14,51
+            L14,39
+            C14,30 21,23 30,23
+            L103,23
+            C112,23 119,30 119,39
+            L119,51
+            Z" />
+
+    <!-- Wallet top inner -->
+
+    <path
+        android:fillColor="#7188EE"
+        android:pathData="
+            M24,40
+            C24,36 27,33 31,33
+            L102,33
+            C106,33 109,36 109,40
+            L109,42
+            L24,42
+            Z" />
+
+    <!-- Money pocket -->
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="
+            M91,74
+            L134,74
+            L134,108
+            L91,108
+            C80,108 72,101 72,91
+            C72,81 80,74 91,74
+            Z" />
+
+    <!-- Money pocket inner -->
+
+    <path
+        android:fillColor="#7188EE"
+        android:pathData="
+            M93,82
+            L124,82
+            L124,100
+            L93,100
+            C87,100 83,97 83,91
+            C83,86 87,82 93,82
+            Z" />
+
+    <!-- Coin -->
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="
+            M96,86
+            A5,5 0 1,0 96,96
+            A5,5 0 1,0 96,86
+            Z" />
+
+</vector>

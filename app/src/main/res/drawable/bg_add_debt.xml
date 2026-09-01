@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ================================================= -->
+    <!-- PRESSED STATE                                     -->
+    <!-- ================================================= -->
+
+    <item android:state_pressed="true">
+
+        <shape android:shape="rectangle">
+
+            <corners android:radius="18dp" />
+
+            <gradient
+                android:type="linear"
+                android:angle="270"
+                android:startColor="#5A6BE8"
+                android:endColor="#4D62DC" />
+
+        </shape>
+
+    </item>
+
+
+    <!-- ================================================= -->
+    <!-- NORMAL STATE                                      -->
+    <!-- ================================================= -->
+
+    <item>
+
+        <layer-list>
+
+            <!-- ========================================= -->
+            <!-- SHADOW                                    -->
+            <!-- ========================================= -->
+
+            <item
+                android:left="1dp"
+                android:right="1dp"
+                android:top="3dp"
+                android:bottom="0dp">
+
+                <shape android:shape="rectangle">
+
+                    <corners android:radius="18dp" />
+
+                    <solid android:color="#C9C9C9" />
+
+                </shape>
+
+            </item>
+
+
+            <!-- ========================================= -->
+            <!-- MAIN BUTTON                               -->
+            <!-- ========================================= -->
+
+            <item android:bottom="3dp">
+
+                <shape android:shape="rectangle">
+
+                    <corners android:radius="18dp" />
+
+                    <gradient
+                        android:type="linear"
+                        android:angle="270"
+                        android:startColor="#7188EE"
+                        android:endColor="#5872E8" />
+
+                </shape>
+
+            </item>
+
+        </layer-list>
+
+    </item>
+
+</selector>

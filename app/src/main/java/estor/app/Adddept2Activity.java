@@ -1,7 +1,6 @@
 package estor.app;
 
 import android.Manifest;
-import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,398 +25,1030 @@ import java.util.Locale;
 
 public class Adddept2Activity extends AppCompatActivity {
 
-    // Product input field.
+    // =====================================================
+    // INPUT FIELDS
+    // =====================================================
+
+    // Product name
     private EditText edtProduct;
 
-    // Quantity input field.
+    // Product quantity
     private EditText edtQuantity;
 
-    // Amount input field.
+    // Product amount / price
     private EditText edtAmount;
 
-    // Button used to temporarily add a product to the ListView.
+
+    // =====================================================
+    // BUTTONS
+    // =====================================================
+
+    // Adds an item temporarily to the ListView
     private Button btnAddDebt;
 
-    // Button used to save all products.
+    // Saves all items to the database
     private Button btnConfirm;
 
-    // Back button.
+    // Back button
     private ImageButton btnBack;
 
-    // ListView that displays the products added by the user.
+
+    // =====================================================
+    // LISTVIEW
+    // =====================================================
+
     private ListView listViewDebt;
 
-    // NEW: Customer card views (name, phone, total).
+
+    // =====================================================
+    // CUSTOMER CARD
+    // =====================================================
+
     private TextView txtCustomerName;
     private TextView txtCustomerPhone;
     private TextView txtTotalAmount;
 
-    // Database helper used to access SQLite.
+
+    // =====================================================
+    // DATABASE
+    // =====================================================
+
     private DatabaseHelper databaseHelper;
 
-    // Name of the customer selected from the first screen.
-    private String customerName;
 
-    // Phone number of the selected customer.
+    // =====================================================
+    // CUSTOMER INFORMATION
+    // =====================================================
+
+    private String customerName;
     private String customerPhone;
 
-    // This list temporarily stores products before Confirm is clicked.
+
+    // =====================================================
+    // TEMPORARY DEBT LIST
+    // =====================================================
+
     private ArrayList<DebtItem> debtItems;
 
-    // Adapter that displays debtItems inside the ListView.
     private DebtAdapter adapter;
 
-    // NEW: SMS permission request code.
+
+    // =====================================================
+    // SMS PERMISSION
+    // =====================================================
+
     private static final int SMS_PERMISSION_CODE = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
-        // Open the Add Debt Item screen.
+        // Open Add Debt Item layout
         setContentView(R.layout.adddept);
 
-        // Create the database helper.
+
+        // =====================================================
+        // DATABASE
+        // =====================================================
+
         databaseHelper = new DatabaseHelper(this);
 
-        // Get the customer name sent from AdddeptActivity.
-        customerName = getIntent().getStringExtra("customer_name");
 
-        // Get the customer phone sent from AdddeptActivity.
-        customerPhone = getIntent().getStringExtra("customer_phone");
+        // =====================================================
+        // GET CUSTOMER INFORMATION
+        // =====================================================
 
-        // Product input.
-        edtProduct = findViewById(R.id.edtProduct);
+        customerName =
+                getIntent().getStringExtra("customer_name");
 
-        // Quantity input.
-        edtQuantity = findViewById(R.id.edtQuantity);
+        customerPhone =
+                getIntent().getStringExtra("customer_phone");
 
-        // Amount input.
-        edtAmount = findViewById(R.id.edtAmount);
 
-        // Add Debt button.
-        btnAddDebt = findViewById(R.id.btnAddDebt);
+        // =====================================================
+        // CONNECT INPUT FIELDS
+        // =====================================================
 
-        // Confirm button.
-        btnConfirm = findViewById(R.id.btnConfirm);
+        edtProduct =
+                findViewById(R.id.edtProduct);
 
-        // Back button.
-        btnBack = findViewById(R.id.btnBack);
+        edtQuantity =
+                findViewById(R.id.edtQuantity);
 
-        // ListView.
-        listViewDebt = findViewById(R.id.listViewDebt);
+        edtAmount =
+                findViewById(R.id.edtAmount);
 
-        // NEW: Bind customer card views.
-        txtCustomerName = findViewById(R.id.txtCustomerName);
-        txtCustomerPhone = findViewById(R.id.txtCustomerPhone);
-        txtTotalAmount = findViewById(R.id.txtTotalAmount);
 
-        // NEW: Show customer name and phone in the card.
-        txtCustomerName.setText(customerName != null ? customerName : "Unknown");
-        txtCustomerPhone.setText(customerPhone != null ? customerPhone : "");
+        // =====================================================
+        // CONNECT BUTTONS
+        // =====================================================
 
-        // Create an empty list. Products are stored here temporarily.
-        debtItems = new ArrayList<>();
+        btnAddDebt =
+                findViewById(R.id.btnAddDebt);
 
-        // Create the adapter.
-        adapter = new DebtAdapter(Adddept2Activity.this, debtItems);
+        btnConfirm =
+                findViewById(R.id.btnConfirm);
 
-        // Connect the adapter to the ListView.
+        btnBack =
+                findViewById(R.id.btnBack);
+
+
+        // =====================================================
+        // CONNECT LISTVIEW
+        // =====================================================
+
+        listViewDebt =
+                findViewById(R.id.listViewDebt);
+
+
+        // =====================================================
+        // CONNECT CUSTOMER CARD
+        // =====================================================
+
+        txtCustomerName =
+                findViewById(R.id.txtCustomerName);
+
+        txtCustomerPhone =
+                findViewById(R.id.txtCustomerPhone);
+
+        txtTotalAmount =
+                findViewById(R.id.txtTotalAmount);
+
+
+        // =====================================================
+        // DISPLAY CUSTOMER INFORMATION
+        // =====================================================
+
+        if (customerName != null) {
+
+            txtCustomerName.setText(customerName);
+
+        } else {
+
+            txtCustomerName.setText("Unknown");
+        }
+
+
+        if (customerPhone != null) {
+
+            txtCustomerPhone.setText(customerPhone);
+
+        } else {
+
+            txtCustomerPhone.setText("");
+        }
+
+
+        // =====================================================
+        // CREATE EMPTY DEBT LIST
+        // =====================================================
+
+        debtItems =
+                new ArrayList<>();
+
+
+        // =====================================================
+        // CREATE ADAPTER
+        // =====================================================
+
+        adapter =
+                new DebtAdapter(
+                        Adddept2Activity.this,
+                        debtItems
+                );
+
+
+        // Connect adapter to ListView
         listViewDebt.setAdapter(adapter);
 
-        // NEW: Card total starts at 0 and reflects only items currently in the ListView.
+
+        // =====================================================
+        // INITIAL TOTAL
+        // =====================================================
+
         updateTotalDisplay();
 
-        // NEW: Make sure we have SMS permission before Confirm is tapped.
+
+        // =====================================================
+        // SMS PERMISSION
+        // =====================================================
+
         checkSmsPermission();
 
-        // Back button listener.
-        btnBack.setOnClickListener(v -> finish());
 
-        // Add Debt button listener.
-        btnAddDebt.setOnClickListener(v -> addDebtItem());
+        // =====================================================
+        // BACK BUTTON
+        // =====================================================
 
-        // Confirm button listener.
-        btnConfirm.setOnClickListener(v -> confirmDebt());
+        btnBack.setOnClickListener(v -> {
+
+            finish();
+
+        });
+
+
+        // =====================================================
+        // ADD DEBT BUTTON
+        // =====================================================
+
+        btnAddDebt.setOnClickListener(v -> {
+
+            addDebtItem();
+
+        });
+
+
+        // =====================================================
+        // CONFIRM BUTTON
+        // =====================================================
+
+        btnConfirm.setOnClickListener(v -> {
+
+            confirmDebt();
+
+        });
     }
 
-    // Add product to ListView.
+
+    // =========================================================
+    // ADD DEBT ITEM TO LISTVIEW
+    // =========================================================
+
     private void addDebtItem() {
-        String product = edtProduct.getText().toString().trim();
-        String quantityText = edtQuantity.getText().toString().trim();
-        String amountText = edtAmount.getText().toString().trim();
+
+        // Get product
+        String product =
+                edtProduct.getText()
+                        .toString()
+                        .trim();
+
+
+        // Get quantity
+        String quantityText =
+                edtQuantity.getText()
+                        .toString()
+                        .trim();
+
+
+        // Get amount
+        String amountText =
+                edtAmount.getText()
+                        .toString()
+                        .trim();
+
+
+        // =====================================================
+        // VALIDATE PRODUCT
+        // =====================================================
 
         if (product.isEmpty()) {
+
             edtProduct.setError("Enter product");
+
             edtProduct.requestFocus();
+
             return;
         }
+
+
+        // =====================================================
+        // VALIDATE QUANTITY
+        // =====================================================
 
         if (quantityText.isEmpty()) {
+
             edtQuantity.setError("Enter quantity");
+
             edtQuantity.requestFocus();
+
             return;
         }
+
+
+        // =====================================================
+        // VALIDATE AMOUNT
+        // =====================================================
 
         if (amountText.isEmpty()) {
+
             edtAmount.setError("Enter amount");
+
             edtAmount.requestFocus();
+
             return;
         }
+
+
+        // =====================================================
+        // CONVERT QUANTITY
+        // =====================================================
 
         int quantity;
+
         try {
-            quantity = Integer.parseInt(quantityText);
+
+            quantity =
+                    Integer.parseInt(quantityText);
+
         } catch (NumberFormatException e) {
-            edtQuantity.setError("Enter a valid quantity");
+
+            edtQuantity.setError(
+                    "Enter a valid quantity"
+            );
+
             edtQuantity.requestFocus();
+
             return;
         }
 
+
+        // Quantity must be greater than zero
         if (quantity <= 0) {
-            edtQuantity.setError("Quantity must be greater than 0");
+
+            edtQuantity.setError(
+                    "Quantity must be greater than 0"
+            );
+
             edtQuantity.requestFocus();
+
             return;
         }
+
+
+        // =====================================================
+        // CONVERT AMOUNT
+        // =====================================================
 
         double amount;
+
         try {
-            amount = Double.parseDouble(amountText);
+
+            amount =
+                    Double.parseDouble(amountText);
+
         } catch (NumberFormatException e) {
-            edtAmount.setError("Enter a valid amount");
+
+            edtAmount.setError(
+                    "Enter a valid amount"
+            );
+
             edtAmount.requestFocus();
+
             return;
         }
 
+
+        // Amount must be greater than zero
         if (amount <= 0) {
-            edtAmount.setError("Amount must be greater than 0");
+
+            edtAmount.setError(
+                    "Amount must be greater than 0"
+            );
+
             edtAmount.requestFocus();
+
             return;
         }
 
-        DebtItem item = new DebtItem(product, quantity, amount);
+
+        // =====================================================
+        // CREATE DEBT ITEM
+        // =====================================================
+
+        DebtItem item =
+                new DebtItem(
+                        product,
+                        quantity,
+                        amount
+                );
+
+
+        // Add item to temporary list
         debtItems.add(item);
+
+
+        // Refresh ListView
         adapter.notifyDataSetChanged();
 
-        // NEW: Refresh the card total to match what's currently in the ListView.
+
+        // Refresh total
         updateTotalDisplay();
 
+
+        // =====================================================
+        // CLEAR INPUT FIELDS
+        // =====================================================
+
         edtProduct.setText("");
+
         edtQuantity.setText("");
+
         edtAmount.setText("");
+
+
+        // Focus product field
         edtProduct.requestFocus();
 
-        Toast.makeText(Adddept2Activity.this, "Debt item added", Toast.LENGTH_SHORT).show();
+
+        Toast.makeText(
+                Adddept2Activity.this,
+                "Debt item added",
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
-    // NEW: Sums quantity*amount for every item currently in the ListView and shows it in the card.
+
+    // =========================================================
+    // UPDATE TOTAL DISPLAY
+    // =========================================================
+
     private void updateTotalDisplay() {
+
         double total = 0.0;
+
+
+        // Calculate every item's total
         for (DebtItem item : debtItems) {
-            total += item.getQuantity() * item.getAmount();
+
+            double lineTotal =
+                    item.getQuantity()
+                            * item.getAmount();
+
+            total += lineTotal;
         }
-        txtTotalAmount.setText(String.format(Locale.getDefault(), "₱ %.2f", total));
+
+
+        // Display total
+        txtTotalAmount.setText(
+                String.format(
+                        Locale.getDefault(),
+                        "₱ %.2f",
+                        total
+                )
+        );
     }
 
-    // Confirm all debt items.
+
+    // =========================================================
+    // CONFIRM ALL DEBT ITEMS
+    // =========================================================
+
     private void confirmDebt() {
-        if (customerPhone == null || customerPhone.trim().isEmpty()) {
-            Toast.makeText(Adddept2Activity.this, "Customer information is missing", Toast.LENGTH_SHORT).show();
+
+        // =====================================================
+        // CHECK CUSTOMER PHONE
+        // =====================================================
+
+        if (customerPhone == null ||
+                customerPhone.trim().isEmpty()) {
+
+            Toast.makeText(
+                    Adddept2Activity.this,
+                    "Customer information is missing",
+                    Toast.LENGTH_SHORT
+            ).show();
+
             return;
         }
+
+
+        // =====================================================
+        // CHECK DEBT ITEMS
+        // =====================================================
 
         if (debtItems.isEmpty()) {
-            Toast.makeText(Adddept2Activity.this, "Add at least one debt item", Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(
+                    Adddept2Activity.this,
+                    "Add at least one debt item",
+                    Toast.LENGTH_SHORT
+            ).show();
+
             return;
         }
 
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
-        // Create debt_items table if needed.
-        db.execSQL("CREATE TABLE IF NOT EXISTS debt_items (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "customer_id INTEGER NOT NULL, " +
-                "product TEXT NOT NULL, " +
-                "quantity INTEGER NOT NULL, " +
-                "amount REAL NOT NULL, " +
-                "date TEXT NOT NULL" +
-                ")");
+        // =====================================================
+        // OPEN DATABASE
+        // =====================================================
+
+        SQLiteDatabase db =
+                databaseHelper.getReadableDatabase();
+
+
+        // =====================================================
+        // FIND CUSTOMER ID
+        // =====================================================
 
         long customerId = -1;
-        Cursor cursor = db.query(
-                DatabaseHelper.TABLE_CUSTOMERS,
-                new String[]{DatabaseHelper.COLUMN_ID},
-                DatabaseHelper.COLUMN_PHONE + "=?",
-                new String[]{customerPhone},
-                null, null, null
-        );
+
+
+        Cursor cursor =
+                db.query(
+                        DatabaseHelper.TABLE_CUSTOMERS,
+
+                        new String[]{
+                                DatabaseHelper.COLUMN_ID
+                        },
+
+                        DatabaseHelper.COLUMN_PHONE + "=?",
+
+                        new String[]{
+                                customerPhone
+                        },
+
+                        null,
+                        null,
+                        null
+                );
+
 
         if (cursor != null) {
+
             if (cursor.moveToFirst()) {
-                customerId = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
+
+                customerId =
+                        cursor.getLong(
+                                cursor.getColumnIndexOrThrow(
+                                        DatabaseHelper.COLUMN_ID
+                                )
+                        );
             }
+
             cursor.close();
         }
 
+
+        // =====================================================
+        // CUSTOMER NOT FOUND
+        // =====================================================
+
         if (customerId == -1) {
-            Toast.makeText(Adddept2Activity.this, "Customer was not found", Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(
+                    Adddept2Activity.this,
+                    "Customer was not found",
+                    Toast.LENGTH_SHORT
+            ).show();
+
             return;
         }
 
-        db.beginTransaction();
+
+        // =====================================================
+        // SAVE ALL ITEMS
+        // =====================================================
+
+        boolean saveSuccessful = true;
+
+
         try {
-            String currentDate = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                    .format(new java.util.Date());
 
             for (DebtItem item : debtItems) {
-                ContentValues values = new ContentValues();
-                values.put("customer_id", customerId);
-                values.put("product", item.getProduct());
-                values.put("quantity", item.getQuantity());
-                values.put("amount", item.getAmount());
-                values.put("date", currentDate);
 
-                db.insertOrThrow("debt_items", null, values);
+                // -------------------------------------------------
+                // IMPORTANT
+                // -------------------------------------------------
+                // amount entered = price per item
+                //
+                // Example:
+                //
+                // Quantity = 3
+                // Amount = 20
+                //
+                // Debt saved = 60
+                // -------------------------------------------------
+
+                double lineTotal =
+                        item.getQuantity()
+                                * item.getAmount();
+
+
+                // Save to DatabaseHelper
+                long result =
+                        databaseHelper.insertDebt(
+                                (int) customerId,
+
+                                customerName,
+
+                                customerPhone,
+
+                                item.getProduct(),
+
+                                lineTotal
+                        );
+
+
+                // Check if insertion failed
+                if (result == -1) {
+
+                    saveSuccessful = false;
+
+                    break;
+                }
             }
 
-            db.setTransactionSuccessful();
+
         } catch (Exception e) {
-            Toast.makeText(Adddept2Activity.this, "Failed to save debt: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            return;
-        } finally {
-            db.endTransaction();
+
+            saveSuccessful = false;
+
+            Toast.makeText(
+                    Adddept2Activity.this,
+                    "Failed to save debt: "
+                            + e.getMessage(),
+                    Toast.LENGTH_LONG
+            ).show();
         }
 
-        Toast.makeText(Adddept2Activity.this, "Debt saved successfully", Toast.LENGTH_SHORT).show();
 
-        // NEW: Send SMS with product, quantity, and total to the customer's number.
-        sendDebtSms(customerPhone, debtItems);
+        // =====================================================
+        // CHECK SAVE RESULT
+        // =====================================================
+
+        if (!saveSuccessful) {
+
+            Toast.makeText(
+                    Adddept2Activity.this,
+                    "Failed to save debt",
+                    Toast.LENGTH_LONG
+            ).show();
+
+            return;
+        }
+
+
+        // =====================================================
+        // SUCCESS
+        // =====================================================
+
+        Toast.makeText(
+                Adddept2Activity.this,
+                "Debt saved successfully",
+                Toast.LENGTH_SHORT
+        ).show();
+
+
+        // =====================================================
+        // SEND SMS
+        // =====================================================
+
+        sendDebtSms(
+                customerPhone,
+                debtItems
+        );
+
+
+        // =====================================================
+        // CLEAR LIST
+        // =====================================================
 
         debtItems.clear();
+
         adapter.notifyDataSetChanged();
+
         updateTotalDisplay();
+
+
+        // =====================================================
+        // RETURN TO PREVIOUS SCREEN
+        // =====================================================
+
         finish();
     }
 
-    // =====================================================
-    // NEW: SMS PERMISSION
-    // =====================================================
+
+    // =========================================================
+    // SMS PERMISSION
+    // =========================================================
 
     private void checkSmsPermission() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.SEND_SMS
+        ) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(
                     this,
-                    new String[]{Manifest.permission.SEND_SMS},
+
+                    new String[]{
+                            Manifest.permission.SEND_SMS
+                    },
+
                     SMS_PERMISSION_CODE
             );
         }
     }
 
-    // =====================================================
-    // NEW: BUILD AND SEND DEBT SUMMARY SMS
-    // =====================================================
 
-    private void sendDebtSms(String phoneNumber, ArrayList<DebtItem> items) {
-        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+    // =========================================================
+    // SEND SMS
+    // =========================================================
+
+    private void sendDebtSms(
+            String phoneNumber,
+            ArrayList<DebtItem> items
+    ) {
+
+        if (phoneNumber == null ||
+                phoneNumber.trim().isEmpty()) {
+
             return;
         }
 
-        // Check permission before attempting to send.
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "SMS permission not granted", Toast.LENGTH_SHORT).show();
+
+        // =====================================================
+        // CHECK SMS PERMISSION
+        // =====================================================
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.SEND_SMS
+        ) != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(
+                    this,
+                    "SMS permission not granted",
+                    Toast.LENGTH_SHORT
+            ).show();
+
             return;
         }
 
-        // Build the message body: greeting + each item + total.
-        StringBuilder message = new StringBuilder();
+
+        // =====================================================
+        // CREATE MESSAGE
+        // =====================================================
+
+        StringBuilder message =
+                new StringBuilder();
+
+
         message.append("Hello ")
-                .append(customerName != null ? customerName : "")
-                .append(", here is your debt summary:\n");
+                .append(
+                        customerName != null
+                                ? customerName
+                                : ""
+                )
+                .append(
+                        ", here is your debt summary:\n\n"
+                );
+
 
         double total = 0.0;
+
+
+        // =====================================================
+        // ADD PRODUCTS TO SMS
+        // =====================================================
+
         for (DebtItem item : items) {
-            double lineTotal = item.getQuantity() * item.getAmount();
+
+            double lineTotal =
+                    item.getQuantity()
+                            * item.getAmount();
+
+
             total += lineTotal;
 
-            message.append(item.getProduct())
+
+            message.append(
+                            item.getProduct()
+                    )
                     .append(" x")
                     .append(item.getQuantity())
                     .append(" - ₱")
-                    .append(String.format(Locale.getDefault(), "%.2f", lineTotal))
+                    .append(
+                            String.format(
+                                    Locale.getDefault(),
+                                    "%.2f",
+                                    lineTotal
+                            )
+                    )
                     .append("\n");
         }
 
-        message.append("Total: ₱")
-                .append(String.format(Locale.getDefault(), "%.2f", total));
+
+        // =====================================================
+        // ADD TOTAL
+        // =====================================================
+
+        message.append("\nTotal Debt: ₱")
+                .append(
+                        String.format(
+                                Locale.getDefault(),
+                                "%.2f",
+                                total
+                        )
+                );
+
+
+        // =====================================================
+        // SEND SMS
+        // =====================================================
 
         try {
-            SmsManager smsManager = SmsManager.getDefault();
 
-            // Split into multiple parts if the message is longer than one SMS segment.
-            ArrayList<String> parts = smsManager.divideMessage(message.toString());
-            smsManager.sendMultipartTextMessage(phoneNumber, null, parts, null, null);
+            SmsManager smsManager =
+                    SmsManager.getDefault();
 
-            Toast.makeText(this, "SMS Sent!", Toast.LENGTH_SHORT).show();
+
+            // Split long messages
+            ArrayList<String> parts =
+                    smsManager.divideMessage(
+                            message.toString()
+                    );
+
+
+            smsManager.sendMultipartTextMessage(
+                    phoneNumber,
+                    null,
+                    parts,
+                    null,
+                    null
+            );
+
+
+            Toast.makeText(
+                    this,
+                    "SMS Sent!",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+
         } catch (Exception e) {
-            Toast.makeText(this, "Failed to send SMS", Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(
+                    this,
+                    "Failed to send SMS",
+                    Toast.LENGTH_SHORT
+            ).show();
         }
     }
 
-    // Debt item class.
+
+    // =========================================================
+    // DEBT ITEM CLASS
+    // =========================================================
+
     private static class DebtItem {
+
         private String product;
+
         private int quantity;
+
         private double amount;
 
-        DebtItem(String product, int quantity, double amount) {
+
+        DebtItem(
+                String product,
+                int quantity,
+                double amount
+        ) {
+
             this.product = product;
+
             this.quantity = quantity;
+
             this.amount = amount;
         }
 
-        String getProduct() { return product; }
-        int getQuantity() { return quantity; }
-        double getAmount() { return amount; }
+
+        String getProduct() {
+
+            return product;
+        }
+
+
+        int getQuantity() {
+
+            return quantity;
+        }
+
+
+        double getAmount() {
+
+            return amount;
+        }
     }
 
-    // ListView adapter.
-    private static class DebtAdapter extends BaseAdapter {
+
+    // =========================================================
+    // LISTVIEW ADAPTER
+    // =========================================================
+
+    private static class DebtAdapter
+            extends BaseAdapter {
+
         private final android.content.Context context;
+
         private final ArrayList<DebtItem> debtItems;
 
-        DebtAdapter(android.content.Context context, ArrayList<DebtItem> debtItems) {
+
+        DebtAdapter(
+                android.content.Context context,
+                ArrayList<DebtItem> debtItems
+        ) {
+
             this.context = context;
+
             this.debtItems = debtItems;
         }
 
-        @Override
-        public int getCount() { return debtItems.size(); }
 
         @Override
-        public Object getItem(int position) { return debtItems.get(position); }
+        public int getCount() {
+
+            return debtItems.size();
+        }
+
 
         @Override
-        public long getItemId(int position) { return position; }
+        public Object getItem(int position) {
+
+            return debtItems.get(position);
+        }
+
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public long getItemId(int position) {
+
+            return position;
+        }
+
+
+        @Override
+        public View getView(
+                int position,
+                View convertView,
+                ViewGroup parent
+        ) {
+
+            // Create the ListView item
             if (convertView == null) {
-                convertView = LayoutInflater.from(context).inflate(R.layout.dept_item, parent, false);
+
+                convertView =
+                        LayoutInflater
+                                .from(context)
+                                .inflate(
+                                        R.layout.dept_item,
+                                        parent,
+                                        false
+                                );
             }
 
-            TextView txtProduct = convertView.findViewById(R.id.txtProduct);
-            TextView txtQuantity = convertView.findViewById(R.id.txtQuantity);
-            TextView txtAmount = convertView.findViewById(R.id.txtAmount);
 
-            // Get the debt item.
-            DebtItem item = debtItems.get(position);
+            // =================================================
+            // CONNECT TEXTVIEWS
+            // =================================================
 
-            txtProduct.setText(item.getProduct());
-            txtQuantity.setText("Qty: " + item.getQuantity());
-            txtAmount.setText("₱ " + String.format(Locale.getDefault(), "%.2f", item.getAmount()));
+            TextView txtProduct =
+                    convertView.findViewById(
+                            R.id.txtProduct
+                    );
+
+            TextView txtQuantity =
+                    convertView.findViewById(
+                            R.id.txtQuantity
+                    );
+
+            TextView txtAmount =
+                    convertView.findViewById(
+                            R.id.txtAmount
+                    );
+
+
+            // Get item
+            DebtItem item =
+                    debtItems.get(position);
+
+
+            // Product
+            txtProduct.setText(
+                    item.getProduct()
+            );
+
+
+            // Quantity
+            txtQuantity.setText(
+                    "Qty: " +
+                            item.getQuantity()
+            );
+
+
+            // Price
+            txtAmount.setText(
+                    "₱ " +
+                            String.format(
+                                    Locale.getDefault(),
+                                    "%.2f",
+                                    item.getAmount()
+                            )
+            );
+
 
             return convertView;
         }

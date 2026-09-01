@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">estor</string>
+    <string name="enter_pin_title">Enter PIN</string>
+    <string name="enter_pin_subtitle">Enter your 4-digit PIN to continue</string>
+    <string name="ok_label">OK</string>
+    <string name="forgot_pin_label">Forgot PIN</string>
+    <string name="lock_icon_desc">Lock icon</string>
+    <string name="backspace_desc">Delete last digit</string>
 </resources>
