@@ -1,10 +1,5 @@
 package estor.app;
 
-
-// ============================================================
-// IMPORTS
-// ============================================================
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -40,28 +35,20 @@ public class AdddeptActivity extends AppCompatActivity {
     // VARIABLES
     // ========================================================
 
-    // Customer ListView
     ListView listCustomers;
 
-    // Displays number of customers
     TextView txtCustomerCount;
 
-    // Main Add Customer button
     Button btnAddDebt;
 
-    // Back button
     ImageButton btnBack;
 
-    // Database
     DatabaseHelper databaseHelper;
 
-    // Customer data
     ArrayList<HashMap<String, String>> customerList;
 
-    // List adapter
     CustomerAdapter adapter;
 
-    // Error message inside bottom sheet
     TextView txtError;
 
 
@@ -77,11 +64,14 @@ public class AdddeptActivity extends AppCompatActivity {
     // ========================================================
 
     private final Handler errorHandler =
-            new Handler(Looper.getMainLooper());
+            new Handler(
+                    Looper.getMainLooper()
+            );
 
     private Runnable hideErrorRunnable;
 
-    private static final long ERROR_DISPLAY_DURATION_MS = 3000;
+    private static final long
+            ERROR_DISPLAY_DURATION_MS = 3000;
 
 
     // ========================================================
@@ -89,13 +79,16 @@ public class AdddeptActivity extends AppCompatActivity {
     // ========================================================
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(
+            Bundle savedInstanceState
+    ) {
 
         super.onCreate(savedInstanceState);
 
 
-        // Open Add Debt screen
-        setContentView(R.layout.adddept_main);
+        setContentView(
+                R.layout.adddept_main
+        );
 
 
         // ====================================================
@@ -107,20 +100,31 @@ public class AdddeptActivity extends AppCompatActivity {
 
 
         // ====================================================
-        // FIND MAIN VIEWS
+        // MAIN VIEWS
         // ====================================================
 
         listCustomers =
-                findViewById(R.id.listCustomers);
+                findViewById(
+                        R.id.listCustomers
+                );
+
 
         txtCustomerCount =
-                findViewById(R.id.txtCustomerCount);
+                findViewById(
+                        R.id.txtCustomerCount
+                );
+
 
         btnAddDebt =
-                findViewById(R.id.btnAddDebt);
+                findViewById(
+                        R.id.btnAddDebt
+                );
+
 
         btnBack =
-                findViewById(R.id.btnBack);
+                findViewById(
+                        R.id.btnBack
+                );
 
 
         // ====================================================
@@ -128,10 +132,15 @@ public class AdddeptActivity extends AppCompatActivity {
         // ====================================================
 
         View overlayDim =
-                findViewById(R.id.overlayDim);
+                findViewById(
+                        R.id.overlayDim
+                );
+
 
         View addDebtSheet =
-                findViewById(R.id.includeAddDebtSheet);
+                findViewById(
+                        R.id.includeAddDebtSheet
+                );
 
 
         // ====================================================
@@ -143,15 +152,18 @@ public class AdddeptActivity extends AppCompatActivity {
                         R.id.etName
                 );
 
+
         EditText etPhone =
                 addDebtSheet.findViewById(
                         R.id.etPhone
                 );
 
+
         Button btnConfirm =
                 addDebtSheet.findViewById(
                         R.id.btnConfirm
                 );
+
 
         txtError =
                 addDebtSheet.findViewById(
@@ -167,20 +179,18 @@ public class AdddeptActivity extends AppCompatActivity {
                 new ArrayList<>();
 
 
-        // Create adapter
         adapter =
                 new CustomerAdapter();
 
 
-        // Connect adapter
-        listCustomers.setAdapter(adapter);
+        listCustomers.setAdapter(
+                adapter
+        );
 
 
-        // Load customers
         loadCustomers();
 
 
-        // Update customer count
         updateCustomerCount();
 
 
@@ -192,38 +202,24 @@ public class AdddeptActivity extends AppCompatActivity {
                 (parent, view, position, id) -> {
 
 
-                    // Get selected customer
-                    HashMap<String, String> customer =
-                            customerList.get(position);
+                    HashMap<String, String>
+                            customer =
+                            customerList.get(
+                                    position
+                            );
 
-
-                    // =================================================
-                    // GET CUSTOMER ID
-                    // =================================================
 
                     String customerId =
                             customer.get("id");
 
 
-                    // =================================================
-                    // GET CUSTOMER NAME
-                    // =================================================
-
                     String name =
                             customer.get("name");
 
 
-                    // =================================================
-                    // GET CUSTOMER PHONE
-                    // =================================================
-
                     String phone =
                             customer.get("phone");
 
-
-                    // =================================================
-                    // OPEN ADDDEPT2ACTIVITY
-                    // =================================================
 
                     Intent intent =
                             new Intent(
@@ -232,28 +228,24 @@ public class AdddeptActivity extends AppCompatActivity {
                             );
 
 
-                    // Send customer ID
                     intent.putExtra(
                             "customer_id",
                             customerId
                     );
 
 
-                    // Send customer name
                     intent.putExtra(
                             "customer_name",
                             name
                     );
 
 
-                    // Send customer phone
                     intent.putExtra(
                             "customer_phone",
                             phone
                     );
 
 
-                    // Open screen
                     startActivity(intent);
                 }
         );
@@ -266,23 +258,19 @@ public class AdddeptActivity extends AppCompatActivity {
         btnAddDebt.setOnClickListener(v -> {
 
 
-            // Show dark background
             overlayDim.setVisibility(
                     View.VISIBLE
             );
 
 
-            // Show bottom sheet
             addDebtSheet.setVisibility(
                     View.VISIBLE
             );
 
 
-            // Hide previous error
             hideError();
 
 
-            // Focus name
             etName.requestFocus();
         });
 
@@ -294,19 +282,16 @@ public class AdddeptActivity extends AppCompatActivity {
         overlayDim.setOnClickListener(v -> {
 
 
-            // Hide background
             overlayDim.setVisibility(
                     View.GONE
             );
 
 
-            // Hide sheet
             addDebtSheet.setVisibility(
                     View.GONE
             );
 
 
-            // Hide error
             hideError();
         });
 
@@ -325,14 +310,12 @@ public class AdddeptActivity extends AppCompatActivity {
         btnConfirm.setOnClickListener(v -> {
 
 
-            // Get name
             String name =
                     etName.getText()
                             .toString()
                             .trim();
 
 
-            // Get phone
             String phone =
                     etPhone.getText()
                             .toString()
@@ -372,10 +355,6 @@ public class AdddeptActivity extends AppCompatActivity {
             // PHONE VALIDATION
             // =================================================
 
-            // Philippine format:
-            //
-            // 09123456789
-
             if (!phone.matches(
                     "^09\\d{9}$"
             )) {
@@ -406,7 +385,6 @@ public class AdddeptActivity extends AppCompatActivity {
             if (result != -1) {
 
 
-                // Customer successfully saved
                 Toast.makeText(
                         AdddeptActivity.this,
                         "Customer added successfully",
@@ -428,7 +406,7 @@ public class AdddeptActivity extends AppCompatActivity {
 
 
                 // =================================================
-                // CLEAR INPUTS
+                // CLEAR INPUT
                 // =================================================
 
                 etName.setText("");
@@ -437,7 +415,7 @@ public class AdddeptActivity extends AppCompatActivity {
 
 
                 // =================================================
-                // REFRESH CUSTOMER LIST
+                // REFRESH LIST
                 // =================================================
 
                 loadCustomers();
@@ -445,7 +423,6 @@ public class AdddeptActivity extends AppCompatActivity {
                 updateCustomerCount();
 
 
-                // Hide error
                 hideError();
 
 
@@ -457,6 +434,7 @@ public class AdddeptActivity extends AppCompatActivity {
                         View.GONE
                 );
 
+
                 addDebtSheet.setVisibility(
                         View.GONE
                 );
@@ -464,8 +442,6 @@ public class AdddeptActivity extends AppCompatActivity {
 
             } else {
 
-
-                // Database failed
                 showError(
                         "Failed to save customer"
                 );
@@ -479,12 +455,8 @@ public class AdddeptActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> {
 
-            // Simply close this Activity.
-            //
-            // This returns to MainActivity instead of
-            // creating another MainActivity.
-
             finish();
+
         });
     }
 
@@ -499,9 +471,6 @@ public class AdddeptActivity extends AppCompatActivity {
         super.onResume();
 
 
-        // Refresh customers whenever we return
-        // from Adddept2Activity.
-
         if (databaseHelper != null) {
 
             loadCustomers();
@@ -515,10 +484,10 @@ public class AdddeptActivity extends AppCompatActivity {
     // SHOW ERROR
     // ========================================================
 
-    private void showError(String message) {
+    private void showError(
+            String message
+    ) {
 
-
-        // Cancel previous timer
         if (hideErrorRunnable != null) {
 
             errorHandler.removeCallbacks(
@@ -527,15 +496,16 @@ public class AdddeptActivity extends AppCompatActivity {
         }
 
 
-        // Show error
-        txtError.setText(message);
+        txtError.setText(
+                message
+        );
+
 
         txtError.setVisibility(
                 View.VISIBLE
         );
 
 
-        // Automatically hide after 3 seconds
         hideErrorRunnable =
                 () -> txtError.setVisibility(
                         View.GONE
@@ -555,8 +525,6 @@ public class AdddeptActivity extends AppCompatActivity {
 
     private void hideError() {
 
-
-        // Cancel timer
         if (hideErrorRunnable != null) {
 
             errorHandler.removeCallbacks(
@@ -565,7 +533,6 @@ public class AdddeptActivity extends AppCompatActivity {
         }
 
 
-        // Hide error
         txtError.setVisibility(
                 View.GONE
         );
@@ -577,7 +544,6 @@ public class AdddeptActivity extends AppCompatActivity {
     // ========================================================
 
     private void checkSmsPermission() {
-
 
         if (checkSelfPermission(
                 Manifest.permission.SEND_SMS
@@ -605,8 +571,6 @@ public class AdddeptActivity extends AppCompatActivity {
             String message
     ) {
 
-
-        // Check permission
         if (checkSelfPermission(
                 Manifest.permission.SEND_SMS
         ) != PackageManager.PERMISSION_GRANTED) {
@@ -624,13 +588,10 @@ public class AdddeptActivity extends AppCompatActivity {
 
         try {
 
-
-            // Get SMS Manager
             SmsManager smsManager =
                     SmsManager.getDefault();
 
 
-            // Send SMS
             smsManager.sendTextMessage(
                     phoneNumber,
                     null,
@@ -649,7 +610,6 @@ public class AdddeptActivity extends AppCompatActivity {
 
         } catch (Exception e) {
 
-
             Toast.makeText(
                     AdddeptActivity.this,
                     "Failed to send SMS",
@@ -665,23 +625,14 @@ public class AdddeptActivity extends AppCompatActivity {
 
     private void loadCustomers() {
 
-
-        // Remove old data
         customerList.clear();
 
 
-        // Get customers
         Cursor cursor =
                 databaseHelper.getAllCustomers();
 
 
-        // Check cursor
         if (cursor != null) {
-
-
-            // =================================================
-            // GET COLUMN INDEXES
-            // =================================================
 
             int idIndex =
                     cursor.getColumnIndex(
@@ -713,18 +664,19 @@ public class AdddeptActivity extends AppCompatActivity {
                     );
 
 
-            // =================================================
-            // READ CUSTOMERS
-            // =================================================
-
             while (cursor.moveToNext()) {
 
 
-                // ---------------------------------------------
-                // CUSTOMER ID
-                // ---------------------------------------------
-
                 String id = "";
+
+                String name = "";
+
+                String phone = "";
+
+                String date = "";
+
+                String time = "";
+
 
                 if (idIndex != -1 &&
                         !cursor.isNull(idIndex)) {
@@ -736,12 +688,6 @@ public class AdddeptActivity extends AppCompatActivity {
                 }
 
 
-                // ---------------------------------------------
-                // NAME
-                // ---------------------------------------------
-
-                String name = "";
-
                 if (nameIndex != -1 &&
                         !cursor.isNull(nameIndex)) {
 
@@ -751,12 +697,6 @@ public class AdddeptActivity extends AppCompatActivity {
                             );
                 }
 
-
-                // ---------------------------------------------
-                // PHONE
-                // ---------------------------------------------
-
-                String phone = "";
 
                 if (phoneIndex != -1 &&
                         !cursor.isNull(phoneIndex)) {
@@ -768,12 +708,6 @@ public class AdddeptActivity extends AppCompatActivity {
                 }
 
 
-                // ---------------------------------------------
-                // DATE
-                // ---------------------------------------------
-
-                String date = "";
-
                 if (dateIndex != -1 &&
                         !cursor.isNull(dateIndex)) {
 
@@ -783,12 +717,6 @@ public class AdddeptActivity extends AppCompatActivity {
                             );
                 }
 
-
-                // ---------------------------------------------
-                // TIME
-                // ---------------------------------------------
-
-                String time = "";
 
                 if (timeIndex != -1 &&
                         !cursor.isNull(timeIndex)) {
@@ -800,11 +728,8 @@ public class AdddeptActivity extends AppCompatActivity {
                 }
 
 
-                // =================================================
-                // CREATE CUSTOMER MAP
-                // =================================================
-
-                HashMap<String, String> customer =
+                HashMap<String, String>
+                        customer =
                         new HashMap<>();
 
 
@@ -838,19 +763,16 @@ public class AdddeptActivity extends AppCompatActivity {
                 );
 
 
-                // Add customer
                 customerList.add(
                         customer
                 );
             }
 
 
-            // Close cursor
             cursor.close();
         }
 
 
-        // Refresh ListView
         adapter.notifyDataSetChanged();
     }
 
@@ -861,13 +783,10 @@ public class AdddeptActivity extends AppCompatActivity {
 
     private void updateCustomerCount() {
 
-
-        // Get customer count
         int count =
                 databaseHelper.getCustomerCount();
 
 
-        // Show count
         txtCustomerCount.setText(
                 String.valueOf(count)
         );
@@ -884,7 +803,6 @@ public class AdddeptActivity extends AppCompatActivity {
         super.onDestroy();
 
 
-        // Cancel error timer
         if (hideErrorRunnable != null) {
 
             errorHandler.removeCallbacks(
@@ -902,25 +820,15 @@ public class AdddeptActivity extends AppCompatActivity {
             extends ArrayAdapter<HashMap<String, String>> {
 
 
-        // ====================================================
-        // CONSTRUCTOR
-        // ====================================================
-
         CustomerAdapter() {
 
             super(
                     AdddeptActivity.this,
-
                     R.layout.item_customer,
-
                     customerList
             );
         }
 
-
-        // ====================================================
-        // GET VIEW
-        // ====================================================
 
         @Override
         public View getView(
@@ -929,8 +837,6 @@ public class AdddeptActivity extends AppCompatActivity {
                 ViewGroup parent
         ) {
 
-
-            // Create row if necessary
             if (convertView == null) {
 
                 convertView =
@@ -942,10 +848,6 @@ public class AdddeptActivity extends AppCompatActivity {
                                 );
             }
 
-
-            // =================================================
-            // FIND TEXTVIEWS
-            // =================================================
 
             TextView txtName =
                     convertView.findViewById(
@@ -971,17 +873,12 @@ public class AdddeptActivity extends AppCompatActivity {
                     );
 
 
-            // =================================================
-            // GET CUSTOMER
-            // =================================================
+            HashMap<String, String>
+                    customer =
+                    customerList.get(
+                            position
+                    );
 
-            HashMap<String, String> customer =
-                    customerList.get(position);
-
-
-            // =================================================
-            // DISPLAY CUSTOMER
-            // =================================================
 
             txtName.setText(
                     customer.get("name")

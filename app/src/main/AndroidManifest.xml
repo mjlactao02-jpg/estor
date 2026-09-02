@@ -73,6 +73,10 @@
             android:name=".PaydeptActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".Paydept2Activity"
+            android:exported="false" />
+
 
         <!-- ===================================================== -->
         <!-- TRANSACTIONS                                           -->

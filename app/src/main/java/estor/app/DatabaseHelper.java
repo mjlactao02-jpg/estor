@@ -18,8 +18,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "estor.db";
 
-    // Increase version because we are adding debt amount and paid amount
-    private static final int DATABASE_VERSION = 4;
+    // Version 5 because quantity is being added to debts
+    private static final int DATABASE_VERSION = 5;
 
 
     // =========================================================
@@ -47,11 +47,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DEBT_CUSTOMER_PHONE = "customer_phone";
     public static final String COLUMN_DEBT_ITEM = "item";
 
-    // NEW:
-    // Amount of the debt
+    // Quantity of the product
+    public static final String COLUMN_DEBT_QUANTITY = "quantity";
+
+    // Total amount for the debt item
     public static final String COLUMN_DEBT_AMOUNT = "amount";
 
-    // NEW:
     // Amount already paid
     public static final String COLUMN_DEBT_PAID = "paid";
 
@@ -61,7 +62,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // =========================================================
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
+        super(
+                context,
+                DATABASE_NAME,
+                null,
+                DATABASE_VERSION
+        );
     }
 
 
@@ -77,17 +84,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // -----------------------------------------------------
 
         String createCustomersTable =
-                "CREATE TABLE " + TABLE_CUSTOMERS + " (" +
+                "CREATE TABLE " +
+                        TABLE_CUSTOMERS +
+                        " (" +
 
-                        COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COLUMN_ID +
+                        " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 
-                        COLUMN_NAME + " TEXT NOT NULL, " +
+                        COLUMN_NAME +
+                        " TEXT NOT NULL, " +
 
-                        COLUMN_PHONE + " TEXT NOT NULL, " +
+                        COLUMN_PHONE +
+                        " TEXT NOT NULL, " +
 
-                        COLUMN_DATE + " TEXT, " +
+                        COLUMN_DATE +
+                        " TEXT, " +
 
-                        COLUMN_TIME + " TEXT" +
+                        COLUMN_TIME +
+                        " TEXT" +
 
                         ")";
 
@@ -99,23 +113,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // -----------------------------------------------------
 
         String createDebtsTable =
-                "CREATE TABLE " + TABLE_DEBTS + " (" +
+                "CREATE TABLE " +
+                        TABLE_DEBTS +
+                        " (" +
 
-                        COLUMN_DEBT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COLUMN_DEBT_ID +
+                        " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 
-                        COLUMN_DEBT_CUSTOMER_ID + " INTEGER, " +
+                        COLUMN_DEBT_CUSTOMER_ID +
+                        " INTEGER, " +
 
-                        COLUMN_DEBT_CUSTOMER_NAME + " TEXT, " +
+                        COLUMN_DEBT_CUSTOMER_NAME +
+                        " TEXT, " +
 
-                        COLUMN_DEBT_CUSTOMER_PHONE + " TEXT, " +
+                        COLUMN_DEBT_CUSTOMER_PHONE +
+                        " TEXT, " +
 
-                        COLUMN_DEBT_ITEM + " TEXT, " +
+                        COLUMN_DEBT_ITEM +
+                        " TEXT, " +
 
-                        // Debt amount
-                        COLUMN_DEBT_AMOUNT + " REAL DEFAULT 0, " +
+                        COLUMN_DEBT_QUANTITY +
+                        " INTEGER DEFAULT 1, " +
 
-                        // Amount already paid
-                        COLUMN_DEBT_PAID + " REAL DEFAULT 0" +
+                        COLUMN_DEBT_AMOUNT +
+                        " REAL DEFAULT 0, " +
+
+                        COLUMN_DEBT_PAID +
+                        " REAL DEFAULT 0" +
 
                         ")";
 
@@ -124,13 +148,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     // =========================================================
-    // UPDATE DATABASE
+    // DATABASE UPGRADE
     // =========================================================
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(
+            SQLiteDatabase db,
+            int oldVersion,
+            int newVersion
+    ) {
 
-        // Version 2 -> 3
+        // -----------------------------------------------------
+        // VERSION 2 -> 3
+        // -----------------------------------------------------
+
         if (oldVersion < 3) {
 
             db.execSQL(
@@ -151,10 +182,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
 
-        // Version 3 -> 4
+        // -----------------------------------------------------
+        // VERSION 3 -> 4
+        // -----------------------------------------------------
+
         if (oldVersion < 4) {
 
-            // Add debt amount
             db.execSQL(
                     "ALTER TABLE " +
                             TABLE_DEBTS +
@@ -163,13 +196,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             " REAL DEFAULT 0"
             );
 
-            // Add amount paid
             db.execSQL(
                     "ALTER TABLE " +
                             TABLE_DEBTS +
                             " ADD COLUMN " +
                             COLUMN_DEBT_PAID +
                             " REAL DEFAULT 0"
+            );
+        }
+
+
+        // -----------------------------------------------------
+        // VERSION 4 -> 5
+        // Add quantity
+        // -----------------------------------------------------
+
+        if (oldVersion < 5) {
+
+            db.execSQL(
+                    "ALTER TABLE " +
+                            TABLE_DEBTS +
+                            " ADD COLUMN " +
+                            COLUMN_DEBT_QUANTITY +
+                            " INTEGER DEFAULT 1"
             );
         }
     }
@@ -179,42 +228,63 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // ADD CUSTOMER
     // =========================================================
 
-    public long addCustomer(String name, String phone) {
+    public long addCustomer(
+            String name,
+            String phone
+    ) {
 
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db =
+                this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
+        ContentValues values =
+                new ContentValues();
 
-        values.put(COLUMN_NAME, name);
-        values.put(COLUMN_PHONE, phone);
 
-        // Get current date
+        values.put(
+                COLUMN_NAME,
+                name
+        );
+
+
+        values.put(
+                COLUMN_PHONE,
+                phone
+        );
+
+
         String date =
                 new SimpleDateFormat(
                         "MMM dd, yyyy",
                         Locale.getDefault()
                 ).format(new Date());
 
-        values.put(COLUMN_DATE, date);
+
+        values.put(
+                COLUMN_DATE,
+                date
+        );
 
 
-        // Get current time
         String time =
                 new SimpleDateFormat(
                         "hh:mm a",
                         Locale.getDefault()
                 ).format(new Date());
 
-        values.put(COLUMN_TIME, time);
+
+        values.put(
+                COLUMN_TIME,
+                time
+        );
 
 
-        // Insert customer
         long result =
                 db.insert(
                         TABLE_CUSTOMERS,
                         null,
                         values
                 );
+
 
         db.close();
 
@@ -262,7 +332,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int count = 0;
 
         if (cursor.moveToFirst()) {
-            count = cursor.getInt(0);
+
+            count =
+                    cursor.getInt(0);
         }
 
         cursor.close();
@@ -274,12 +346,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // =========================================================
     // INSERT DEBT
     // =========================================================
+    //
+    // New version:
+    //
+    // customer ID
+    // customer name
+    // phone
+    // product
+    // quantity
+    // total line amount
+    //
+    // Example:
+    //
+    // Coke
+    // quantity = 3
+    // price = 20
+    // amount = 60
+    //
+    // =========================================================
 
     public long insertDebt(
             int customerId,
             String name,
             String phone,
             String item,
+            int quantity,
             double amount
     ) {
 
@@ -289,33 +380,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values =
                 new ContentValues();
 
+
         values.put(
                 COLUMN_DEBT_CUSTOMER_ID,
                 customerId
         );
+
 
         values.put(
                 COLUMN_DEBT_CUSTOMER_NAME,
                 name
         );
 
+
         values.put(
                 COLUMN_DEBT_CUSTOMER_PHONE,
                 phone
         );
+
 
         values.put(
                 COLUMN_DEBT_ITEM,
                 item
         );
 
-        // Store debt amount
+
+        // Save quantity
+        values.put(
+                COLUMN_DEBT_QUANTITY,
+                quantity
+        );
+
+
+        // Save total line amount
         values.put(
                 COLUMN_DEBT_AMOUNT,
                 amount
         );
 
-        // New debt has no payment yet
+
+        // New debt = nothing paid
         values.put(
                 COLUMN_DEBT_PAID,
                 0
@@ -329,9 +433,539 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         values
                 );
 
+
         db.close();
 
         return result;
+    }
+
+
+    // =========================================================
+    // OLD INSERT DEBT METHOD
+    // =========================================================
+    //
+    // This is kept so existing code that uses the old method
+    // will not immediately break.
+    //
+    // Quantity defaults to 1.
+    //
+    // =========================================================
+
+    public long insertDebt(
+            int customerId,
+            String name,
+            String phone,
+            String item,
+            double amount
+    ) {
+
+        return insertDebt(
+                customerId,
+                name,
+                phone,
+                item,
+                1,
+                amount
+        );
+    }
+
+
+    // =========================================================
+    // GET CUSTOMERS WITH TOTAL DEBT
+    // =========================================================
+
+    public Cursor getCustomersWithTotalDebt() {
+
+        SQLiteDatabase db =
+                this.getReadableDatabase();
+
+
+        String query =
+                "SELECT " +
+
+                        "c." +
+                        COLUMN_ID +
+                        " AS " +
+                        COLUMN_ID +
+                        ", " +
+
+                        "c." +
+                        COLUMN_NAME +
+                        " AS " +
+                        COLUMN_NAME +
+                        ", " +
+
+                        "c." +
+                        COLUMN_PHONE +
+                        " AS " +
+                        COLUMN_PHONE +
+                        ", " +
+
+                        "COALESCE(" +
+
+                        "SUM(" +
+
+                        "CASE " +
+
+                        "WHEN d." +
+                        COLUMN_DEBT_AMOUNT +
+                        " - d." +
+                        COLUMN_DEBT_PAID +
+                        " > 0 " +
+
+                        "THEN d." +
+                        COLUMN_DEBT_AMOUNT +
+                        " - d." +
+                        COLUMN_DEBT_PAID +
+                        " ELSE 0 " +
+
+                        "END" +
+
+                        "), 0) AS total_debt " +
+
+                        "FROM " +
+                        TABLE_CUSTOMERS +
+                        " c " +
+
+                        "LEFT JOIN " +
+                        TABLE_DEBTS +
+                        " d " +
+
+                        "ON c." +
+                        COLUMN_ID +
+                        " = d." +
+                        COLUMN_DEBT_CUSTOMER_ID +
+
+                        " GROUP BY " +
+
+                        "c." +
+                        COLUMN_ID +
+                        ", " +
+
+                        "c." +
+                        COLUMN_NAME +
+                        ", " +
+
+                        "c." +
+                        COLUMN_PHONE +
+
+                        " ORDER BY " +
+
+                        "c." +
+                        COLUMN_ID +
+                        " DESC";
+
+
+        return db.rawQuery(
+                query,
+                null
+        );
+    }
+
+
+    // =========================================================
+    // GET DEBT ITEMS FOR CUSTOMER
+    // =========================================================
+
+    public Cursor getDebtItemsForCustomer(
+            int customerId
+    ) {
+
+        SQLiteDatabase db =
+                this.getReadableDatabase();
+
+
+        String query =
+                "SELECT " +
+
+                        COLUMN_DEBT_ID +
+                        ", " +
+
+                        COLUMN_DEBT_ITEM +
+                        ", " +
+
+                        COLUMN_DEBT_QUANTITY +
+                        ", " +
+
+                        COLUMN_DEBT_AMOUNT +
+                        ", " +
+
+                        COLUMN_DEBT_PAID +
+
+                        " FROM " +
+                        TABLE_DEBTS +
+
+                        " WHERE " +
+                        COLUMN_DEBT_CUSTOMER_ID +
+                        " = ? " +
+
+                        " AND (" +
+                        COLUMN_DEBT_AMOUNT +
+                        " - " +
+                        COLUMN_DEBT_PAID +
+                        ") > 0 " +
+
+                        " ORDER BY " +
+                        COLUMN_DEBT_ID +
+                        " ASC";
+
+
+        return db.rawQuery(
+                query,
+                new String[]{
+                        String.valueOf(customerId)
+                }
+        );
+    }
+
+
+    // =========================================================
+    // GET CUSTOMER TOTAL DEBT
+    // =========================================================
+
+    public double getCustomerTotalDebt(
+            int customerId
+    ) {
+
+        SQLiteDatabase db =
+                this.getReadableDatabase();
+
+
+        Cursor cursor =
+                db.rawQuery(
+
+                        "SELECT COALESCE(" +
+                                "SUM(" +
+                                COLUMN_DEBT_AMOUNT +
+                                " - " +
+                                COLUMN_DEBT_PAID +
+                                ")" +
+                                ", 0) " +
+
+                                "FROM " +
+                                TABLE_DEBTS +
+
+                                " WHERE " +
+                                COLUMN_DEBT_CUSTOMER_ID +
+                                " = ? " +
+
+                                " AND (" +
+                                COLUMN_DEBT_AMOUNT +
+                                " - " +
+                                COLUMN_DEBT_PAID +
+                                ") > 0",
+
+                        new String[]{
+                                String.valueOf(customerId)
+                        }
+                );
+
+
+        double total = 0;
+
+
+        if (cursor.moveToFirst()) {
+
+            total =
+                    cursor.getDouble(0);
+        }
+
+
+        cursor.close();
+
+        return total;
+    }
+
+
+    // =========================================================
+    // MAKE PAYMENT
+    // =========================================================
+    //
+    // The payment is applied to the customer's oldest debts
+    // first.
+    //
+    // Example:
+    //
+    // Debt 1 = 40
+    // Debt 2 = 50
+    // Debt 3 = 100
+    //
+    // Payment = 60
+    //
+    // Result:
+    //
+    // Debt 1 = fully paid
+    // Debt 2 = paid 20
+    // Debt 3 = unchanged
+    //
+    // =========================================================
+
+    public boolean makePayment(
+            int customerId,
+            double paymentAmount
+    ) {
+
+        if (paymentAmount <= 0) {
+
+            return false;
+        }
+
+
+        SQLiteDatabase db =
+                this.getWritableDatabase();
+
+
+        Cursor cursor = null;
+
+
+        boolean success = false;
+
+
+        try {
+
+            db.beginTransaction();
+
+
+            // -------------------------------------------------
+            // Get all unpaid debt items
+            // -------------------------------------------------
+
+            cursor =
+                    db.query(
+
+                            TABLE_DEBTS,
+
+                            new String[]{
+                                    COLUMN_DEBT_ID,
+                                    COLUMN_DEBT_AMOUNT,
+                                    COLUMN_DEBT_PAID
+                            },
+
+                            COLUMN_DEBT_CUSTOMER_ID +
+                                    "=? AND (" +
+                                    COLUMN_DEBT_AMOUNT +
+                                    " - " +
+                                    COLUMN_DEBT_PAID +
+                                    ") > 0",
+
+                            new String[]{
+                                    String.valueOf(
+                                            customerId
+                                    )
+                            },
+
+                            null,
+                            null,
+
+                            COLUMN_DEBT_ID +
+                                    " ASC"
+                    );
+
+
+            double remainingPayment =
+                    paymentAmount;
+
+
+            // -------------------------------------------------
+            // Apply payment from oldest debt to newest
+            // -------------------------------------------------
+
+            while (
+                    cursor.moveToNext()
+                            &&
+                            remainingPayment > 0
+            ) {
+
+                long debtId =
+                        cursor.getLong(
+                                cursor.getColumnIndexOrThrow(
+                                        COLUMN_DEBT_ID
+                                )
+                        );
+
+
+                double amount =
+                        cursor.getDouble(
+                                cursor.getColumnIndexOrThrow(
+                                        COLUMN_DEBT_AMOUNT
+                                )
+                        );
+
+
+                double paid =
+                        cursor.getDouble(
+                                cursor.getColumnIndexOrThrow(
+                                        COLUMN_DEBT_PAID
+                                )
+                        );
+
+
+                double balance =
+                        amount - paid;
+
+
+                if (balance <= 0) {
+
+                    continue;
+                }
+
+
+                // How much goes into this debt
+                double paymentForThisDebt =
+                        Math.min(
+                                remainingPayment,
+                                balance
+                        );
+
+
+                double newPaid =
+                        paid +
+                                paymentForThisDebt;
+
+
+                ContentValues values =
+                        new ContentValues();
+
+
+                values.put(
+                        COLUMN_DEBT_PAID,
+                        newPaid
+                );
+
+
+                int updated =
+                        db.update(
+
+                                TABLE_DEBTS,
+
+                                values,
+
+                                COLUMN_DEBT_ID +
+                                        "=?",
+
+                                new String[]{
+                                        String.valueOf(
+                                                debtId
+                                        )
+                                }
+                        );
+
+
+                if (updated <= 0) {
+
+                    throw new Exception(
+                            "Payment update failed"
+                    );
+                }
+
+
+                remainingPayment -=
+                        paymentForThisDebt;
+            }
+
+
+            // -------------------------------------------------
+            // Make sure the payment was not larger than debt
+            // -------------------------------------------------
+
+            double totalDebtAfter =
+                    getCustomerTotalDebtFromDatabase(
+                            db,
+                            customerId
+                    );
+
+
+            // Small floating point tolerance
+            if (remainingPayment > 0.001) {
+
+                throw new Exception(
+                        "Payment exceeds customer debt"
+                );
+            }
+
+
+            db.setTransactionSuccessful();
+
+            success = true;
+
+
+        } catch (Exception e) {
+
+            success = false;
+
+
+        } finally {
+
+            if (cursor != null) {
+
+                cursor.close();
+            }
+
+
+            db.endTransaction();
+
+            db.close();
+        }
+
+
+        return success;
+    }
+
+
+    // =========================================================
+    // INTERNAL TOTAL DEBT METHOD
+    // =========================================================
+
+    private double getCustomerTotalDebtFromDatabase(
+            SQLiteDatabase db,
+            int customerId
+    ) {
+
+        Cursor cursor =
+                db.rawQuery(
+
+                        "SELECT COALESCE(" +
+                                "SUM(" +
+                                COLUMN_DEBT_AMOUNT +
+                                " - " +
+                                COLUMN_DEBT_PAID +
+                                ")" +
+                                ", 0) " +
+
+                                "FROM " +
+                                TABLE_DEBTS +
+
+                                " WHERE " +
+                                COLUMN_DEBT_CUSTOMER_ID +
+                                " = ? " +
+
+                                " AND (" +
+                                COLUMN_DEBT_AMOUNT +
+                                " - " +
+                                COLUMN_DEBT_PAID +
+                                ") > 0",
+
+                        new String[]{
+                                String.valueOf(
+                                        customerId
+                                )
+                        }
+                );
+
+
+        double total = 0;
+
+
+        if (cursor.moveToFirst()) {
+
+            total =
+                    cursor.getDouble(0);
+        }
+
+
+        cursor.close();
+
+        return total;
     }
 
 
@@ -344,25 +978,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db =
                 this.getReadableDatabase();
 
+
         Cursor cursor =
                 db.rawQuery(
+
                         "SELECT SUM(" +
                                 COLUMN_DEBT_AMOUNT +
                                 " - " +
                                 COLUMN_DEBT_PAID +
                                 ") FROM " +
                                 TABLE_DEBTS,
+
                         null
                 );
 
+
         double total = 0;
+
 
         if (cursor.moveToFirst()) {
 
             if (!cursor.isNull(0)) {
-                total = cursor.getDouble(0);
+
+                total =
+                        cursor.getDouble(0);
             }
         }
+
 
         cursor.close();
 
@@ -379,23 +1021,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db =
                 this.getReadableDatabase();
 
+
         Cursor cursor =
                 db.rawQuery(
+
                         "SELECT COUNT(DISTINCT " +
                                 COLUMN_DEBT_CUSTOMER_ID +
                                 ") FROM " +
                                 TABLE_DEBTS +
+
                                 " WHERE " +
                                 COLUMN_DEBT_PAID +
                                 " = 0",
+
                         null
                 );
 
+
         int count = 0;
 
+
         if (cursor.moveToFirst()) {
-            count = cursor.getInt(0);
+
+            count =
+                    cursor.getInt(0);
         }
+
 
         cursor.close();
 
@@ -412,26 +1063,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db =
                 this.getReadableDatabase();
 
+
         Cursor cursor =
                 db.rawQuery(
+
                         "SELECT SUM(" +
                                 COLUMN_DEBT_AMOUNT +
                                 ") FROM " +
                                 TABLE_DEBTS +
+
                                 " WHERE " +
                                 COLUMN_DEBT_PAID +
                                 " = 0",
+
                         null
                 );
 
+
         double amount = 0;
+
 
         if (cursor.moveToFirst()) {
 
             if (!cursor.isNull(0)) {
-                amount = cursor.getDouble(0);
+
+                amount =
+                        cursor.getDouble(0);
             }
         }
+
 
         cursor.close();
 
@@ -448,26 +1108,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db =
                 this.getReadableDatabase();
 
+
         Cursor cursor =
                 db.rawQuery(
+
                         "SELECT COUNT(DISTINCT " +
                                 COLUMN_DEBT_CUSTOMER_ID +
                                 ") FROM " +
                                 TABLE_DEBTS +
+
                                 " WHERE " +
                                 COLUMN_DEBT_PAID +
                                 " > 0 AND " +
                                 COLUMN_DEBT_PAID +
                                 " < " +
                                 COLUMN_DEBT_AMOUNT,
+
                         null
                 );
 
+
         int count = 0;
 
+
         if (cursor.moveToFirst()) {
-            count = cursor.getInt(0);
+
+            count =
+                    cursor.getInt(0);
         }
+
 
         cursor.close();
 
@@ -484,31 +1153,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db =
                 this.getReadableDatabase();
 
+
         Cursor cursor =
                 db.rawQuery(
+
                         "SELECT SUM(" +
                                 COLUMN_DEBT_AMOUNT +
                                 " - " +
                                 COLUMN_DEBT_PAID +
                                 ") FROM " +
                                 TABLE_DEBTS +
+
                                 " WHERE " +
                                 COLUMN_DEBT_PAID +
                                 " > 0 AND " +
                                 COLUMN_DEBT_PAID +
                                 " < " +
                                 COLUMN_DEBT_AMOUNT,
+
                         null
                 );
 
+
         double amount = 0;
+
 
         if (cursor.moveToFirst()) {
 
             if (!cursor.isNull(0)) {
-                amount = cursor.getDouble(0);
+
+                amount =
+                        cursor.getDouble(0);
             }
         }
+
 
         cursor.close();
 

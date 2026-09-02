@@ -29,13 +29,10 @@ public class Adddept2Activity extends AppCompatActivity {
     // INPUT FIELDS
     // =====================================================
 
-    // Product name
     private EditText edtProduct;
 
-    // Product quantity
     private EditText edtQuantity;
 
-    // Product amount / price
     private EditText edtAmount;
 
 
@@ -43,13 +40,10 @@ public class Adddept2Activity extends AppCompatActivity {
     // BUTTONS
     // =====================================================
 
-    // Adds an item temporarily to the ListView
     private Button btnAddDebt;
 
-    // Saves all items to the database
     private Button btnConfirm;
 
-    // Back button
     private ImageButton btnBack;
 
 
@@ -65,7 +59,9 @@ public class Adddept2Activity extends AppCompatActivity {
     // =====================================================
 
     private TextView txtCustomerName;
+
     private TextView txtCustomerPhone;
+
     private TextView txtTotalAmount;
 
 
@@ -80,7 +76,10 @@ public class Adddept2Activity extends AppCompatActivity {
     // CUSTOMER INFORMATION
     // =====================================================
 
+    private String customerId;
+
     private String customerName;
+
     private String customerPhone;
 
 
@@ -94,124 +93,168 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
     // =====================================================
-    // SMS PERMISSION
+    // SMS
     // =====================================================
 
     private static final int SMS_PERMISSION_CODE = 2;
 
 
+    // =====================================================
+    // ON CREATE
+    // =====================================================
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(
+            Bundle savedInstanceState
+    ) {
 
         super.onCreate(savedInstanceState);
 
-        // Open Add Debt Item layout
-        setContentView(R.layout.adddept);
+        setContentView(
+                R.layout.adddept
+        );
 
 
         // =====================================================
         // DATABASE
         // =====================================================
 
-        databaseHelper = new DatabaseHelper(this);
+        databaseHelper =
+                new DatabaseHelper(this);
 
 
         // =====================================================
         // GET CUSTOMER INFORMATION
         // =====================================================
 
+        customerId =
+                getIntent()
+                        .getStringExtra(
+                                "customer_id"
+                        );
+
         customerName =
-                getIntent().getStringExtra("customer_name");
+                getIntent()
+                        .getStringExtra(
+                                "customer_name"
+                        );
 
         customerPhone =
-                getIntent().getStringExtra("customer_phone");
+                getIntent()
+                        .getStringExtra(
+                                "customer_phone"
+                        );
 
 
         // =====================================================
-        // CONNECT INPUT FIELDS
+        // INPUT FIELDS
         // =====================================================
 
         edtProduct =
-                findViewById(R.id.edtProduct);
+                findViewById(
+                        R.id.edtProduct
+                );
 
         edtQuantity =
-                findViewById(R.id.edtQuantity);
+                findViewById(
+                        R.id.edtQuantity
+                );
 
         edtAmount =
-                findViewById(R.id.edtAmount);
+                findViewById(
+                        R.id.edtAmount
+                );
 
 
         // =====================================================
-        // CONNECT BUTTONS
+        // BUTTONS
         // =====================================================
 
         btnAddDebt =
-                findViewById(R.id.btnAddDebt);
+                findViewById(
+                        R.id.btnAddDebt
+                );
 
         btnConfirm =
-                findViewById(R.id.btnConfirm);
+                findViewById(
+                        R.id.btnConfirm
+                );
 
         btnBack =
-                findViewById(R.id.btnBack);
+                findViewById(
+                        R.id.btnBack
+                );
 
 
         // =====================================================
-        // CONNECT LISTVIEW
+        // LISTVIEW
         // =====================================================
 
         listViewDebt =
-                findViewById(R.id.listViewDebt);
+                findViewById(
+                        R.id.listViewDebt
+                );
 
 
         // =====================================================
-        // CONNECT CUSTOMER CARD
+        // CUSTOMER CARD
         // =====================================================
 
         txtCustomerName =
-                findViewById(R.id.txtCustomerName);
+                findViewById(
+                        R.id.txtCustomerName
+                );
 
         txtCustomerPhone =
-                findViewById(R.id.txtCustomerPhone);
+                findViewById(
+                        R.id.txtCustomerPhone
+                );
 
         txtTotalAmount =
-                findViewById(R.id.txtTotalAmount);
+                findViewById(
+                        R.id.txtTotalAmount
+                );
 
 
         // =====================================================
-        // DISPLAY CUSTOMER INFORMATION
+        // DISPLAY CUSTOMER
         // =====================================================
 
         if (customerName != null) {
 
-            txtCustomerName.setText(customerName);
+            txtCustomerName.setText(
+                    customerName
+            );
 
         } else {
 
-            txtCustomerName.setText("Unknown");
+            txtCustomerName.setText(
+                    "Unknown"
+            );
         }
 
 
         if (customerPhone != null) {
 
-            txtCustomerPhone.setText(customerPhone);
+            txtCustomerPhone.setText(
+                    customerPhone
+            );
 
         } else {
 
-            txtCustomerPhone.setText("");
+            txtCustomerPhone.setText(
+                    ""
+            );
         }
 
 
         // =====================================================
-        // CREATE EMPTY DEBT LIST
+        // CREATE TEMPORARY LIST
         // =====================================================
 
         debtItems =
                 new ArrayList<>();
 
-
-        // =====================================================
-        // CREATE ADAPTER
-        // =====================================================
 
         adapter =
                 new DebtAdapter(
@@ -220,13 +263,10 @@ public class Adddept2Activity extends AppCompatActivity {
                 );
 
 
-        // Connect adapter to ListView
-        listViewDebt.setAdapter(adapter);
+        listViewDebt.setAdapter(
+                adapter
+        );
 
-
-        // =====================================================
-        // INITIAL TOTAL
-        // =====================================================
 
         updateTotalDisplay();
 
@@ -239,7 +279,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // BACK BUTTON
+        // BACK
         // =====================================================
 
         btnBack.setOnClickListener(v -> {
@@ -250,7 +290,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // ADD DEBT BUTTON
+        // ADD ITEM
         // =====================================================
 
         btnAddDebt.setOnClickListener(v -> {
@@ -261,7 +301,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // CONFIRM BUTTON
+        // CONFIRM
         // =====================================================
 
         btnConfirm.setOnClickListener(v -> {
@@ -273,26 +313,23 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
     // =========================================================
-    // ADD DEBT ITEM TO LISTVIEW
+    // ADD DEBT ITEM
     // =========================================================
 
     private void addDebtItem() {
 
-        // Get product
         String product =
                 edtProduct.getText()
                         .toString()
                         .trim();
 
 
-        // Get quantity
         String quantityText =
                 edtQuantity.getText()
                         .toString()
                         .trim();
 
 
-        // Get amount
         String amountText =
                 edtAmount.getText()
                         .toString()
@@ -300,12 +337,14 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // VALIDATE PRODUCT
+        // PRODUCT
         // =====================================================
 
         if (product.isEmpty()) {
 
-            edtProduct.setError("Enter product");
+            edtProduct.setError(
+                    "Enter product"
+            );
 
             edtProduct.requestFocus();
 
@@ -314,12 +353,14 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // VALIDATE QUANTITY
+        // QUANTITY
         // =====================================================
 
         if (quantityText.isEmpty()) {
 
-            edtQuantity.setError("Enter quantity");
+            edtQuantity.setError(
+                    "Enter quantity"
+            );
 
             edtQuantity.requestFocus();
 
@@ -328,12 +369,14 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // VALIDATE AMOUNT
+        // AMOUNT
         // =====================================================
 
         if (amountText.isEmpty()) {
 
-            edtAmount.setError("Enter amount");
+            edtAmount.setError(
+                    "Enter amount"
+            );
 
             edtAmount.requestFocus();
 
@@ -342,15 +385,18 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // CONVERT QUANTITY
+        // QUANTITY CONVERSION
         // =====================================================
 
         int quantity;
 
+
         try {
 
             quantity =
-                    Integer.parseInt(quantityText);
+                    Integer.parseInt(
+                            quantityText
+                    );
 
         } catch (NumberFormatException e) {
 
@@ -364,7 +410,6 @@ public class Adddept2Activity extends AppCompatActivity {
         }
 
 
-        // Quantity must be greater than zero
         if (quantity <= 0) {
 
             edtQuantity.setError(
@@ -378,15 +423,18 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // CONVERT AMOUNT
+        // AMOUNT CONVERSION
         // =====================================================
 
         double amount;
 
+
         try {
 
             amount =
-                    Double.parseDouble(amountText);
+                    Double.parseDouble(
+                            amountText
+                    );
 
         } catch (NumberFormatException e) {
 
@@ -400,7 +448,6 @@ public class Adddept2Activity extends AppCompatActivity {
         }
 
 
-        // Amount must be greater than zero
         if (amount <= 0) {
 
             edtAmount.setError(
@@ -414,7 +461,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // CREATE DEBT ITEM
+        // CREATE TEMPORARY ITEM
         // =====================================================
 
         DebtItem item =
@@ -425,20 +472,19 @@ public class Adddept2Activity extends AppCompatActivity {
                 );
 
 
-        // Add item to temporary list
-        debtItems.add(item);
+        debtItems.add(
+                item
+        );
 
 
-        // Refresh ListView
         adapter.notifyDataSetChanged();
 
 
-        // Refresh total
         updateTotalDisplay();
 
 
         // =====================================================
-        // CLEAR INPUT FIELDS
+        // CLEAR INPUT
         // =====================================================
 
         edtProduct.setText("");
@@ -448,7 +494,6 @@ public class Adddept2Activity extends AppCompatActivity {
         edtAmount.setText("");
 
 
-        // Focus product field
         edtProduct.requestFocus();
 
 
@@ -461,7 +506,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
     // =========================================================
-    // UPDATE TOTAL DISPLAY
+    // UPDATE TOTAL
     // =========================================================
 
     private void updateTotalDisplay() {
@@ -469,18 +514,17 @@ public class Adddept2Activity extends AppCompatActivity {
         double total = 0.0;
 
 
-        // Calculate every item's total
         for (DebtItem item : debtItems) {
 
             double lineTotal =
                     item.getQuantity()
                             * item.getAmount();
 
+
             total += lineTotal;
         }
 
 
-        // Display total
         txtTotalAmount.setText(
                 String.format(
                         Locale.getDefault(),
@@ -492,13 +536,13 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
     // =========================================================
-    // CONFIRM ALL DEBT ITEMS
+    // CONFIRM DEBT
     // =========================================================
 
     private void confirmDebt() {
 
         // =====================================================
-        // CHECK CUSTOMER PHONE
+        // CUSTOMER PHONE
         // =====================================================
 
         if (customerPhone == null ||
@@ -515,7 +559,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // CHECK DEBT ITEMS
+        // DEBT ITEMS
         // =====================================================
 
         if (debtItems.isEmpty()) {
@@ -531,53 +575,80 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // OPEN DATABASE
+        // DATABASE
         // =====================================================
 
         SQLiteDatabase db =
-                databaseHelper.getReadableDatabase();
+                databaseHelper
+                        .getReadableDatabase();
+
+
+        long foundCustomerId = -1;
 
 
         // =====================================================
-        // FIND CUSTOMER ID
+        // FIRST USE CUSTOMER ID
         // =====================================================
 
-        long customerId = -1;
+        if (customerId != null &&
+                !customerId.trim().isEmpty()) {
 
+            try {
 
-        Cursor cursor =
-                db.query(
-                        DatabaseHelper.TABLE_CUSTOMERS,
-
-                        new String[]{
-                                DatabaseHelper.COLUMN_ID
-                        },
-
-                        DatabaseHelper.COLUMN_PHONE + "=?",
-
-                        new String[]{
-                                customerPhone
-                        },
-
-                        null,
-                        null,
-                        null
-                );
-
-
-        if (cursor != null) {
-
-            if (cursor.moveToFirst()) {
-
-                customerId =
-                        cursor.getLong(
-                                cursor.getColumnIndexOrThrow(
-                                        DatabaseHelper.COLUMN_ID
-                                )
+                foundCustomerId =
+                        Long.parseLong(
+                                customerId
                         );
-            }
 
-            cursor.close();
+            } catch (NumberFormatException ignored) {
+
+                foundCustomerId = -1;
+            }
+        }
+
+
+        // =====================================================
+        // FALLBACK BY PHONE
+        // =====================================================
+
+        if (foundCustomerId == -1) {
+
+            Cursor cursor =
+                    db.query(
+
+                            DatabaseHelper.TABLE_CUSTOMERS,
+
+                            new String[]{
+                                    DatabaseHelper.COLUMN_ID
+                            },
+
+                            DatabaseHelper.COLUMN_PHONE +
+                                    "=?",
+
+                            new String[]{
+                                    customerPhone
+                            },
+
+                            null,
+                            null,
+                            null
+                    );
+
+
+            if (cursor != null) {
+
+                if (cursor.moveToFirst()) {
+
+                    foundCustomerId =
+                            cursor.getLong(
+                                    cursor.getColumnIndexOrThrow(
+                                            DatabaseHelper.COLUMN_ID
+                                    )
+                            );
+                }
+
+                cursor.close();
+            }
         }
 
 
@@ -585,7 +656,7 @@ public class Adddept2Activity extends AppCompatActivity {
         // CUSTOMER NOT FOUND
         // =====================================================
 
-        if (customerId == -1) {
+        if (foundCustomerId == -1) {
 
             Toast.makeText(
                     Adddept2Activity.this,
@@ -608,28 +679,16 @@ public class Adddept2Activity extends AppCompatActivity {
 
             for (DebtItem item : debtItems) {
 
-                // -------------------------------------------------
-                // IMPORTANT
-                // -------------------------------------------------
-                // amount entered = price per item
-                //
-                // Example:
-                //
-                // Quantity = 3
-                // Amount = 20
-                //
-                // Debt saved = 60
-                // -------------------------------------------------
-
+                // Quantity x price
                 double lineTotal =
                         item.getQuantity()
                                 * item.getAmount();
 
 
-                // Save to DatabaseHelper
                 long result =
                         databaseHelper.insertDebt(
-                                (int) customerId,
+
+                                (int) foundCustomerId,
 
                                 customerName,
 
@@ -637,11 +696,12 @@ public class Adddept2Activity extends AppCompatActivity {
 
                                 item.getProduct(),
 
+                                item.getQuantity(),
+
                                 lineTotal
                         );
 
 
-                // Check if insertion failed
                 if (result == -1) {
 
                     saveSuccessful = false;
@@ -655,17 +715,18 @@ public class Adddept2Activity extends AppCompatActivity {
 
             saveSuccessful = false;
 
+
             Toast.makeText(
                     Adddept2Activity.this,
-                    "Failed to save debt: "
-                            + e.getMessage(),
+                    "Failed to save debt: " +
+                            e.getMessage(),
                     Toast.LENGTH_LONG
             ).show();
         }
 
 
         // =====================================================
-        // CHECK SAVE RESULT
+        // SAVE FAILED
         // =====================================================
 
         if (!saveSuccessful) {
@@ -692,7 +753,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // SEND SMS
+        // SMS
         // =====================================================
 
         sendDebtSms(
@@ -702,7 +763,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // CLEAR LIST
+        // CLEAR
         // =====================================================
 
         debtItems.clear();
@@ -713,7 +774,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // RETURN TO PREVIOUS SCREEN
+        // RETURN
         // =====================================================
 
         finish();
@@ -732,6 +793,7 @@ public class Adddept2Activity extends AppCompatActivity {
         ) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(
+
                     this,
 
                     new String[]{
@@ -760,10 +822,6 @@ public class Adddept2Activity extends AppCompatActivity {
         }
 
 
-        // =====================================================
-        // CHECK SMS PERMISSION
-        // =====================================================
-
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.SEND_SMS
@@ -778,10 +836,6 @@ public class Adddept2Activity extends AppCompatActivity {
             return;
         }
 
-
-        // =====================================================
-        // CREATE MESSAGE
-        // =====================================================
 
         StringBuilder message =
                 new StringBuilder();
@@ -801,10 +855,6 @@ public class Adddept2Activity extends AppCompatActivity {
         double total = 0.0;
 
 
-        // =====================================================
-        // ADD PRODUCTS TO SMS
-        // =====================================================
-
         for (DebtItem item : items) {
 
             double lineTotal =
@@ -819,7 +869,9 @@ public class Adddept2Activity extends AppCompatActivity {
                             item.getProduct()
                     )
                     .append(" x")
-                    .append(item.getQuantity())
+                    .append(
+                            item.getQuantity()
+                    )
                     .append(" - ₱")
                     .append(
                             String.format(
@@ -832,11 +884,9 @@ public class Adddept2Activity extends AppCompatActivity {
         }
 
 
-        // =====================================================
-        // ADD TOTAL
-        // =====================================================
-
-        message.append("\nTotal Debt: ₱")
+        message.append(
+                        "\nTotal Debt: ₱"
+                )
                 .append(
                         String.format(
                                 Locale.getDefault(),
@@ -846,17 +896,12 @@ public class Adddept2Activity extends AppCompatActivity {
                 );
 
 
-        // =====================================================
-        // SEND SMS
-        // =====================================================
-
         try {
 
             SmsManager smsManager =
                     SmsManager.getDefault();
 
 
-            // Split long messages
             ArrayList<String> parts =
                     smsManager.divideMessage(
                             message.toString()
@@ -937,7 +982,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
     // =========================================================
-    // LISTVIEW ADAPTER
+    // ADAPTER
     // =========================================================
 
     private static class DebtAdapter
@@ -967,14 +1012,20 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         @Override
-        public Object getItem(int position) {
+        public Object getItem(
+                int position
+        ) {
 
-            return debtItems.get(position);
+            return debtItems.get(
+                    position
+            );
         }
 
 
         @Override
-        public long getItemId(int position) {
+        public long getItemId(
+                int position
+        ) {
 
             return position;
         }
@@ -987,7 +1038,6 @@ public class Adddept2Activity extends AppCompatActivity {
                 ViewGroup parent
         ) {
 
-            // Create the ListView item
             if (convertView == null) {
 
                 convertView =
@@ -1001,19 +1051,17 @@ public class Adddept2Activity extends AppCompatActivity {
             }
 
 
-            // =================================================
-            // CONNECT TEXTVIEWS
-            // =================================================
-
             TextView txtProduct =
                     convertView.findViewById(
                             R.id.txtProduct
                     );
 
+
             TextView txtQuantity =
                     convertView.findViewById(
                             R.id.txtQuantity
                     );
+
 
             TextView txtAmount =
                     convertView.findViewById(
@@ -1021,25 +1069,23 @@ public class Adddept2Activity extends AppCompatActivity {
                     );
 
 
-            // Get item
             DebtItem item =
-                    debtItems.get(position);
+                    debtItems.get(
+                            position
+                    );
 
 
-            // Product
             txtProduct.setText(
                     item.getProduct()
             );
 
 
-            // Quantity
             txtQuantity.setText(
                     "Qty: " +
                             item.getQuantity()
             );
 
 
-            // Price
             txtAmount.setText(
                     "₱ " +
                             String.format(
