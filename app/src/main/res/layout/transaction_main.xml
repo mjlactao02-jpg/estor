@@ -4,108 +4,168 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     android:background="#D3D3D3">
 
-    <!-- Main Container -->
+
+    <!-- ===================================================== -->
+    <!-- MAIN CONTAINER                                       -->
+    <!-- ===================================================== -->
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/mainContainer"
+
         android:layout_width="0dp"
         android:layout_height="0dp"
+
         android:background="#FFFFFF"
+
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- HEADER -->
+
+        <!-- ================================================= -->
+        <!-- HEADER                                             -->
+        <!-- ================================================= -->
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/header"
+
             android:layout_width="0dp"
             android:layout_height="90dp"
+
             android:background="@drawable/bg_header"
+
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- Back Button -->
+
+            <!-- BACK BUTTON -->
+
             <ImageButton
                 android:id="@+id/btnBack"
+
                 android:layout_width="45dp"
                 android:layout_height="45dp"
+
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="32dp"
+
                 android:background="@android:color/transparent"
+
                 android:contentDescription="Back"
+
                 android:padding="10dp"
+
                 android:src="@drawable/ic_arrow_back"
+
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- History Title - ALWAYS CENTERED -->
+
+            <!-- TITLE -->
+
             <TextView
                 android:id="@+id/txtTitle"
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
                 android:text="Transaction"
+
                 android:textColor="#FFFFFF"
                 android:textSize="26sp"
                 android:textStyle="bold"
+
                 android:gravity="center"
+
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+
                 app:layout_constraintVertical_bias="0.872" />
 
-            <!-- Customers Icon -->
+
+            <!-- CUSTOMERS ICON -->
+
             <ImageView
                 android:id="@+id/imgCustomers"
+
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+
                 android:layout_marginEnd="3dp"
+
                 android:contentDescription="Customers"
+
                 android:src="@drawable/ic_people"
+
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/txtCustomerCount"
                 app:layout_constraintTop_toTopOf="parent"
+
                 app:layout_constraintVertical_bias="0.818" />
 
-            <!-- Customer Count -->
+
+            <!-- CUSTOMER COUNT -->
+
             <TextView
                 android:id="@+id/txtCustomerCount"
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
                 android:layout_marginEnd="8dp"
+
                 android:text="0"
+
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
                 android:textStyle="bold"
+
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+
                 app:layout_constraintVertical_bias="0.774" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <!-- LIST VIEW -->
+        <!-- ================================================= -->
+        <!-- TRANSACTION LIST                                   -->
+        <!-- ================================================= -->
+
         <ListView
             android:id="@+id/listCustomers"
+
             android:layout_width="0dp"
             android:layout_height="0dp"
+
             android:layout_marginStart="9dp"
             android:layout_marginEnd="9dp"
+
             android:background="@android:color/transparent"
+
             android:clipToPadding="false"
+
             android:divider="@android:color/transparent"
             android:dividerHeight="0dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
+
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+
             android:scrollbars="vertical"
             android:overScrollMode="ifContentScrolls"
+
             app:layout_constraintTop_toBottomOf="@id/header"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

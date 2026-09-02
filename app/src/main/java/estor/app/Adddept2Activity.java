@@ -25,9 +25,9 @@ import java.util.Locale;
 
 public class Adddept2Activity extends AppCompatActivity {
 
-    // =====================================================
-    // INPUT FIELDS
-    // =====================================================
+    // =========================================================
+    // INPUTS
+    // =========================================================
 
     private EditText edtProduct;
 
@@ -36,9 +36,9 @@ public class Adddept2Activity extends AppCompatActivity {
     private EditText edtAmount;
 
 
-    // =====================================================
+    // =========================================================
     // BUTTONS
-    // =====================================================
+    // =========================================================
 
     private Button btnAddDebt;
 
@@ -47,16 +47,16 @@ public class Adddept2Activity extends AppCompatActivity {
     private ImageButton btnBack;
 
 
-    // =====================================================
-    // LISTVIEW
-    // =====================================================
+    // =========================================================
+    // LIST
+    // =========================================================
 
     private ListView listViewDebt;
 
 
-    // =====================================================
-    // CUSTOMER CARD
-    // =====================================================
+    // =========================================================
+    // CUSTOMER
+    // =========================================================
 
     private TextView txtCustomerName;
 
@@ -65,16 +65,16 @@ public class Adddept2Activity extends AppCompatActivity {
     private TextView txtTotalAmount;
 
 
-    // =====================================================
+    // =========================================================
     // DATABASE
-    // =====================================================
+    // =========================================================
 
     private DatabaseHelper databaseHelper;
 
 
-    // =====================================================
-    // CUSTOMER INFORMATION
-    // =====================================================
+    // =========================================================
+    // CUSTOMER DATA
+    // =========================================================
 
     private String customerId;
 
@@ -83,25 +83,25 @@ public class Adddept2Activity extends AppCompatActivity {
     private String customerPhone;
 
 
-    // =====================================================
+    // =========================================================
     // TEMPORARY DEBT LIST
-    // =====================================================
+    // =========================================================
 
     private ArrayList<DebtItem> debtItems;
 
     private DebtAdapter adapter;
 
 
-    // =====================================================
+    // =========================================================
     // SMS
-    // =====================================================
+    // =========================================================
 
     private static final int SMS_PERMISSION_CODE = 2;
 
 
-    // =====================================================
+    // =========================================================
     // ON CREATE
-    // =====================================================
+    // =========================================================
 
     @Override
     protected void onCreate(
@@ -109,6 +109,7 @@ public class Adddept2Activity extends AppCompatActivity {
     ) {
 
         super.onCreate(savedInstanceState);
+
 
         setContentView(
                 R.layout.adddept
@@ -124,7 +125,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // GET CUSTOMER INFORMATION
+        // CUSTOMER DATA
         // =====================================================
 
         customerId =
@@ -133,11 +134,13 @@ public class Adddept2Activity extends AppCompatActivity {
                                 "customer_id"
                         );
 
+
         customerName =
                 getIntent()
                         .getStringExtra(
                                 "customer_name"
                         );
+
 
         customerPhone =
                 getIntent()
@@ -147,7 +150,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // INPUT FIELDS
+        // INPUTS
         // =====================================================
 
         edtProduct =
@@ -155,10 +158,12 @@ public class Adddept2Activity extends AppCompatActivity {
                         R.id.edtProduct
                 );
 
+
         edtQuantity =
                 findViewById(
                         R.id.edtQuantity
                 );
+
 
         edtAmount =
                 findViewById(
@@ -175,10 +180,12 @@ public class Adddept2Activity extends AppCompatActivity {
                         R.id.btnAddDebt
                 );
 
+
         btnConfirm =
                 findViewById(
                         R.id.btnConfirm
                 );
+
 
         btnBack =
                 findViewById(
@@ -205,10 +212,12 @@ public class Adddept2Activity extends AppCompatActivity {
                         R.id.txtCustomerName
                 );
 
+
         txtCustomerPhone =
                 findViewById(
                         R.id.txtCustomerPhone
                 );
+
 
         txtTotalAmount =
                 findViewById(
@@ -258,7 +267,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
         adapter =
                 new DebtAdapter(
-                        Adddept2Activity.this,
+                        this,
                         debtItems
                 );
 
@@ -290,7 +299,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // ADD ITEM
+        // ADD DEBT
         // =====================================================
 
         btnAddDebt.setOnClickListener(v -> {
@@ -385,7 +394,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // QUANTITY CONVERSION
+        // PARSE QUANTITY
         // =====================================================
 
         int quantity;
@@ -423,7 +432,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // AMOUNT CONVERSION
+        // PARSE AMOUNT
         // =====================================================
 
         double amount;
@@ -461,7 +470,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // CREATE TEMPORARY ITEM
+        // CREATE ITEM
         // =====================================================
 
         DebtItem item =
@@ -498,7 +507,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         Toast.makeText(
-                Adddept2Activity.this,
+                this,
                 "Debt item added",
                 Toast.LENGTH_SHORT
         ).show();
@@ -506,22 +515,19 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
     // =========================================================
-    // UPDATE TOTAL
+    // UPDATE TEMPORARY TOTAL
     // =========================================================
 
     private void updateTotalDisplay() {
 
-        double total = 0.0;
+        double total = 0;
 
 
         for (DebtItem item : debtItems) {
 
-            double lineTotal =
+            total +=
                     item.getQuantity()
                             * item.getAmount();
-
-
-            total += lineTotal;
         }
 
 
@@ -541,15 +547,11 @@ public class Adddept2Activity extends AppCompatActivity {
 
     private void confirmDebt() {
 
-        // =====================================================
-        // CUSTOMER PHONE
-        // =====================================================
-
         if (customerPhone == null ||
                 customerPhone.trim().isEmpty()) {
 
             Toast.makeText(
-                    Adddept2Activity.this,
+                    this,
                     "Customer information is missing",
                     Toast.LENGTH_SHORT
             ).show();
@@ -558,14 +560,10 @@ public class Adddept2Activity extends AppCompatActivity {
         }
 
 
-        // =====================================================
-        // DEBT ITEMS
-        // =====================================================
-
         if (debtItems.isEmpty()) {
 
             Toast.makeText(
-                    Adddept2Activity.this,
+                    this,
                     "Add at least one debt item",
                     Toast.LENGTH_SHORT
             ).show();
@@ -573,10 +571,6 @@ public class Adddept2Activity extends AppCompatActivity {
             return;
         }
 
-
-        // =====================================================
-        // DATABASE
-        // =====================================================
 
         SQLiteDatabase db =
                 databaseHelper
@@ -587,7 +581,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // FIRST USE CUSTOMER ID
+        // USE CUSTOMER ID
         // =====================================================
 
         if (customerId != null &&
@@ -608,7 +602,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // FALLBACK BY PHONE
+        // FALLBACK TO PHONE
         // =====================================================
 
         if (foundCustomerId == -1) {
@@ -659,7 +653,7 @@ public class Adddept2Activity extends AppCompatActivity {
         if (foundCustomerId == -1) {
 
             Toast.makeText(
-                    Adddept2Activity.this,
+                    this,
                     "Customer was not found",
                     Toast.LENGTH_SHORT
             ).show();
@@ -669,7 +663,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // SAVE ALL ITEMS
+        // SAVE
         // =====================================================
 
         boolean saveSuccessful = true;
@@ -679,7 +673,6 @@ public class Adddept2Activity extends AppCompatActivity {
 
             for (DebtItem item : debtItems) {
 
-                // Quantity x price
                 double lineTotal =
                         item.getQuantity()
                                 * item.getAmount();
@@ -717,7 +710,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
             Toast.makeText(
-                    Adddept2Activity.this,
+                    this,
                     "Failed to save debt: " +
                             e.getMessage(),
                     Toast.LENGTH_LONG
@@ -732,7 +725,7 @@ public class Adddept2Activity extends AppCompatActivity {
         if (!saveSuccessful) {
 
             Toast.makeText(
-                    Adddept2Activity.this,
+                    this,
                     "Failed to save debt",
                     Toast.LENGTH_LONG
             ).show();
@@ -746,14 +739,14 @@ public class Adddept2Activity extends AppCompatActivity {
         // =====================================================
 
         Toast.makeText(
-                Adddept2Activity.this,
+                this,
                 "Debt saved successfully",
                 Toast.LENGTH_SHORT
         ).show();
 
 
         // =====================================================
-        // SMS
+        // SEND SMS
         // =====================================================
 
         sendDebtSms(
@@ -772,10 +765,6 @@ public class Adddept2Activity extends AppCompatActivity {
 
         updateTotalDisplay();
 
-
-        // =====================================================
-        // RETURN
-        // =====================================================
 
         finish();
     }
@@ -827,12 +816,6 @@ public class Adddept2Activity extends AppCompatActivity {
                 Manifest.permission.SEND_SMS
         ) != PackageManager.PERMISSION_GRANTED) {
 
-            Toast.makeText(
-                    this,
-                    "SMS permission not granted",
-                    Toast.LENGTH_SHORT
-            ).show();
-
             return;
         }
 
@@ -852,7 +835,7 @@ public class Adddept2Activity extends AppCompatActivity {
                 );
 
 
-        double total = 0.0;
+        double total = 0;
 
 
         for (DebtItem item : items) {
@@ -862,7 +845,8 @@ public class Adddept2Activity extends AppCompatActivity {
                             * item.getAmount();
 
 
-            total += lineTotal;
+            total +=
+                    lineTotal;
 
 
             message.append(
@@ -936,7 +920,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
     // =========================================================
-    // DEBT ITEM CLASS
+    // DEBT ITEM
     // =========================================================
 
     private static class DebtItem {
@@ -998,9 +982,11 @@ public class Adddept2Activity extends AppCompatActivity {
                 ArrayList<DebtItem> debtItems
         ) {
 
-            this.context = context;
+            this.context =
+                    context;
 
-            this.debtItems = debtItems;
+            this.debtItems =
+                    debtItems;
         }
 
 

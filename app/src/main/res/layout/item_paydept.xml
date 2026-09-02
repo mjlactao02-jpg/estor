@@ -19,25 +19,17 @@
 
     <TextView
         android:id="@+id/txtCustomerName"
-
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-
         android:text="Mary Jane Parker"
-
         android:textColor="#222222"
         android:textSize="23sp"
         android:textStyle="bold"
-
         android:maxLines="1"
         android:ellipsize="end"
-
         android:layout_marginTop="12dp"
-
         app:layout_constraintStart_toStartOf="parent"
-
         app:layout_constraintEnd_toStartOf="@id/totalDebtContainer"
-
         app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -94,7 +86,7 @@
             android:layout_height="wrap_content"
             android:text="₱ 0.00"
             android:textColor="#555555"
-            android:textSize="17sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:maxLines="1"
             android:ellipsize="end" />

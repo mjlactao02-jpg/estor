@@ -1,29 +1,47 @@
 package estor.app;
 
+// ============================================================
+// IMPORTS
+// ============================================================
+
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.text.InputType;
+import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
+
+// ============================================================
+// PAY DEPT 2 ACTIVITY
+// ============================================================
+
 public class Paydept2Activity extends AppCompatActivity {
 
-    // =========================================================
+    // ========================================================
     // CUSTOMER INFORMATION
-    // =========================================================
+    // ========================================================
 
     private int customerId;
 
@@ -32,16 +50,16 @@ public class Paydept2Activity extends AppCompatActivity {
     private String customerPhone;
 
 
-    // =========================================================
+    // ========================================================
     // DATABASE
-    // =========================================================
+    // ========================================================
 
     private DatabaseHelper databaseHelper;
 
 
-    // =========================================================
-    // CUSTOMER VIEWS
-    // =========================================================
+    // ========================================================
+    // CUSTOMER UI
+    // ========================================================
 
     private TextView txtCustomerName;
 
@@ -50,9 +68,9 @@ public class Paydept2Activity extends AppCompatActivity {
     private TextView txtTotalDebt;
 
 
-    // =========================================================
+    // ========================================================
     // DEBT LIST
-    // =========================================================
+    // ========================================================
 
     private ListView listViewDebt;
 
@@ -61,9 +79,9 @@ public class Paydept2Activity extends AppCompatActivity {
     private DebtAdapter adapter;
 
 
-    // =========================================================
-    // PAYMENT VIEWS
-    // =========================================================
+    // ========================================================
+    // PAYMENT UI
+    // ========================================================
 
     private EditText edtAmountToPay;
 
@@ -75,48 +93,84 @@ public class Paydept2Activity extends AppCompatActivity {
 
     private ImageButton btnBack;
 
+    private LinearLayout paymentContainer;
 
-    // =========================================================
+
+    // ========================================================
+    // SMS PERMISSION
+    // ========================================================
+
+    private static final int SMS_PERMISSION_CODE = 3;
+
+
+    // ========================================================
+    // ORIGINAL PAYMENT CONTAINER BOTTOM MARGIN
+    // ========================================================
+
+    private int originalPaymentBottomMargin = 0;
+
+
+    // ========================================================
     // ON CREATE
-    // =========================================================
+    // ========================================================
 
     @Override
-    protected void onCreate(
-            Bundle savedInstanceState
-    ) {
+    protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
 
-        // =====================================================
-        // OPEN LAYOUT
-        // =====================================================
+        // ====================================================
+        // KEYBOARD RESIZE
+        // ====================================================
+        //
+        // This tells Android that the activity should resize
+        // when the keyboard appears.
+        //
+        // The additional WindowInsets code below also handles
+        // devices where edge-to-edge prevents normal resizing.
+        // ====================================================
 
-        setContentView(
-                R.layout.paydept2
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         );
 
 
-        // =====================================================
+        // ====================================================
+        // LOAD LAYOUT
+        // ====================================================
+
+        setContentView(R.layout.paydept2);
+
+
+        // ====================================================
         // DATABASE
-        // =====================================================
+        // ====================================================
 
         databaseHelper =
                 new DatabaseHelper(this);
 
 
-        // =====================================================
+        // ====================================================
+        // CHECK SMS PERMISSION
+        // ====================================================
+
+        checkSmsPermission();
+
+
+        // ====================================================
         // GET CUSTOMER ID
-        // =====================================================
+        // ====================================================
 
-        String customerIdString =
-                getIntent()
-                        .getStringExtra(
-                                "customer_id"
-                        );
+        String id =
+                getIntent().getStringExtra("customer_id");
 
 
-        if (customerIdString == null) {
+        // ====================================================
+        // CHECK CUSTOMER ID
+        // ====================================================
+
+        if (id == null) {
 
             Toast.makeText(
                     this,
@@ -130,12 +184,14 @@ public class Paydept2Activity extends AppCompatActivity {
         }
 
 
+        // ====================================================
+        // CONVERT CUSTOMER ID
+        // ====================================================
+
         try {
 
             customerId =
-                    Integer.parseInt(
-                            customerIdString
-                    );
+                    Integer.parseInt(id);
 
         } catch (NumberFormatException e) {
 
@@ -151,31 +207,25 @@ public class Paydept2Activity extends AppCompatActivity {
         }
 
 
-        // =====================================================
-        // GET CUSTOMER NAME
-        // =====================================================
+        // ====================================================
+        // GET CUSTOMER INFORMATION
+        // ====================================================
 
         customerName =
-                getIntent()
-                        .getStringExtra(
-                                "customer_name"
-                        );
+                getIntent().getStringExtra(
+                        "customer_name"
+                );
 
-
-        // =====================================================
-        // GET CUSTOMER PHONE
-        // =====================================================
 
         customerPhone =
-                getIntent()
-                        .getStringExtra(
-                                "customer_phone"
-                        );
+                getIntent().getStringExtra(
+                        "customer_phone"
+                );
 
 
-        // =====================================================
-        // CONNECT CUSTOMER VIEWS
-        // =====================================================
+        // ====================================================
+        // FIND CUSTOMER VIEWS
+        // ====================================================
 
         txtCustomerName =
                 findViewById(
@@ -195,9 +245,9 @@ public class Paydept2Activity extends AppCompatActivity {
                 );
 
 
-        // =====================================================
-        // CONNECT LISTVIEW
-        // =====================================================
+        // ====================================================
+        // FIND LISTVIEW
+        // ====================================================
 
         listViewDebt =
                 findViewById(
@@ -205,9 +255,9 @@ public class Paydept2Activity extends AppCompatActivity {
                 );
 
 
-        // =====================================================
-        // CONNECT PAYMENT VIEWS
-        // =====================================================
+        // ====================================================
+        // FIND PAYMENT VIEWS
+        // ====================================================
 
         edtAmountToPay =
                 findViewById(
@@ -239,42 +289,59 @@ public class Paydept2Activity extends AppCompatActivity {
                 );
 
 
-        // =====================================================
-        // DISPLAY CUSTOMER
-        // =====================================================
+        paymentContainer =
+                findViewById(
+                        R.id.paymentContainer
+                );
 
-        if (customerName == null ||
-                customerName.trim().isEmpty()) {
 
-            txtCustomerName.setText(
-                    "Unknown"
-            );
+        // ====================================================
+        // SETUP KEYBOARD FIX
+        // ====================================================
 
-        } else {
+        setupKeyboardFix();
+
+
+        // ====================================================
+        // DISPLAY CUSTOMER NAME
+        // ====================================================
+
+        if (customerName != null &&
+                !customerName.trim().isEmpty()) {
 
             txtCustomerName.setText(
                     customerName
             );
+
+        } else {
+
+            txtCustomerName.setText(
+                    "Unknown"
+            );
         }
 
 
-        if (customerPhone == null) {
+        // ====================================================
+        // DISPLAY CUSTOMER PHONE
+        // ====================================================
+
+        if (customerPhone != null) {
 
             txtCustomerPhone.setText(
-                    ""
+                    customerPhone
             );
 
         } else {
 
             txtCustomerPhone.setText(
-                    customerPhone
+                    ""
             );
         }
 
 
-        // =====================================================
+        // ====================================================
         // CREATE DEBT LIST
-        // =====================================================
+        // ====================================================
 
         debtItems =
                 new ArrayList<>();
@@ -292,16 +359,16 @@ public class Paydept2Activity extends AppCompatActivity {
         );
 
 
-        // =====================================================
+        // ====================================================
         // LOAD DEBT ITEMS
-        // =====================================================
+        // ====================================================
 
         loadDebtItems();
 
 
-        // =====================================================
+        // ====================================================
         // BACK BUTTON
-        // =====================================================
+        // ====================================================
 
         btnBack.setOnClickListener(v -> {
 
@@ -310,37 +377,303 @@ public class Paydept2Activity extends AppCompatActivity {
         });
 
 
-        // =====================================================
+        // ====================================================
         // HALF BUTTON
-        // =====================================================
+        // ====================================================
 
         btnHalf.setOnClickListener(v -> {
 
-            setHalfPayment();
+            double total =
+                    databaseHelper
+                            .getCustomerTotalDebt(
+                                    customerId
+                            );
+
+
+            if (total <= 0.001) {
+
+                edtAmountToPay.setText("");
+
+                return;
+            }
+
+
+            double half =
+                    total / 2.0;
+
+
+            edtAmountToPay.setText(
+                    String.format(
+                            Locale.getDefault(),
+                            "%.2f",
+                            half
+                    )
+            );
+
+
+            edtAmountToPay.setSelection(
+                    edtAmountToPay.length()
+            );
 
         });
 
 
-        // =====================================================
+        // ====================================================
         // FULL BUTTON
-        // =====================================================
+        // ====================================================
 
         btnFull.setOnClickListener(v -> {
 
-            setFullPayment();
+            double total =
+                    databaseHelper
+                            .getCustomerTotalDebt(
+                                    customerId
+                            );
+
+
+            if (total <= 0.001) {
+
+                edtAmountToPay.setText("");
+
+                return;
+            }
+
+
+            edtAmountToPay.setText(
+                    String.format(
+                            Locale.getDefault(),
+                            "%.2f",
+                            total
+                    )
+            );
+
+
+            edtAmountToPay.setSelection(
+                    edtAmountToPay.length()
+            );
 
         });
 
 
-        // =====================================================
+        // ====================================================
         // PAY DEBT BUTTON
-        // =====================================================
+        // ====================================================
 
         btnPayDebt.setOnClickListener(v -> {
 
             makePayment();
 
         });
+    }
+
+
+    // =========================================================
+    // KEYBOARD FIX
+    // =========================================================
+    //
+    // IMPORTANT:
+    //
+    // We DO NOT use setTranslationY().
+    //
+    // Instead, when the keyboard appears, we increase the
+    // bottom margin of paymentContainer.
+    //
+    // Because listViewDebt is constrained:
+    //
+    //     Bottom_toTopOf paymentContainer
+    //
+    // ConstraintLayout automatically makes the ListView
+    // shorter.
+    //
+    // This prevents debt items from appearing behind:
+    //
+    //     Amount to pay
+    //     EditText
+    //     Half
+    //     Full
+    //     Pay Debt
+    //
+    // =========================================================
+
+    private void setupKeyboardFix() {
+
+        if (paymentContainer == null) {
+
+            return;
+        }
+
+
+        // ====================================================
+        // GET CURRENT LAYOUT PARAMETERS
+        // ====================================================
+
+        ViewGroup.LayoutParams params =
+                paymentContainer.getLayoutParams();
+
+
+        if (!(params instanceof
+                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams)) {
+
+            return;
+        }
+
+
+        androidx.constraintlayout.widget.ConstraintLayout.LayoutParams constraintParams =
+                (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams)
+                        params;
+
+
+        // ====================================================
+        // SAVE ORIGINAL BOTTOM MARGIN
+        // ====================================================
+
+        originalPaymentBottomMargin =
+                constraintParams.bottomMargin;
+
+
+        // ====================================================
+        // ROOT VIEW
+        // ====================================================
+
+        View rootView =
+                findViewById(
+                        android.R.id.content
+                );
+
+
+        // ====================================================
+        // WINDOW INSETS LISTENER
+        // ====================================================
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+                rootView,
+                (view, insets) -> {
+
+
+                    // =================================================
+                    // GET KEYBOARD INSET
+                    // =================================================
+
+                    Insets imeInsets =
+                            insets.getInsets(
+                                    WindowInsetsCompat.Type.ime()
+                            );
+
+
+                    // =================================================
+                    // GET SYSTEM BAR INSET
+                    // =================================================
+
+                    Insets systemInsets =
+                            insets.getInsets(
+                                    WindowInsetsCompat.Type.systemBars()
+                            );
+
+
+                    // =================================================
+                    // CHECK IF KEYBOARD IS VISIBLE
+                    // =================================================
+
+                    boolean keyboardVisible =
+                            insets.isVisible(
+                                    WindowInsetsCompat.Type.ime()
+                            );
+
+
+                    // =================================================
+                    // GET PAYMENT CONTAINER PARAMS
+                    // =================================================
+
+                    ViewGroup.LayoutParams currentParams =
+                            paymentContainer.getLayoutParams();
+
+
+                    if (!(currentParams instanceof
+                            androidx.constraintlayout.widget.ConstraintLayout.LayoutParams)) {
+
+                        return insets;
+                    }
+
+
+                    androidx.constraintlayout.widget.ConstraintLayout.LayoutParams paymentParams =
+                            (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams)
+                                    currentParams;
+
+
+                    // =================================================
+                    // KEYBOARD OPEN
+                    // =================================================
+
+                    if (keyboardVisible) {
+
+
+                        int keyboardHeight =
+                                imeInsets.bottom;
+
+
+                        int navigationBarHeight =
+                                systemInsets.bottom;
+
+
+                        // -------------------------------------------------
+                        // Only move the payment section by the portion
+                        // of the keyboard that overlaps the normal
+                        // bottom system area.
+                        // -------------------------------------------------
+
+                        int keyboardOverlap =
+                                Math.max(
+                                        0,
+                                        keyboardHeight -
+                                                navigationBarHeight
+                                );
+
+
+                        // -------------------------------------------------
+                        // MOVE PAYMENT SECTION THROUGH ITS ACTUAL
+                        // CONSTRAINT MARGIN.
+                        //
+                        // This is the important part.
+                        // -------------------------------------------------
+
+                        paymentParams.bottomMargin =
+                                originalPaymentBottomMargin +
+                                        keyboardOverlap;
+
+
+                    } else {
+
+
+                        // =================================================
+                        // KEYBOARD CLOSED
+                        // =================================================
+
+                        paymentParams.bottomMargin =
+                                originalPaymentBottomMargin;
+                    }
+
+
+                    // =================================================
+                    // APPLY NEW LAYOUT
+                    // =================================================
+
+                    paymentContainer.setLayoutParams(
+                            paymentParams
+                    );
+
+
+                    return insets;
+                }
+        );
+
+
+        // ====================================================
+        // REQUEST INSETS
+        // ====================================================
+
+        ViewCompat.requestApplyInsets(
+                rootView
+        );
     }
 
 
@@ -354,7 +687,8 @@ public class Paydept2Activity extends AppCompatActivity {
         super.onResume();
 
 
-        if (databaseHelper != null) {
+        if (databaseHelper != null &&
+                debtItems != null) {
 
             loadDebtItems();
         }
@@ -367,11 +701,9 @@ public class Paydept2Activity extends AppCompatActivity {
 
     private void loadDebtItems() {
 
-        // Clear existing items
         debtItems.clear();
 
 
-        // Get debt records for selected customer
         Cursor cursor =
                 databaseHelper
                         .getDebtItemsForCustomer(
@@ -380,6 +712,7 @@ public class Paydept2Activity extends AppCompatActivity {
 
 
         if (cursor != null) {
+
 
             int debtIdIndex =
                     cursor.getColumnIndex(
@@ -411,11 +744,8 @@ public class Paydept2Activity extends AppCompatActivity {
                     );
 
 
-            // =================================================
-            // READ DEBTS
-            // =================================================
-
             while (cursor.moveToNext()) {
+
 
                 long debtId =
                         cursor.getLong(
@@ -447,25 +777,19 @@ public class Paydept2Activity extends AppCompatActivity {
                         );
 
 
-                // Current remaining balance
                 double remaining =
                         amount - paid;
 
 
-                // Only display debts that still have balance
-                if (remaining > 0) {
+                if (remaining > 0.001) {
 
-                    DebtItem item =
+                    debtItems.add(
                             new DebtItem(
                                     debtId,
                                     product,
                                     quantity,
                                     remaining
-                            );
-
-
-                    debtItems.add(
-                            item
+                            )
                     );
                 }
             }
@@ -475,28 +799,10 @@ public class Paydept2Activity extends AppCompatActivity {
         }
 
 
-        // Refresh ListView
         adapter.notifyDataSetChanged();
 
 
-        // Update total
         updateTotalDebt();
-
-
-        // =====================================================
-        // IF NO DEBT
-        // =====================================================
-
-        if (debtItems.isEmpty()) {
-
-            edtAmountToPay.setText("");
-
-            Toast.makeText(
-                    this,
-                    "This customer has no remaining debt",
-                    Toast.LENGTH_SHORT
-            ).show();
-        }
     }
 
 
@@ -506,14 +812,11 @@ public class Paydept2Activity extends AppCompatActivity {
 
     private void updateTotalDebt() {
 
-        double total = 0;
-
-
-        for (DebtItem item : debtItems) {
-
-            total +=
-                    item.getRemainingAmount();
-        }
+        double total =
+                databaseHelper
+                        .getCustomerTotalDebt(
+                                customerId
+                        );
 
 
         txtTotalDebt.setText(
@@ -527,103 +830,17 @@ public class Paydept2Activity extends AppCompatActivity {
 
 
     // =========================================================
-    // GET TOTAL FROM DATABASE
-    // =========================================================
-
-    private double getCurrentTotalDebt() {
-
-        return databaseHelper
-                .getCustomerTotalDebt(
-                        customerId
-                );
-    }
-
-
-    // =========================================================
-    // HALF PAYMENT
-    // =========================================================
-
-    private void setHalfPayment() {
-
-        double total =
-                getCurrentTotalDebt();
-
-
-        if (total <= 0) {
-
-            edtAmountToPay.setText("");
-
-            return;
-        }
-
-
-        double half =
-                total / 2.0;
-
-
-        edtAmountToPay.setText(
-                String.format(
-                        Locale.getDefault(),
-                        "%.2f",
-                        half
-                )
-        );
-
-
-        edtAmountToPay.setSelection(
-                edtAmountToPay.length()
-        );
-    }
-
-
-    // =========================================================
-    // FULL PAYMENT
-    // =========================================================
-
-    private void setFullPayment() {
-
-        double total =
-                getCurrentTotalDebt();
-
-
-        if (total <= 0) {
-
-            edtAmountToPay.setText("");
-
-            return;
-        }
-
-
-        edtAmountToPay.setText(
-                String.format(
-                        Locale.getDefault(),
-                        "%.2f",
-                        total
-                )
-        );
-
-
-        edtAmountToPay.setSelection(
-                edtAmountToPay.length()
-        );
-    }
-
-
-    // =========================================================
     // MAKE PAYMENT
     // =========================================================
 
     private void makePayment() {
 
         String amountText =
-                edtAmountToPay.getText()
+                edtAmountToPay
+                        .getText()
                         .toString()
                         .trim();
 
-
-        // =====================================================
-        // EMPTY CHECK
-        // =====================================================
 
         if (amountText.isEmpty()) {
 
@@ -637,16 +854,12 @@ public class Paydept2Activity extends AppCompatActivity {
         }
 
 
-        // =====================================================
-        // CONVERT AMOUNT
-        // =====================================================
-
-        double paymentAmount;
+        double payment;
 
 
         try {
 
-            paymentAmount =
+            payment =
                     Double.parseDouble(
                             amountText
                     );
@@ -663,11 +876,7 @@ public class Paydept2Activity extends AppCompatActivity {
         }
 
 
-        // =====================================================
-        // GREATER THAN ZERO
-        // =====================================================
-
-        if (paymentAmount <= 0) {
+        if (payment <= 0) {
 
             edtAmountToPay.setError(
                     "Amount must be greater than 0"
@@ -679,38 +888,28 @@ public class Paydept2Activity extends AppCompatActivity {
         }
 
 
-        // =====================================================
-        // GET CURRENT DEBT
-        // =====================================================
-
         double currentDebt =
-                getCurrentTotalDebt();
+                databaseHelper
+                        .getCustomerTotalDebt(
+                                customerId
+                        );
 
 
-        // =====================================================
-        // NO DEBT
-        // =====================================================
-
-        if (currentDebt <= 0) {
+        if (currentDebt <= 0.001) {
 
             Toast.makeText(
                     this,
-                    "This customer has no remaining debt",
+                    "No remaining debt",
                     Toast.LENGTH_SHORT
             ).show();
 
-            loadDebtItems();
+            finish();
 
             return;
         }
 
 
-        // =====================================================
-        // PAYMENT CANNOT EXCEED DEBT
-        // =====================================================
-
-        if (paymentAmount >
-                currentDebt + 0.001) {
+        if (payment > currentDebt + 0.001) {
 
             edtAmountToPay.setError(
                     "Amount cannot be greater than debt"
@@ -722,36 +921,37 @@ public class Paydept2Activity extends AppCompatActivity {
         }
 
 
-        // =====================================================
-        // SAVE PAYMENT
-        // =====================================================
-
-        boolean paymentSuccessful =
+        boolean success =
                 databaseHelper.makePayment(
                         customerId,
-                        paymentAmount
+                        payment
                 );
 
 
-        // =====================================================
-        // CHECK RESULT
-        // =====================================================
-
-        if (!paymentSuccessful) {
+        if (!success) {
 
             Toast.makeText(
                     this,
                     "Failed to process payment",
-                    Toast.LENGTH_LONG
+                    Toast.LENGTH_SHORT
             ).show();
 
             return;
         }
 
 
-        // =====================================================
-        // SUCCESS
-        // =====================================================
+        double remainingDebt =
+                databaseHelper
+                        .getCustomerTotalDebt(
+                                customerId
+                        );
+
+
+        sendPaymentSms(
+                payment,
+                remainingDebt
+        );
+
 
         Toast.makeText(
                 this,
@@ -760,29 +960,13 @@ public class Paydept2Activity extends AppCompatActivity {
         ).show();
 
 
-        // =====================================================
-        // CLEAR INPUT
-        // =====================================================
-
         edtAmountToPay.setText("");
 
 
-        // =====================================================
-        // RELOAD DEBT
-        // =====================================================
-
-        loadDebtItems();
-
-
-        // =====================================================
-        // CHECK IF FULLY PAID
-        // =====================================================
-
-        double remainingDebt =
-                getCurrentTotalDebt();
-
-
         if (remainingDebt <= 0.001) {
+
+            loadDebtItems();
+
 
             Toast.makeText(
                     this,
@@ -790,24 +974,175 @@ public class Paydept2Activity extends AppCompatActivity {
                     Toast.LENGTH_SHORT
             ).show();
 
+
+            setResult(
+                    RESULT_OK
+            );
+
+
             finish();
+
+            return;
+        }
+
+
+        loadDebtItems();
+    }
+
+
+    // =========================================================
+    // CHECK SMS PERMISSION
+    // =========================================================
+
+    private void checkSmsPermission() {
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.SEND_SMS
+        ) != PackageManager.PERMISSION_GRANTED) {
+
+
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{
+                            Manifest.permission.SEND_SMS
+                    },
+                    SMS_PERMISSION_CODE
+            );
         }
     }
 
 
     // =========================================================
-    // DEBT ITEM CLASS
+    // SEND PAYMENT SMS
+    // =========================================================
+
+    private void sendPaymentSms(
+            double paymentAmount,
+            double remainingDebt
+    ) {
+
+
+        if (customerPhone == null ||
+                customerPhone.trim().isEmpty()) {
+
+            return;
+        }
+
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.SEND_SMS
+        ) != PackageManager.PERMISSION_GRANTED) {
+
+
+            Toast.makeText(
+                    this,
+                    "Payment saved, but SMS permission was not granted",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+
+        StringBuilder message =
+                new StringBuilder();
+
+
+        message.append("Hello ")
+                .append(
+                        customerName != null
+                                ? customerName
+                                : ""
+                )
+                .append(",\n\n");
+
+
+        message.append(
+                        "We received your payment of ₱"
+                )
+                .append(
+                        String.format(
+                                Locale.getDefault(),
+                                "%.2f",
+                                paymentAmount
+                        )
+                )
+                .append(".\n\n");
+
+
+        message.append(
+                        "Remaining debt: ₱"
+                )
+                .append(
+                        String.format(
+                                Locale.getDefault(),
+                                "%.2f",
+                                remainingDebt
+                        )
+                )
+                .append("\n");
+
+
+        if (remainingDebt <= 0.001) {
+
+            message.append(
+                    "\nYour debt has been fully paid.\n"
+            );
+        }
+
+
+        message.append(
+                "\nThank you."
+        );
+
+
+        try {
+
+            SmsManager smsManager =
+                    SmsManager.getDefault();
+
+
+            ArrayList<String> parts =
+                    smsManager.divideMessage(
+                            message.toString()
+                    );
+
+
+            smsManager.sendMultipartTextMessage(
+                    customerPhone,
+                    null,
+                    parts,
+                    null,
+                    null
+            );
+
+
+        } catch (Exception e) {
+
+            Toast.makeText(
+                    this,
+                    "Payment saved, but SMS failed",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+
+    // =========================================================
+    // DEBT ITEM
     // =========================================================
 
     private static class DebtItem {
 
-        private long debtId;
+        private final long debtId;
 
-        private String product;
+        private final String product;
 
-        private int quantity;
+        private final int quantity;
 
-        private double remainingAmount;
+        private final double remainingAmount;
 
 
         DebtItem(
@@ -857,13 +1192,14 @@ public class Paydept2Activity extends AppCompatActivity {
     private static class DebtAdapter
             extends BaseAdapter {
 
-        private final android.content.Context context;
+
+        private final Context context;
 
         private final ArrayList<DebtItem> debtItems;
 
 
         DebtAdapter(
-                android.content.Context context,
+                Context context,
                 ArrayList<DebtItem> debtItems
         ) {
 
@@ -911,9 +1247,6 @@ public class Paydept2Activity extends AppCompatActivity {
                 ViewGroup parent
         ) {
 
-            // =================================================
-            // CREATE ROW
-            // =================================================
 
             if (convertView == null) {
 
@@ -927,10 +1260,6 @@ public class Paydept2Activity extends AppCompatActivity {
                                 );
             }
 
-
-            // =================================================
-            // CONNECT VIEWS
-            // =================================================
 
             TextView txtProduct =
                     convertView.findViewById(
@@ -950,38 +1279,22 @@ public class Paydept2Activity extends AppCompatActivity {
                     );
 
 
-            // =================================================
-            // GET ITEM
-            // =================================================
-
             DebtItem item =
                     debtItems.get(
                             position
                     );
 
 
-            // =================================================
-            // DISPLAY PRODUCT
-            // =================================================
-
             txtProduct.setText(
                     item.getProduct()
             );
 
-
-            // =================================================
-            // DISPLAY QUANTITY
-            // =================================================
 
             txtQuantity.setText(
                     "Qty " +
                             item.getQuantity()
             );
 
-
-            // =================================================
-            // DISPLAY REMAINING AMOUNT
-            // =================================================
 
             txtAmount.setText(
                     "₱ " +

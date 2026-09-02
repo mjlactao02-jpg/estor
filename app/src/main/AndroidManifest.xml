@@ -71,11 +71,13 @@
 
         <activity
             android:name=".PaydeptActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
 
         <activity
             android:name=".Paydept2Activity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
 
 
         <!-- ===================================================== -->

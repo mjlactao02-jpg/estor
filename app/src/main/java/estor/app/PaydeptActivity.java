@@ -16,7 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class PaydeptActivity extends AppCompatActivity {
+public class PaydeptActivity
+        extends AppCompatActivity {
 
     // =========================================================
     // VIEWS
@@ -43,10 +44,6 @@ public class PaydeptActivity extends AppCompatActivity {
     private ArrayList<HashMap<String, String>>
             customerList;
 
-
-    // =========================================================
-    // ADAPTER
-    // =========================================================
 
     private CustomerDebtAdapter adapter;
 
@@ -99,7 +96,7 @@ public class PaydeptActivity extends AppCompatActivity {
 
 
         // =====================================================
-        // CUSTOMER LIST
+        // CREATE LIST
         // =====================================================
 
         customerList =
@@ -121,12 +118,11 @@ public class PaydeptActivity extends AppCompatActivity {
 
         loadCustomers();
 
-
         updateCustomerCount();
 
 
         // =====================================================
-        // CUSTOMER CLICK
+        // CLICK CUSTOMER
         // =====================================================
 
         listCustomers.setOnItemClickListener(
@@ -139,25 +135,23 @@ public class PaydeptActivity extends AppCompatActivity {
                             );
 
 
-                    // =========================================
-                    // GET CUSTOMER DATA
-                    // =========================================
-
                     String customerId =
-                            customer.get("id");
+                            customer.get(
+                                    "id"
+                            );
 
 
                     String customerName =
-                            customer.get("name");
+                            customer.get(
+                                    "name"
+                            );
 
 
                     String customerPhone =
-                            customer.get("phone");
+                            customer.get(
+                                    "phone"
+                            );
 
-
-                    // =========================================
-                    // OPEN PAYDEPT2
-                    // =========================================
 
                     Intent intent =
                             new Intent(
@@ -204,7 +198,7 @@ public class PaydeptActivity extends AppCompatActivity {
 
 
     // =========================================================
-    // ON RESUME
+    // REFRESH WHEN RETURNING
     // =========================================================
 
     @Override
@@ -223,7 +217,7 @@ public class PaydeptActivity extends AppCompatActivity {
 
 
     // =========================================================
-    // LOAD CUSTOMERS
+    // LOAD ONLY CUSTOMERS WITH DEBT
     // =========================================================
 
     private void loadCustomers() {
@@ -233,26 +227,26 @@ public class PaydeptActivity extends AppCompatActivity {
 
         Cursor cursor =
                 databaseHelper
-                        .getCustomersWithTotalDebt();
+                        .getCustomersWithRemainingDebt();
 
 
         if (cursor != null) {
 
             int idIndex =
                     cursor.getColumnIndex(
-                            DatabaseHelper.COLUMN_ID
+                            "customer_id"
                     );
 
 
             int nameIndex =
                     cursor.getColumnIndex(
-                            DatabaseHelper.COLUMN_NAME
+                            "customer_name"
                     );
 
 
             int phoneIndex =
                     cursor.getColumnIndex(
-                            DatabaseHelper.COLUMN_PHONE
+                            "customer_phone"
                     );
 
 
@@ -273,6 +267,10 @@ public class PaydeptActivity extends AppCompatActivity {
                 double totalDebt = 0;
 
 
+                // ------------------------------------------------
+                // ID
+                // ------------------------------------------------
+
                 if (idIndex != -1 &&
                         !cursor.isNull(idIndex)) {
 
@@ -282,6 +280,10 @@ public class PaydeptActivity extends AppCompatActivity {
                             );
                 }
 
+
+                // ------------------------------------------------
+                // NAME
+                // ------------------------------------------------
 
                 if (nameIndex != -1 &&
                         !cursor.isNull(nameIndex)) {
@@ -293,6 +295,10 @@ public class PaydeptActivity extends AppCompatActivity {
                 }
 
 
+                // ------------------------------------------------
+                // PHONE
+                // ------------------------------------------------
+
                 if (phoneIndex != -1 &&
                         !cursor.isNull(phoneIndex)) {
 
@@ -303,6 +309,10 @@ public class PaydeptActivity extends AppCompatActivity {
                 }
 
 
+                // ------------------------------------------------
+                // TOTAL DEBT
+                // ------------------------------------------------
+
                 if (debtIndex != -1 &&
                         !cursor.isNull(debtIndex)) {
 
@@ -310,6 +320,19 @@ public class PaydeptActivity extends AppCompatActivity {
                             cursor.getDouble(
                                     debtIndex
                             );
+                }
+
+
+                // ------------------------------------------------
+                // EXTRA SAFETY CHECK
+                // ------------------------------------------------
+                //
+                // A customer with ₱0 remaining is never added.
+                //
+
+                if (totalDebt <= 0.001) {
+
+                    continue;
                 }
 
 
@@ -366,12 +389,10 @@ public class PaydeptActivity extends AppCompatActivity {
 
     private void updateCustomerCount() {
 
-        int count =
-                databaseHelper.getCustomerCount();
-
-
         txtCustomerCount.setText(
-                String.valueOf(count)
+                String.valueOf(
+                        customerList.size()
+                )
         );
     }
 
@@ -439,30 +460,24 @@ public class PaydeptActivity extends AppCompatActivity {
 
 
             txtName.setText(
-                    customer.get("name")
+                    customer.get(
+                            "name"
+                    )
             );
 
 
             txtPhone.setText(
-                    customer.get("phone")
-            );
-
-
-            String totalDebt =
                     customer.get(
-                            "total_debt"
-                    );
-
-
-            if (totalDebt == null) {
-
-                totalDebt = "0.00";
-            }
+                            "phone"
+                    )
+            );
 
 
             txtTotalDebt.setText(
                     "₱ " +
-                            totalDebt
+                            customer.get(
+                                    "total_debt"
+                            )
             );
 
 
