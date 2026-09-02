@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#D3D3D3">
+
+
+    <!-- ================================================= -->
+    <!-- MAIN CONTAINER                                    -->
+    <!-- ================================================= -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/mainContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#FFFFFF"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+        <!-- ================================================= -->
+        <!-- HEADER                                            -->
+        <!-- Same header design as history_main.xml           -->
+        <!-- ================================================= -->
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/header"
+            android:layout_width="0dp"
+            android:layout_height="90dp"
+            android:background="@drawable/bg_header"
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+
+            <!-- ================================================= -->
+            <!-- BACK BUTTON                                       -->
+            <!-- ================================================= -->
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="32dp"
+
+                android:background="@android:color/transparent"
+                android:contentDescription="Back"
+                android:padding="10dp"
+                android:src="@drawable/ic_arrow_back"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <!-- ================================================= -->
+            <!-- HISTORY TITLE                                     -->
+            <!-- ================================================= -->
+
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="History"
+                android:textColor="#FFFFFF"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:gravity="center"
+
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+
+                app:layout_constraintVertical_bias="0.872" />
+
+
+            <!-- ================================================= -->
+            <!-- CUSTOMER ICON                                     -->
+            <!-- ================================================= -->
+
+            <ImageView
+                android:id="@+id/imgCustomers"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+
+                android:layout_marginEnd="3dp"
+
+                android:contentDescription="Customers"
+                android:src="@drawable/ic_people"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/txtCustomerCount"
+                app:layout_constraintTop_toTopOf="parent"
+
+                app:layout_constraintVertical_bias="0.818" />
+
+
+            <!-- ================================================= -->
+            <!-- CUSTOMER COUNT                                    -->
+            <!-- ================================================= -->
+
+            <TextView
+                android:id="@+id/txtCustomerCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginEnd="8dp"
+
+                android:text="1"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+
+                app:layout_constraintVertical_bias="0.774" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <!-- ================================================= -->
+        <!-- CUSTOMER INFORMATION CARD                         -->
+        <!-- ================================================= -->
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/customerInfoCard"
+
+            android:layout_width="0dp"
+            android:layout_height="116dp"
+
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+
+            app:cardBackgroundColor="#6E84EF"
+            app:cardCornerRadius="7dp"
+            app:cardElevation="0dp"
+
+            app:layout_constraintTop_toBottomOf="@id/header"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <!-- ================================================= -->
+                <!-- CUSTOMER NAME                                     -->
+                <!-- ================================================= -->
+
+                <TextView
+                    android:id="@+id/txtCustomerName"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="9dp"
+
+                    android:text="Juan Dela Cruz"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <!-- ================================================= -->
+                <!-- PHONE NUMBER                                     -->
+                <!-- ================================================= -->
+
+                <TextView
+                    android:id="@+id/txtCustomerPhone"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="1dp"
+
+                    android:text="☎ 0987 654 3201"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11sp"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/txtCustomerName" />
+
+
+                <!-- ================================================= -->
+                <!-- SUMMARY CARD                                     -->
+                <!-- ================================================= -->
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/summaryCard"
+
+                    android:layout_width="0dp"
+                    android:layout_height="63dp"
+
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginBottom="4dp"
+
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="6dp"
+                    app:cardElevation="0dp"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+
+                        <!-- ========================================= -->
+                        <!-- TOTAL BORROWED                             -->
+                        <!-- ========================================= -->
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+
+                            android:layout_weight="1"
+
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+
+                            <TextView
+                                android:id="@+id/txtTotalBorrowed"
+
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+
+                                android:text="₱467.00"
+                                android:textColor="#6E84EF"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+
+                                android:text="Total Borrowed"
+                                android:textColor="#999999"
+                                android:textSize="9sp" />
+
+                        </LinearLayout>
+
+
+                        <!-- ========================================= -->
+                        <!-- TOTAL PAID                                -->
+                        <!-- ========================================= -->
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+
+                            android:layout_weight="1"
+
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+
+                            <TextView
+                                android:id="@+id/txtTotalPaid"
+
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+
+                                android:text="₱150.00"
+                                android:textColor="#35B96B"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+
+                                android:text="Total Paid"
+                                android:textColor="#999999"
+                                android:textSize="9sp" />
+
+                        </LinearLayout>
+
+
+                        <!-- ========================================= -->
+                        <!-- CURRENT DEBT                              -->
+                        <!-- ========================================= -->
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+
+                            android:layout_weight="1"
+
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+
+                            <TextView
+                                android:id="@+id/txtCurrentDebt"
+
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+
+                                android:text="₱317.00"
+                                android:textColor="#E53935"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+
+                                android:text="Current Debt"
+                                android:textColor="#999999"
+                                android:textSize="9sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+        <!-- ================================================= -->
+        <!-- TRANSACTION HISTORY                               -->
+        <!-- ================================================= -->
+
+        <ListView
+            android:id="@+id/listHistory"
+
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="6dp"
+
+            android:background="@android:color/transparent"
+
+            android:clipToPadding="false"
+
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+
+            android:paddingTop="0dp"
+            android:paddingBottom="8dp"
+
+            android:scrollbars="none"
+
+            app:layout_constraintTop_toBottomOf="@id/customerInfoCard"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            tools:listitem="@layout/item_history2" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

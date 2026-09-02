@@ -1459,4 +1459,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return amount;
     }
+
+    // =========================================================
+    // GET CUSTOMERS FOR HISTORY
+    // =========================================================
+
+    public Cursor getHistoryCustomers() {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query =
+                "SELECT " +
+                        "c." + COLUMN_ID + " AS customer_id, " +
+                        "c." + COLUMN_NAME + " AS customer_name, " +
+                        "c." + COLUMN_PHONE + " AS customer_phone, " +
+                        "COALESCE((" +
+                        "SELECT SUM(d." + COLUMN_DEBT_AMOUNT + ") " +
+                        "FROM " + TABLE_DEBTS + " d " +
+                        "WHERE d." + COLUMN_DEBT_CUSTOMER_ID + " = c." + COLUMN_ID +
+                        "), 0) AS total_debt, " +
+                        "COALESCE((" +
+                        "SELECT SUM(d." + COLUMN_DEBT_PAID + ") " +
+                        "FROM " + TABLE_DEBTS + " d " +
+                        "WHERE d." + COLUMN_DEBT_CUSTOMER_ID + " = c." + COLUMN_ID +
+                        "), 0) AS total_paid, " +
+                        "COALESCE((" +
+                        "SELECT MAX(t." + COLUMN_TRANSACTION_ID + ") " +
+                        "FROM " + TABLE_TRANSACTIONS + " t " +
+                        "WHERE t." + COLUMN_TRANSACTION_CUSTOMER_ID + " = c." + COLUMN_ID +
+                        "), 0) AS latest_activity " +
+                        "FROM " + TABLE_CUSTOMERS + " c " +
+                        "WHERE EXISTS (" +
+                        "SELECT 1 FROM " + TABLE_DEBTS + " d " +
+                        "WHERE d." + COLUMN_DEBT_CUSTOMER_ID + " = c." + COLUMN_ID +
+                        ") " +
+                        "ORDER BY latest_activity DESC, c." + COLUMN_ID + " DESC";
+
+        return db.rawQuery(query, null);
+    }
+
 }

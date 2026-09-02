@@ -12,10 +12,17 @@
     android:layout_marginTop="4dp"
     android:layout_marginBottom="4dp">
 
+
+    <!-- ===================================================== -->
+    <!-- CUSTOMER CARD                                        -->
+    <!-- ===================================================== -->
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/customerCard"
+
         android:layout_width="0dp"
         android:layout_height="70dp"
+
         android:background="@drawable/bg_history_customer"
 
         android:paddingStart="14dp"
@@ -26,13 +33,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- CUSTOMER NAME -->
+
+        <!-- ================================================= -->
+        <!-- CUSTOMER NAME                                    -->
+        <!-- ================================================= -->
+
         <TextView
             android:id="@+id/txtCustomerName"
+
             android:layout_width="0dp"
             android:layout_height="wrap_content"
 
             android:text="Mary Jane Parker"
+
             android:textColor="#222222"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -44,15 +57,22 @@
             app:layout_constraintEnd_toStartOf="@id/txtStatus"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/txtPhone"
+
             app:layout_constraintVertical_bias="0.35" />
 
-        <!-- PHONE NUMBER -->
+
+        <!-- ================================================= -->
+        <!-- PHONE                                             -->
+        <!-- ================================================= -->
+
         <TextView
             android:id="@+id/txtPhone"
+
             android:layout_width="0dp"
             android:layout_height="wrap_content"
 
             android:text="0912 345 6789"
+
             android:textColor="#777777"
             android:textSize="12sp"
 
@@ -64,16 +84,24 @@
             app:layout_constraintTop_toBottomOf="@id/txtCustomerName"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- STATUS -->
+
+        <!-- ================================================= -->
+        <!-- STATUS                                             -->
+        <!-- ================================================= -->
+
         <TextView
             android:id="@+id/txtStatus"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
             android:text="Unpaid"
+
             android:textColor="#F05B5B"
             android:textSize="11sp"
             android:textStyle="bold"
+
+            android:gravity="center"
 
             android:paddingStart="9dp"
             android:paddingEnd="9dp"
