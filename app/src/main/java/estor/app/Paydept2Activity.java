@@ -1,9 +1,5 @@
 package estor.app;
 
-// ============================================================
-// IMPORTS
-// ============================================================
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -32,16 +28,7 @@ import androidx.core.view.WindowInsetsCompat;
 import java.util.ArrayList;
 import java.util.Locale;
 
-
-// ============================================================
-// PAY DEPT 2 ACTIVITY
-// ============================================================
-
 public class Paydept2Activity extends AppCompatActivity {
-
-    // ========================================================
-    // CUSTOMER INFORMATION
-    // ========================================================
 
     private int customerId;
 
@@ -49,17 +36,7 @@ public class Paydept2Activity extends AppCompatActivity {
 
     private String customerPhone;
 
-
-    // ========================================================
-    // DATABASE
-    // ========================================================
-
     private DatabaseHelper databaseHelper;
-
-
-    // ========================================================
-    // CUSTOMER UI
-    // ========================================================
 
     private TextView txtCustomerName;
 
@@ -67,21 +44,11 @@ public class Paydept2Activity extends AppCompatActivity {
 
     private TextView txtTotalDebt;
 
-
-    // ========================================================
-    // DEBT LIST
-    // ========================================================
-
     private ListView listViewDebt;
 
     private ArrayList<DebtItem> debtItems;
 
     private DebtAdapter adapter;
-
-
-    // ========================================================
-    // PAYMENT UI
-    // ========================================================
 
     private EditText edtAmountToPay;
 
@@ -95,80 +62,45 @@ public class Paydept2Activity extends AppCompatActivity {
 
     private LinearLayout paymentContainer;
 
-
-    // ========================================================
-    // SMS PERMISSION
-    // ========================================================
-
     private static final int SMS_PERMISSION_CODE = 3;
-
-
-    // ========================================================
-    // ORIGINAL PAYMENT CONTAINER BOTTOM MARGIN
-    // ========================================================
 
     private int originalPaymentBottomMargin = 0;
 
 
-    // ========================================================
+    // =========================================================
     // ON CREATE
-    // ========================================================
+    // =========================================================
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(
+            Bundle savedInstanceState
+    ) {
 
         super.onCreate(savedInstanceState);
 
-
-        // ====================================================
-        // KEYBOARD RESIZE
-        // ====================================================
-        //
-        // This tells Android that the activity should resize
-        // when the keyboard appears.
-        //
-        // The additional WindowInsets code below also handles
-        // devices where edge-to-edge prevents normal resizing.
-        // ====================================================
 
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         );
 
 
-        // ====================================================
-        // LOAD LAYOUT
-        // ====================================================
+        setContentView(
+                R.layout.paydept2
+        );
 
-        setContentView(R.layout.paydept2);
-
-
-        // ====================================================
-        // DATABASE
-        // ====================================================
 
         databaseHelper =
                 new DatabaseHelper(this);
 
 
-        // ====================================================
-        // CHECK SMS PERMISSION
-        // ====================================================
-
         checkSmsPermission();
 
 
-        // ====================================================
-        // GET CUSTOMER ID
-        // ====================================================
-
         String id =
-                getIntent().getStringExtra("customer_id");
+                getIntent().getStringExtra(
+                        "customer_id"
+                );
 
-
-        // ====================================================
-        // CHECK CUSTOMER ID
-        // ====================================================
 
         if (id == null) {
 
@@ -183,10 +115,6 @@ public class Paydept2Activity extends AppCompatActivity {
             return;
         }
 
-
-        // ====================================================
-        // CONVERT CUSTOMER ID
-        // ====================================================
 
         try {
 
@@ -207,10 +135,6 @@ public class Paydept2Activity extends AppCompatActivity {
         }
 
 
-        // ====================================================
-        // GET CUSTOMER INFORMATION
-        // ====================================================
-
         customerName =
                 getIntent().getStringExtra(
                         "customer_name"
@@ -222,10 +146,6 @@ public class Paydept2Activity extends AppCompatActivity {
                         "customer_phone"
                 );
 
-
-        // ====================================================
-        // FIND CUSTOMER VIEWS
-        // ====================================================
 
         txtCustomerName =
                 findViewById(
@@ -245,19 +165,11 @@ public class Paydept2Activity extends AppCompatActivity {
                 );
 
 
-        // ====================================================
-        // FIND LISTVIEW
-        // ====================================================
-
         listViewDebt =
                 findViewById(
                         R.id.listViewDebt
                 );
 
-
-        // ====================================================
-        // FIND PAYMENT VIEWS
-        // ====================================================
 
         edtAmountToPay =
                 findViewById(
@@ -295,16 +207,8 @@ public class Paydept2Activity extends AppCompatActivity {
                 );
 
 
-        // ====================================================
-        // SETUP KEYBOARD FIX
-        // ====================================================
-
         setupKeyboardFix();
 
-
-        // ====================================================
-        // DISPLAY CUSTOMER NAME
-        // ====================================================
 
         if (customerName != null &&
                 !customerName.trim().isEmpty()) {
@@ -321,10 +225,6 @@ public class Paydept2Activity extends AppCompatActivity {
         }
 
 
-        // ====================================================
-        // DISPLAY CUSTOMER PHONE
-        // ====================================================
-
         if (customerPhone != null) {
 
             txtCustomerPhone.setText(
@@ -338,10 +238,6 @@ public class Paydept2Activity extends AppCompatActivity {
             );
         }
 
-
-        // ====================================================
-        // CREATE DEBT LIST
-        // ====================================================
 
         debtItems =
                 new ArrayList<>();
@@ -359,16 +255,8 @@ public class Paydept2Activity extends AppCompatActivity {
         );
 
 
-        // ====================================================
-        // LOAD DEBT ITEMS
-        // ====================================================
-
         loadDebtItems();
 
-
-        // ====================================================
-        // BACK BUTTON
-        // ====================================================
 
         btnBack.setOnClickListener(v -> {
 
@@ -377,9 +265,9 @@ public class Paydept2Activity extends AppCompatActivity {
         });
 
 
-        // ====================================================
-        // HALF BUTTON
-        // ====================================================
+        // =====================================================
+        // HALF
+        // =====================================================
 
         btnHalf.setOnClickListener(v -> {
 
@@ -414,13 +302,12 @@ public class Paydept2Activity extends AppCompatActivity {
             edtAmountToPay.setSelection(
                     edtAmountToPay.length()
             );
-
         });
 
 
-        // ====================================================
-        // FULL BUTTON
-        // ====================================================
+        // =====================================================
+        // FULL
+        // =====================================================
 
         btnFull.setOnClickListener(v -> {
 
@@ -451,13 +338,12 @@ public class Paydept2Activity extends AppCompatActivity {
             edtAmountToPay.setSelection(
                     edtAmountToPay.length()
             );
-
         });
 
 
-        // ====================================================
-        // PAY DEBT BUTTON
-        // ====================================================
+        // =====================================================
+        // PAY DEBT
+        // =====================================================
 
         btnPayDebt.setOnClickListener(v -> {
 
@@ -470,30 +356,6 @@ public class Paydept2Activity extends AppCompatActivity {
     // =========================================================
     // KEYBOARD FIX
     // =========================================================
-    //
-    // IMPORTANT:
-    //
-    // We DO NOT use setTranslationY().
-    //
-    // Instead, when the keyboard appears, we increase the
-    // bottom margin of paymentContainer.
-    //
-    // Because listViewDebt is constrained:
-    //
-    //     Bottom_toTopOf paymentContainer
-    //
-    // ConstraintLayout automatically makes the ListView
-    // shorter.
-    //
-    // This prevents debt items from appearing behind:
-    //
-    //     Amount to pay
-    //     EditText
-    //     Half
-    //     Full
-    //     Pay Debt
-    //
-    // =========================================================
 
     private void setupKeyboardFix() {
 
@@ -502,10 +364,6 @@ public class Paydept2Activity extends AppCompatActivity {
             return;
         }
 
-
-        // ====================================================
-        // GET CURRENT LAYOUT PARAMETERS
-        // ====================================================
 
         ViewGroup.LayoutParams params =
                 paymentContainer.getLayoutParams();
@@ -523,17 +381,9 @@ public class Paydept2Activity extends AppCompatActivity {
                         params;
 
 
-        // ====================================================
-        // SAVE ORIGINAL BOTTOM MARGIN
-        // ====================================================
-
         originalPaymentBottomMargin =
                 constraintParams.bottomMargin;
 
-
-        // ====================================================
-        // ROOT VIEW
-        // ====================================================
 
         View rootView =
                 findViewById(
@@ -541,18 +391,9 @@ public class Paydept2Activity extends AppCompatActivity {
                 );
 
 
-        // ====================================================
-        // WINDOW INSETS LISTENER
-        // ====================================================
-
         ViewCompat.setOnApplyWindowInsetsListener(
                 rootView,
                 (view, insets) -> {
-
-
-                    // =================================================
-                    // GET KEYBOARD INSET
-                    // =================================================
 
                     Insets imeInsets =
                             insets.getInsets(
@@ -560,29 +401,17 @@ public class Paydept2Activity extends AppCompatActivity {
                             );
 
 
-                    // =================================================
-                    // GET SYSTEM BAR INSET
-                    // =================================================
-
                     Insets systemInsets =
                             insets.getInsets(
                                     WindowInsetsCompat.Type.systemBars()
                             );
 
 
-                    // =================================================
-                    // CHECK IF KEYBOARD IS VISIBLE
-                    // =================================================
-
                     boolean keyboardVisible =
                             insets.isVisible(
                                     WindowInsetsCompat.Type.ime()
                             );
 
-
-                    // =================================================
-                    // GET PAYMENT CONTAINER PARAMS
-                    // =================================================
 
                     ViewGroup.LayoutParams currentParams =
                             paymentContainer.getLayoutParams();
@@ -600,12 +429,7 @@ public class Paydept2Activity extends AppCompatActivity {
                                     currentParams;
 
 
-                    // =================================================
-                    // KEYBOARD OPEN
-                    // =================================================
-
                     if (keyboardVisible) {
-
 
                         int keyboardHeight =
                                 imeInsets.bottom;
@@ -615,12 +439,6 @@ public class Paydept2Activity extends AppCompatActivity {
                                 systemInsets.bottom;
 
 
-                        // -------------------------------------------------
-                        // Only move the payment section by the portion
-                        // of the keyboard that overlaps the normal
-                        // bottom system area.
-                        // -------------------------------------------------
-
                         int keyboardOverlap =
                                 Math.max(
                                         0,
@@ -629,33 +447,16 @@ public class Paydept2Activity extends AppCompatActivity {
                                 );
 
 
-                        // -------------------------------------------------
-                        // MOVE PAYMENT SECTION THROUGH ITS ACTUAL
-                        // CONSTRAINT MARGIN.
-                        //
-                        // This is the important part.
-                        // -------------------------------------------------
-
                         paymentParams.bottomMargin =
                                 originalPaymentBottomMargin +
                                         keyboardOverlap;
 
-
                     } else {
-
-
-                        // =================================================
-                        // KEYBOARD CLOSED
-                        // =================================================
 
                         paymentParams.bottomMargin =
                                 originalPaymentBottomMargin;
                     }
 
-
-                    // =================================================
-                    // APPLY NEW LAYOUT
-                    // =================================================
 
                     paymentContainer.setLayoutParams(
                             paymentParams
@@ -666,10 +467,6 @@ public class Paydept2Activity extends AppCompatActivity {
                 }
         );
 
-
-        // ====================================================
-        // REQUEST INSETS
-        // ====================================================
 
         ViewCompat.requestApplyInsets(
                 rootView
@@ -713,7 +510,6 @@ public class Paydept2Activity extends AppCompatActivity {
 
         if (cursor != null) {
 
-
             int debtIdIndex =
                     cursor.getColumnIndex(
                             DatabaseHelper.COLUMN_DEBT_ID
@@ -745,7 +541,6 @@ public class Paydept2Activity extends AppCompatActivity {
 
 
             while (cursor.moveToNext()) {
-
 
                 long debtId =
                         cursor.getLong(
@@ -909,7 +704,8 @@ public class Paydept2Activity extends AppCompatActivity {
         }
 
 
-        if (payment > currentDebt + 0.001) {
+        if (payment >
+                currentDebt + 0.001) {
 
             edtAmountToPay.setError(
                     "Amount cannot be greater than debt"
@@ -920,6 +716,10 @@ public class Paydept2Activity extends AppCompatActivity {
             return;
         }
 
+
+        // =====================================================
+        // PROCESS PAYMENT
+        // =====================================================
 
         boolean success =
                 databaseHelper.makePayment(
@@ -940,12 +740,45 @@ public class Paydept2Activity extends AppCompatActivity {
         }
 
 
+        // =====================================================
+        // SAVE PAYMENT TRANSACTION
+        // =====================================================
+
+        long transactionResult =
+                databaseHelper.addPaymentTransaction(
+
+                        customerId,
+
+                        customerName,
+
+                        payment
+                );
+
+
+        if (transactionResult == -1) {
+
+            Toast.makeText(
+                    this,
+                    "Payment saved, but transaction history could not be saved",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+
+
+        // =====================================================
+        // REMAINING DEBT
+        // =====================================================
+
         double remainingDebt =
                 databaseHelper
                         .getCustomerTotalDebt(
                                 customerId
                         );
 
+
+        // =====================================================
+        // SMS
+        // =====================================================
 
         sendPaymentSms(
                 payment,
@@ -991,7 +824,7 @@ public class Paydept2Activity extends AppCompatActivity {
 
 
     // =========================================================
-    // CHECK SMS PERMISSION
+    // SMS PERMISSION
     // =========================================================
 
     private void checkSmsPermission() {
@@ -1001,12 +834,14 @@ public class Paydept2Activity extends AppCompatActivity {
                 Manifest.permission.SEND_SMS
         ) != PackageManager.PERMISSION_GRANTED) {
 
-
             ActivityCompat.requestPermissions(
+
                     this,
+
                     new String[]{
                             Manifest.permission.SEND_SMS
                     },
+
                     SMS_PERMISSION_CODE
             );
         }
@@ -1014,14 +849,13 @@ public class Paydept2Activity extends AppCompatActivity {
 
 
     // =========================================================
-    // SEND PAYMENT SMS
+    // PAYMENT SMS
     // =========================================================
 
     private void sendPaymentSms(
             double paymentAmount,
             double remainingDebt
     ) {
-
 
         if (customerPhone == null ||
                 customerPhone.trim().isEmpty()) {
@@ -1034,7 +868,6 @@ public class Paydept2Activity extends AppCompatActivity {
                 this,
                 Manifest.permission.SEND_SMS
         ) != PackageManager.PERMISSION_GRANTED) {
-
 
             Toast.makeText(
                     this,
@@ -1192,7 +1025,6 @@ public class Paydept2Activity extends AppCompatActivity {
     private static class DebtAdapter
             extends BaseAdapter {
 
-
         private final Context context;
 
         private final ArrayList<DebtItem> debtItems;
@@ -1246,7 +1078,6 @@ public class Paydept2Activity extends AppCompatActivity {
                 View convertView,
                 ViewGroup parent
         ) {
-
 
             if (convertView == null) {
 
@@ -1304,7 +1135,6 @@ public class Paydept2Activity extends AppCompatActivity {
                                     item.getRemainingAmount()
                             )
             );
-
 
             return convertView;
         }

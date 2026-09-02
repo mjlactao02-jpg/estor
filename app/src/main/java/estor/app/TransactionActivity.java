@@ -18,27 +18,13 @@ import java.util.Locale;
 
 public class TransactionActivity extends AppCompatActivity {
 
-    // =========================================================
-    // VIEWS
-    // =========================================================
-
     private ListView listCustomers;
 
     private TextView txtCustomerCount;
 
     private ImageButton btnBack;
 
-
-    // =========================================================
-    // DATABASE
-    // =========================================================
-
     private DatabaseHelper databaseHelper;
-
-
-    // =========================================================
-    // TRANSACTION LIST
-    // =========================================================
 
     private ArrayList<TransactionItem> transactionList;
 
@@ -54,20 +40,14 @@ public class TransactionActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.transaction_main);
+        setContentView(
+                R.layout.transaction_main
+        );
 
-
-        // -----------------------------------------------------
-        // DATABASE
-        // -----------------------------------------------------
 
         databaseHelper =
                 new DatabaseHelper(this);
 
-
-        // -----------------------------------------------------
-        // FIND VIEWS
-        // -----------------------------------------------------
 
         listCustomers =
                 findViewById(
@@ -87,10 +67,6 @@ public class TransactionActivity extends AppCompatActivity {
                 );
 
 
-        // -----------------------------------------------------
-        // CREATE LIST
-        // -----------------------------------------------------
-
         transactionList =
                 new ArrayList<>();
 
@@ -99,26 +75,15 @@ public class TransactionActivity extends AppCompatActivity {
                 new TransactionAdapter();
 
 
-        listCustomers.setAdapter(adapter);
+        listCustomers.setAdapter(
+                adapter
+        );
 
-
-        // -----------------------------------------------------
-        // LOAD TRANSACTIONS
-        // -----------------------------------------------------
 
         loadTransactions();
 
-
-        // -----------------------------------------------------
-        // CUSTOMER COUNT
-        // -----------------------------------------------------
-
         updateCustomerCount();
 
-
-        // -----------------------------------------------------
-        // BACK BUTTON
-        // -----------------------------------------------------
 
         btnBack.setOnClickListener(v -> {
 
@@ -144,7 +109,6 @@ public class TransactionActivity extends AppCompatActivity {
 
         super.onResume();
 
-
         if (databaseHelper != null) {
 
             loadTransactions();
@@ -167,7 +131,15 @@ public class TransactionActivity extends AppCompatActivity {
                 databaseHelper.getAllTransactions();
 
 
-        if (cursor != null) {
+        if (cursor == null) {
+
+            adapter.notifyDataSetChanged();
+
+            return;
+        }
+
+
+        try {
 
             int idIndex =
                     cursor.getColumnIndex(
@@ -222,11 +194,15 @@ public class TransactionActivity extends AppCompatActivity {
 
 
                 String name =
-                        cursor.getString(nameIndex);
+                        cursor.isNull(nameIndex)
+                                ? ""
+                                : cursor.getString(nameIndex);
 
 
                 String type =
-                        cursor.getString(typeIndex);
+                        cursor.isNull(typeIndex)
+                                ? ""
+                                : cursor.getString(typeIndex);
 
 
                 double amount =
@@ -234,11 +210,15 @@ public class TransactionActivity extends AppCompatActivity {
 
 
                 String date =
-                        cursor.getString(dateIndex);
+                        cursor.isNull(dateIndex)
+                                ? ""
+                                : cursor.getString(dateIndex);
 
 
                 String time =
-                        cursor.getString(timeIndex);
+                        cursor.isNull(timeIndex)
+                                ? ""
+                                : cursor.getString(timeIndex);
 
 
                 transactionList.add(
@@ -254,6 +234,7 @@ public class TransactionActivity extends AppCompatActivity {
                 );
             }
 
+        } finally {
 
             cursor.close();
         }
@@ -265,11 +246,6 @@ public class TransactionActivity extends AppCompatActivity {
 
     // =========================================================
     // UPDATE CUSTOMER COUNT
-    // =========================================================
-    //
-    // This uses the total number of registered customers,
-    // matching the customer count used by your other screens.
-    //
     // =========================================================
 
     private void updateCustomerCount() {
@@ -315,32 +291,25 @@ public class TransactionActivity extends AppCompatActivity {
                 String time
         ) {
 
-            this.id =
-                    id;
+            this.id = id;
 
-            this.customerId =
-                    customerId;
+            this.customerId = customerId;
 
-            this.customerName =
-                    customerName;
+            this.customerName = customerName;
 
-            this.type =
-                    type;
+            this.type = type;
 
-            this.amount =
-                    amount;
+            this.amount = amount;
 
-            this.date =
-                    date;
+            this.date = date;
 
-            this.time =
-                    time;
+            this.time = time;
         }
     }
 
 
     // =========================================================
-    // TRANSACTION ADAPTER
+    // ADAPTER
     // =========================================================
 
     private class TransactionAdapter
@@ -383,10 +352,6 @@ public class TransactionActivity extends AppCompatActivity {
                 ViewGroup parent
         ) {
 
-            // -------------------------------------------------
-            // CREATE ROW
-            // -------------------------------------------------
-
             if (convertView == null) {
 
                 convertView =
@@ -401,10 +366,6 @@ public class TransactionActivity extends AppCompatActivity {
                                 );
             }
 
-
-            // -------------------------------------------------
-            // FIND TEXTVIEWS
-            // -------------------------------------------------
 
             TextView txtDate =
                     convertView.findViewById(
@@ -430,10 +391,6 @@ public class TransactionActivity extends AppCompatActivity {
                     );
 
 
-            // -------------------------------------------------
-            // GET ITEM
-            // -------------------------------------------------
-
             TransactionItem item =
                     transactionList.get(
                             position
@@ -441,13 +398,21 @@ public class TransactionActivity extends AppCompatActivity {
 
 
             // -------------------------------------------------
-            // DATE + TIME
+            // DATE / TIME
             // -------------------------------------------------
 
             String dateTime =
-                    item.date +
-                            " " +
-                            item.time;
+                    item.date;
+
+
+            if (item.time != null &&
+                    !item.time.trim().isEmpty()) {
+
+                dateTime =
+                        dateTime +
+                                " " +
+                                item.time;
+            }
 
 
             txtDate.setText(
@@ -456,7 +421,7 @@ public class TransactionActivity extends AppCompatActivity {
 
 
             // -------------------------------------------------
-            // CUSTOMER NAME
+            // NAME
             // -------------------------------------------------
 
             txtName.setText(
@@ -465,12 +430,12 @@ public class TransactionActivity extends AppCompatActivity {
 
 
             // -------------------------------------------------
-            // TRANSACTION TYPE
+            // DEBT
             // -------------------------------------------------
 
             if (
                     DatabaseHelper.TRANSACTION_DEBT
-                            .equals(item.type)
+                            .equalsIgnoreCase(item.type)
             ) {
 
                 txtType.setText(
@@ -501,7 +466,16 @@ public class TransactionActivity extends AppCompatActivity {
                         android.graphics.Color.RED
                 );
 
-            } else {
+            }
+
+            // -------------------------------------------------
+            // PAYMENT
+            // -------------------------------------------------
+
+            else if (
+                    DatabaseHelper.TRANSACTION_PAYMENT
+                            .equalsIgnoreCase(item.type)
+            ) {
 
                 txtType.setText(
                         "↑ Payment"
@@ -533,6 +507,28 @@ public class TransactionActivity extends AppCompatActivity {
                                 180,
                                 0
                         )
+                );
+
+            }
+
+            // -------------------------------------------------
+            // UNKNOWN
+            // -------------------------------------------------
+
+            else {
+
+                txtType.setText(
+                        item.type
+                );
+
+
+                txtAmount.setText(
+                        "₱" +
+                                String.format(
+                                        Locale.getDefault(),
+                                        "%.2f",
+                                        item.amount
+                                )
                 );
             }
 
