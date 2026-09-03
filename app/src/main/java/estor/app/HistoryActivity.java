@@ -1,5 +1,6 @@
 package estor.app;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -120,6 +121,24 @@ public class HistoryActivity extends AppCompatActivity {
 
 
         loadHistory();
+
+        // =====================================================
+        // OPEN CUSTOMER HISTORY
+        // =====================================================
+        listCustomers.setOnItemClickListener((parent, view, position, id) -> {
+            HistoryItem customer = displayedCustomers.get(position);
+
+            Intent intent = new Intent(
+                    HistoryActivity.this,
+                    History2Activity.class
+            );
+
+            intent.putExtra("customer_id", customer.customerId);
+            intent.putExtra("customer_name", customer.customerName);
+            intent.putExtra("customer_phone", customer.customerPhone);
+
+            startActivity(intent);
+        });
 
 
         // =====================================================

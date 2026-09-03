@@ -137,6 +137,10 @@
             android:enabled="true"
             android:exported="false" />
 
+        <activity
+            android:name=".History2Activity"
+            android:exported="false" />
+
 
     </application>
 
