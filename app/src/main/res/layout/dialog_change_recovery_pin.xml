@@ -162,7 +162,7 @@
     <!-- SAVE BUTTON -->
     <!-- ===================================================== -->
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnSaveRecoveryPin"
 
         android:layout_width="match_parent"

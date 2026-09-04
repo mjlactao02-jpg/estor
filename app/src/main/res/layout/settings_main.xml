@@ -22,11 +22,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
 
-
-    <!-- BACK BUTTON -->
-
-
-        <!-- TITLE -->
+        <!-- BACK BUTTON -->
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -41,6 +37,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
+
+
+        <!-- TITLE -->
 
         <TextView
             android:id="@+id/txtTitle"
@@ -60,7 +59,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
     <!-- ========================================================= -->
     <!-- MAIN CONTENT -->
     <!-- ========================================================= -->
@@ -78,17 +76,95 @@
         app:layout_constraintEnd_toEndOf="parent">
 
 
-        <!--
-            IMPORTANT:
-            match_parent + fillViewport allows this layout
-            to occupy the complete available screen.
-        -->
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingBottom="16dp">
+
+
+            <!-- ================================================= -->
+            <!-- STORE NAME -->
+            <!-- ================================================= -->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cardStoreName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="105dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/bg_input_field"
+                android:backgroundTint="#FFFFFF"
+                android:padding="16dp">
+
+
+                <!-- STORE ICON -->
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/iconStoreBg"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    app:cardBackgroundColor="#EDEBFF"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <ImageView
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_store"
+                        app:tint="#6C63FF" />
+
+                </androidx.cardview.widget.CardView>
+
+
+                <!-- STORE NAME TITLE -->
+
+                <TextView
+                    android:id="@+id/txtStoreNameTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Store Name"
+                    android:textColor="#222222"
+                    android:textSize="19sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    app:layout_constraintStart_toEndOf="@id/iconStoreBg"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/iconStoreBg" />
+
+
+                <!-- STORE NAME INPUT -->
+
+                <EditText
+                    android:id="@+id/editStoreName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@android:color/transparent"
+                    android:hint="Enter your store name"
+                    android:textColor="#222222"
+                    android:textColorHint="#999999"
+                    android:textSize="16sp"
+                    android:singleLine="true"
+                    android:inputType="textCapSentences"
+                    android:padding="0dp"
+                    app:layout_constraintStart_toEndOf="@id/iconStoreBg"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/txtStoreNameTitle"
+                    app:layout_constraintBottom_toBottomOf="@id/iconStoreBg" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             <!-- ================================================= -->
@@ -102,7 +178,7 @@
                 android:minHeight="105dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="12dp"
                 android:background="@drawable/bg_input_field"
                 android:backgroundTint="#FFFFFF"
                 android:clickable="true"
@@ -187,7 +263,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
             <!-- ================================================= -->
             <!-- PAYMENT REMINDERS LABEL -->
             <!-- ================================================= -->
@@ -203,7 +278,6 @@
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.05" />
-
 
 
             <!-- ================================================= -->
@@ -303,7 +377,6 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
             <!-- ================================================= -->
             <!-- FREQUENCY LABEL -->
             <!-- ================================================= -->
@@ -321,21 +394,14 @@
                 android:letterSpacing="0.05" />
 
 
-
             <!-- ================================================= -->
             <!-- FREQUENCY CARD -->
             <!-- ================================================= -->
 
-            <!--
-                weight = 1
-                makes this card expand and occupy the
-                remaining screen space.
-            -->
-
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cardFrequency"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginTop="10dp"
@@ -351,24 +417,17 @@
 
                 <RadioGroup
                     android:id="@+id/radioGroupFrequency"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:orientation="vertical"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
 
                     <!-- DAILY -->
 
-                    <!-- TWICE A WEEK -->
-
                     <RadioButton
                         android:id="@+id/radioDaily"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="60dp"
                         android:background="@drawable/bg_frequency_item"
                         android:backgroundTint="@null"
                         android:buttonTint="@color/radio_button_color"
@@ -380,11 +439,13 @@
                         android:textColor="#222222"
                         android:textSize="18sp" />
 
+
+                    <!-- TWICE A WEEK -->
+
                     <RadioButton
                         android:id="@+id/radioTwiceWeek"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="60dp"
                         android:background="@drawable/bg_frequency_item"
                         android:buttonTint="#6E84EF"
                         android:gravity="center_vertical"
@@ -400,8 +461,7 @@
                     <RadioButton
                         android:id="@+id/radioThriceWeek"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="60dp"
                         android:background="@drawable/bg_frequency_item"
                         android:buttonTint="#6E84EF"
                         android:gravity="center_vertical"
@@ -417,8 +477,7 @@
                     <RadioButton
                         android:id="@+id/radioFourTimesWeek"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="60dp"
                         android:background="@drawable/bg_frequency_item"
                         android:buttonTint="#6E84EF"
                         android:gravity="center_vertical"
@@ -434,8 +493,7 @@
                     <RadioButton
                         android:id="@+id/radioFiveTimesWeek"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="60dp"
                         android:background="@drawable/bg_frequency_item"
                         android:buttonTint="#6E84EF"
                         android:gravity="center_vertical"
@@ -451,8 +509,7 @@
                     <RadioButton
                         android:id="@+id/radioEveryWeekend"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="60dp"
                         android:background="@drawable/bg_frequency_item"
                         android:buttonTint="#6E84EF"
                         android:gravity="center_vertical"

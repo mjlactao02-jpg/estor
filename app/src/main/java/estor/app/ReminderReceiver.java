@@ -1,5 +1,6 @@
 package estor.app;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -9,17 +10,23 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
+import android.util.Log;
+
 import android.telephony.SmsManager;
 
-import androidx.core.content.ContextCompat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class ReminderReceiver extends BroadcastReceiver {
 
-    // =========================================================
-    // CONSTANTS
-    // =========================================================
+    private static final String TAG = "ReminderReceiver";
 
-    private static final String PREF_NAME =
+    public static final String ACTION_REMINDER =
+            "estor.app.PAYMENT_REMINDER";
+
+    private static final String PREFS_NAME =
             "EstorSettings";
 
     private static final String KEY_REMINDERS =
@@ -31,263 +38,284 @@ public class ReminderReceiver extends BroadcastReceiver {
     private static final int REQUEST_CODE = 500;
 
 
-    // =========================================================
-    // ON RECEIVE
-    // =========================================================
+    // ============================================================
+    // RECEIVER
+    // ============================================================
 
     @Override
-    public void onReceive(
-            Context context,
-            Intent intent
-    ) {
+    public void onReceive(Context context, Intent intent) {
 
-        SharedPreferences preferences =
+        Log.d(TAG, "====================================");
+        Log.d(TAG, "PAYMENT REMINDER RECEIVER STARTED");
+        Log.d(TAG, "====================================");
+
+        SharedPreferences prefs =
                 context.getSharedPreferences(
-                        PREF_NAME,
+                        PREFS_NAME,
                         Context.MODE_PRIVATE
                 );
 
+        boolean remindersEnabled =
+                prefs.getBoolean(KEY_REMINDERS, false);
 
-        // =====================================================
-        // CHECK IF REMINDERS ARE ENABLED
-        // =====================================================
+        if (!remindersEnabled) {
 
-        boolean enabled =
-                preferences.getBoolean(
-                        KEY_REMINDERS,
-                        true
-                );
+            Log.d(TAG,
+                    "Reminders are disabled. Nothing to send.");
 
-
-        if (!enabled) {
+            cancelReminder(context);
 
             return;
         }
 
 
-        // =====================================================
+        // ========================================================
         // CHECK SMS PERMISSION
-        // =====================================================
+        // ========================================================
 
-        if (
-                ContextCompat.checkSelfPermission(
-                        context,
-                        android.Manifest.permission.SEND_SMS
-                )
-                        != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
-            return;
+            if (context.checkSelfPermission(
+                    Manifest.permission.SEND_SMS)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                Log.e(TAG,
+                        "SEND_SMS permission is not granted.");
+
+                // Schedule the next reminder anyway.
+                scheduleReminder(context);
+
+                return;
+            }
         }
 
 
-        // =====================================================
-        // GET DATABASE
-        // =====================================================
-
-        DatabaseHelper database =
-                new DatabaseHelper(context);
-
-
-        Cursor cursor =
-                database.getAllCustomers();
-
+        DatabaseHelper dbHelper = null;
+        Cursor cursor = null;
 
         try {
 
-            // =================================================
-            // LOOP THROUGH CUSTOMERS
-            // =================================================
+            dbHelper = new DatabaseHelper(context);
+
+            cursor = dbHelper.getAllCustomers();
+
+            if (cursor == null) {
+
+                Log.e(TAG,
+                        "Customer cursor is null.");
+
+                scheduleReminder(context);
+
+                return;
+            }
+
+
+            String storeName =
+                    SettingsActivity.getStoreName(context);
+
+            if (storeName == null ||
+                    storeName.trim().isEmpty()) {
+
+                storeName = "estor";
+            }
+
+
+            int customerCount = 0;
 
             while (cursor.moveToNext()) {
 
-                int id =
+                customerCount++;
+
+                int customerId =
                         cursor.getInt(
-                                cursor.getColumnIndexOrThrow(
-                                        DatabaseHelper.COLUMN_ID
-                                )
+                                cursor.getColumnIndexOrThrow("id")
+                        );
+
+                String customerName =
+                        cursor.getString(
+                                cursor.getColumnIndexOrThrow("name")
+                        );
+
+                String customerPhone =
+                        cursor.getString(
+                                cursor.getColumnIndexOrThrow("phone")
                         );
 
 
-                String name =
-                        cursor.getString(
-                                cursor.getColumnIndexOrThrow(
-                                        DatabaseHelper.COLUMN_NAME
-                                )
+                Log.d(TAG,
+                        "Customer: " + customerName);
+
+                Log.d(TAG,
+                        "Phone: " + customerPhone);
+
+
+                // =================================================
+                // CHECK PHONE NUMBER
+                // =================================================
+
+                if (customerPhone == null ||
+                        customerPhone.trim().isEmpty()) {
+
+                    Log.d(TAG,
+                            "Skipping customer because phone is empty.");
+
+                    continue;
+                }
+
+
+                // =================================================
+                // GET REMAINING DEBT
+                // =================================================
+
+                double remainingDebt =
+                        dbHelper.getCustomerTotalDebt(
+                                customerId
                         );
 
 
-                String phone =
-                        cursor.getString(
-                                cursor.getColumnIndexOrThrow(
-                                        DatabaseHelper.COLUMN_PHONE
-                                )
+                Log.d(TAG,
+                        "Remaining debt: ₱" +
+                                remainingDebt);
+
+
+                // =================================================
+                // DO NOT SEND IF DEBT IS ZERO
+                // =================================================
+
+                if (remainingDebt <= 0) {
+
+                    Log.d(TAG,
+                            "Skipping customer because debt is ₱0.");
+
+                    continue;
+                }
+
+
+                // =================================================
+                // FORMAT DEBT
+                // =================================================
+
+                String formattedDebt =
+                        String.format(
+                                Locale.US,
+                                "%,.2f",
+                                remainingDebt
                         );
 
 
                 // =================================================
-                // GET CUSTOMER'S REMAINING DEBT
+                // SMS MESSAGE
                 // =================================================
 
-                double debt =
-                        getCustomerRemainingDebt(
-                                database,
-                                id
-                        );
+                String message =
+                        "Hello " +
+                                customerName +
+                                ", this is a payment reminder from " +
+                                storeName +
+                                ". Your remaining debt is ₱" +
+                                formattedDebt +
+                                ". Please settle your balance. Thank you.";
 
 
-                // Only notify customers who still owe money
-                if (debt > 0) {
+                // =================================================
+                // SEND SMS
+                // =================================================
 
-                    sendReminder(
-                            phone,
-                            name,
-                            debt
+                try {
+
+                    SmsManager smsManager =
+                            SmsManager.getDefault();
+
+                    smsManager.sendTextMessage(
+                            customerPhone.trim(),
+                            null,
+                            message,
+                            null,
+                            null
                     );
+
+                    Log.d(TAG,
+                            "SMS SENT successfully to " +
+                                    customerName);
+
+                } catch (Exception e) {
+
+                    Log.e(TAG,
+                            "Failed to send SMS to " +
+                                    customerName,
+                            e);
                 }
             }
 
+
+            Log.d(TAG,
+                    "Total customers checked: " +
+                            customerCount);
+
+
+        } catch (Exception e) {
+
+            Log.e(TAG,
+                    "Error while processing reminders.",
+                    e);
+
         } finally {
 
-            cursor.close();
+            if (cursor != null) {
+                cursor.close();
+            }
 
-            database.close();
-        }
-
-
-        // =====================================================
-        // SCHEDULE NEXT REMINDER
-        // =====================================================
-
-        scheduleReminder(context);
-    }
-
-
-    // =========================================================
-    // GET CUSTOMER REMAINING DEBT
-    // =========================================================
-
-    private double getCustomerRemainingDebt(
-            DatabaseHelper database,
-            int customerId
-    ) {
-
-        android.database.sqlite.SQLiteDatabase db =
-                database.getReadableDatabase();
-
-
-        Cursor cursor =
-                db.rawQuery(
-                        "SELECT SUM(" +
-                                DatabaseHelper.COLUMN_DEBT_AMOUNT +
-                                " - " +
-                                DatabaseHelper.COLUMN_DEBT_PAID +
-                                ") " +
-                                "FROM " +
-                                DatabaseHelper.TABLE_DEBTS +
-                                " WHERE " +
-                                DatabaseHelper.COLUMN_DEBT_CUSTOMER_ID +
-                                " = ?",
-                        new String[]{
-                                String.valueOf(customerId)
-                        }
-                );
-
-
-        double debt = 0;
-
-
-        if (cursor.moveToFirst()) {
-
-            if (!cursor.isNull(0)) {
-
-                debt =
-                        cursor.getDouble(0);
+            if (dbHelper != null) {
+                dbHelper.close();
             }
         }
 
 
-        cursor.close();
+        // ========================================================
+        // SCHEDULE THE NEXT REMINDER
+        // ========================================================
 
+        scheduleReminder(context);
 
-        return debt;
+        Log.d(TAG,
+                "Next payment reminder scheduled.");
+
+        Log.d(TAG,
+                "====================================");
     }
 
 
-    // =========================================================
-    // SEND SMS
-    // =========================================================
-
-    private void sendReminder(
-            String phone,
-            String name,
-            double debt
-    ) {
-
-        String message =
-                "Hello " +
-                        name +
-                        ", this is a payment reminder from Estor. " +
-                        "Your remaining debt is ₱" +
-                        String.format(
-                                java.util.Locale.getDefault(),
-                                "%.2f",
-                                debt
-                        ) +
-                        ". Please settle your balance. Thank you.";
-
-
-        SmsManager smsManager =
-                SmsManager.getDefault();
-
-
-        smsManager.sendTextMessage(
-                phone,
-                null,
-                message,
-                null,
-                null
-        );
-    }
-
-
-    // =========================================================
+    // ============================================================
     // SCHEDULE REMINDER
-    // =========================================================
+    // ============================================================
 
-    public static void scheduleReminder(
-            Context context
-    ) {
+    public static void scheduleReminder(Context context) {
 
-        SharedPreferences preferences =
+        SharedPreferences prefs =
                 context.getSharedPreferences(
-                        PREF_NAME,
+                        PREFS_NAME,
                         Context.MODE_PRIVATE
                 );
 
+        boolean remindersEnabled =
+                prefs.getBoolean(KEY_REMINDERS, false);
 
-        boolean enabled =
-                preferences.getBoolean(
-                        KEY_REMINDERS,
-                        true
-                );
+        if (!remindersEnabled) {
 
+            Log.d(TAG,
+                    "Reminder scheduling skipped because disabled.");
 
-        if (!enabled) {
+            cancelReminder(context);
 
             return;
         }
 
 
         String frequency =
-                preferences.getString(
+                prefs.getString(
                         KEY_FREQUENCY,
                         "Daily"
                 );
-
-
-        long interval =
-                getInterval(frequency);
 
 
         AlarmManager alarmManager =
@@ -296,12 +324,22 @@ public class ReminderReceiver extends BroadcastReceiver {
                                 Context.ALARM_SERVICE
                         );
 
+        if (alarmManager == null) {
+
+            Log.e(TAG,
+                    "AlarmManager is unavailable.");
+
+            return;
+        }
+
 
         Intent intent =
                 new Intent(
                         context,
                         ReminderReceiver.class
                 );
+
+        intent.setAction(ACTION_REMINDER);
 
 
         PendingIntent pendingIntent =
@@ -314,85 +352,373 @@ public class ReminderReceiver extends BroadcastReceiver {
                 );
 
 
+        // ========================================================
+        // CANCEL OLD ALARM FIRST
+        // ========================================================
+
+        alarmManager.cancel(pendingIntent);
+
+
+        // ========================================================
+        // CALCULATE NEXT REMINDER
+        // ========================================================
+
+        Calendar nextReminder =
+                getNextReminderTime(frequency);
+
+
         long triggerTime =
-                System.currentTimeMillis() +
-                        interval;
+                nextReminder.getTimeInMillis();
 
 
-        if (Build.VERSION.SDK_INT >=
-                Build.VERSION_CODES.M) {
+        Log.d(TAG,
+                "Frequency: " + frequency);
 
-            alarmManager.setAndAllowWhileIdle(
+        Log.d(TAG,
+                "Next reminder: " +
+                        new SimpleDateFormat(
+                                "yyyy-MM-dd HH:mm:ss",
+                                Locale.getDefault()
+                        ).format(
+                                new Date(triggerTime)
+                        ));
+
+
+        // ========================================================
+        // ANDROID 12+ EXACT ALARM
+        // ========================================================
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+
+            if (alarmManager.canScheduleExactAlarms()) {
+
+                alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        triggerTime,
+                        pendingIntent
+                );
+
+                Log.d(TAG,
+                        "Exact alarm scheduled.");
+
+            } else {
+
+                // Exact alarm permission is not available.
+                // Use inexact alarm instead.
+
+                alarmManager.setAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        triggerTime,
+                        pendingIntent
+                );
+
+                Log.d(TAG,
+                        "Inexact alarm scheduled because " +
+                                "exact alarm permission is unavailable.");
+            }
+
+        }
+
+        // ========================================================
+        // ANDROID 6 - ANDROID 11
+        // ========================================================
+
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     triggerTime,
                     pendingIntent
             );
 
-        } else {
+            Log.d(TAG,
+                    "Exact alarm scheduled for Android M+.");
+
+        }
+
+        // ========================================================
+        // OLDER ANDROID
+        // ========================================================
+
+        else {
 
             alarmManager.set(
                     AlarmManager.RTC_WAKEUP,
                     triggerTime,
                     pendingIntent
             );
+
+            Log.d(TAG,
+                    "Standard alarm scheduled.");
         }
     }
 
 
-    // =========================================================
-    // GET FREQUENCY INTERVAL
-    // =========================================================
+    // ============================================================
+    // CALCULATE NEXT REMINDER DATE
+    // ============================================================
 
-    private static long getInterval(
-            String frequency
-    ) {
+    private static Calendar getNextReminderTime(
+            String frequency) {
 
-        long day =
-                24 * 60 * 60 * 1000L;
+        Calendar now =
+                Calendar.getInstance();
 
+
+        // ========================================================
+        // SET THE REMINDER TIME
+        //
+        // Change these if you want a specific time.
+        //
+        // Currently:
+        // 8:00 AM
+        // ========================================================
+
+        int reminderHour = 8;
+        int reminderMinute = 0;
+
+
+        Calendar next =
+                Calendar.getInstance();
+
+        next.set(
+                Calendar.HOUR_OF_DAY,
+                reminderHour
+        );
+
+        next.set(
+                Calendar.MINUTE,
+                reminderMinute
+        );
+
+        next.set(
+                Calendar.SECOND,
+                0
+        );
+
+        next.set(
+                Calendar.MILLISECOND,
+                0
+        );
+
+
+        // ========================================================
+        // DAILY
+        // ========================================================
 
         if (frequency.equals("Daily")) {
 
-            return day;
+            if (!next.after(now)) {
+
+                next.add(
+                        Calendar.DAY_OF_YEAR,
+                        1
+                );
+            }
+
+            return next;
         }
 
+
+        // ========================================================
+        // TWICE A WEEK
+        //
+        // Monday + Thursday
+        // ========================================================
 
         if (frequency.equals("Twice a week")) {
 
-            return 3 * day;
+            int[] days = {
+                    Calendar.MONDAY,
+                    Calendar.THURSDAY
+            };
+
+            return getNextWeeklyDay(
+                    now,
+                    next,
+                    days
+            );
         }
 
+
+        // ========================================================
+        // THRICE A WEEK
+        //
+        // Monday + Wednesday + Friday
+        // ========================================================
 
         if (frequency.equals("Thrice a week")) {
 
-            return 2 * day;
+            int[] days = {
+                    Calendar.MONDAY,
+                    Calendar.WEDNESDAY,
+                    Calendar.FRIDAY
+            };
+
+            return getNextWeeklyDay(
+                    now,
+                    next,
+                    days
+            );
         }
 
+
+        // ========================================================
+        // FOUR TIMES A WEEK
+        //
+        // Monday + Wednesday + Friday + Sunday
+        // ========================================================
 
         if (frequency.equals("4 times a week")) {
 
-            return 36 * 60 * 60 * 1000L;
+            int[] days = {
+                    Calendar.MONDAY,
+                    Calendar.WEDNESDAY,
+                    Calendar.FRIDAY,
+                    Calendar.SUNDAY
+            };
+
+            return getNextWeeklyDay(
+                    now,
+                    next,
+                    days
+            );
         }
 
+
+        // ========================================================
+        // FIVE TIMES A WEEK
+        //
+        // Monday - Friday
+        // ========================================================
 
         if (frequency.equals("5 times a week")) {
 
-            return 29 * 60 * 60 * 1000L;
+            int[] days = {
+                    Calendar.MONDAY,
+                    Calendar.TUESDAY,
+                    Calendar.WEDNESDAY,
+                    Calendar.THURSDAY,
+                    Calendar.FRIDAY
+            };
+
+            return getNextWeeklyDay(
+                    now,
+                    next,
+                    days
+            );
         }
 
 
-        // Every weekend
-        return 7 * day;
+        // ========================================================
+        // EVERY WEEKEND
+        //
+        // Saturday + Sunday
+        // ========================================================
+
+        if (frequency.equals("Every weekend")) {
+
+            int[] days = {
+                    Calendar.SATURDAY,
+                    Calendar.SUNDAY
+            };
+
+            return getNextWeeklyDay(
+                    now,
+                    next,
+                    days
+            );
+        }
+
+
+        // ========================================================
+        // DEFAULT = DAILY
+        // ========================================================
+
+        if (!next.after(now)) {
+
+            next.add(
+                    Calendar.DAY_OF_YEAR,
+                    1
+            );
+        }
+
+        return next;
     }
 
 
-    // =========================================================
+    // ============================================================
+    // FIND NEXT SELECTED WEEKDAY
+    // ============================================================
+
+    private static Calendar getNextWeeklyDay(
+            Calendar now,
+            Calendar base,
+            int[] allowedDays) {
+
+
+        Calendar candidate =
+                (Calendar) base.clone();
+
+
+        // Search the next 7 days.
+        for (int i = 0; i <= 7; i++) {
+
+            candidate =
+                    (Calendar) base.clone();
+
+            candidate.add(
+                    Calendar.DAY_OF_YEAR,
+                    i
+            );
+
+
+            int day =
+                    candidate.get(
+                            Calendar.DAY_OF_WEEK
+                    );
+
+
+            boolean allowed = false;
+
+            for (int allowedDay :
+                    allowedDays) {
+
+                if (day == allowedDay) {
+
+                    allowed = true;
+                    break;
+                }
+            }
+
+
+            if (allowed &&
+                    candidate.after(now)) {
+
+                return candidate;
+            }
+        }
+
+
+        // Safety fallback.
+        candidate =
+                (Calendar) base.clone();
+
+        candidate.add(
+                Calendar.DAY_OF_YEAR,
+                7
+        );
+
+        return candidate;
+    }
+
+
+    // ============================================================
     // CANCEL REMINDER
-    // =========================================================
+    // ============================================================
 
     public static void cancelReminder(
-            Context context
-    ) {
+            Context context) {
 
         AlarmManager alarmManager =
                 (AlarmManager)
@@ -400,12 +726,18 @@ public class ReminderReceiver extends BroadcastReceiver {
                                 Context.ALARM_SERVICE
                         );
 
+        if (alarmManager == null) {
+            return;
+        }
+
 
         Intent intent =
                 new Intent(
                         context,
                         ReminderReceiver.class
                 );
+
+        intent.setAction(ACTION_REMINDER);
 
 
         PendingIntent pendingIntent =
@@ -418,8 +750,12 @@ public class ReminderReceiver extends BroadcastReceiver {
                 );
 
 
-        alarmManager.cancel(
-                pendingIntent
-        );
+        alarmManager.cancel(pendingIntent);
+
+        pendingIntent.cancel();
+
+
+        Log.d(TAG,
+                "Payment reminder cancelled.");
     }
 }

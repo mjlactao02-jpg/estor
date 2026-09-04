@@ -98,10 +98,6 @@ public class AdddeptActivity
         super.onCreate(savedInstanceState);
 
 
-        // =====================================================
-        // OPEN LAYOUT
-        // =====================================================
-
         setContentView(
                 R.layout.adddept_main
         );
@@ -200,20 +196,13 @@ public class AdddeptActivity
         );
 
 
-        // Load all customers.
         loadCustomers();
 
-
-        // Update customer count.
         updateCustomerCount();
 
 
         // =====================================================
         // NORMAL CLICK
-        // =====================================================
-        //
-        // Normal tap still opens Adddept2Activity.
-        //
         // =====================================================
 
         listCustomers.setOnItemClickListener(
@@ -226,28 +215,24 @@ public class AdddeptActivity
                             );
 
 
-                    // Customer ID
                     String customerId =
                             customer.get(
                                     "id"
                             );
 
 
-                    // Customer name
                     String name =
                             customer.get(
                                     "name"
                             );
 
 
-                    // Customer phone
                     String phone =
                             customer.get(
                                     "phone"
                             );
 
 
-                    // Open Adddept2Activity
                     Intent intent =
                             new Intent(
                                     AdddeptActivity.this,
@@ -283,15 +268,10 @@ public class AdddeptActivity
         // =====================================================
         // LONG PRESS
         // =====================================================
-        //
-        // Long pressing a customer shows the delete popup.
-        //
-        // =====================================================
 
         listCustomers.setOnItemLongClickListener(
                 (parent, view, position, id) -> {
 
-                    // Get selected customer.
                     HashMap<String, String>
                             customer =
                             customerList.get(
@@ -299,29 +279,24 @@ public class AdddeptActivity
                             );
 
 
-                    // Get customer ID.
                     String customerId =
                             customer.get(
                                     "id"
                             );
 
 
-                    // Get customer name.
                     String customerName =
                             customer.get(
                                     "name"
                             );
 
 
-                    // Show delete dialog.
                     showDeleteCustomerDialog(
                             customerId,
                             customerName
                     );
 
 
-                    // Tell ListView that the long press
-                    // has already been handled.
                     return true;
                 }
         );
@@ -333,23 +308,19 @@ public class AdddeptActivity
 
         btnAddDebt.setOnClickListener(v -> {
 
-            // Show dark overlay.
             overlayDim.setVisibility(
                     View.VISIBLE
             );
 
 
-            // Show bottom sheet.
             addDebtSheet.setVisibility(
                     View.VISIBLE
             );
 
 
-            // Hide previous error.
             hideError();
 
 
-            // Focus name input.
             etName.requestFocus();
         });
 
@@ -360,19 +331,16 @@ public class AdddeptActivity
 
         overlayDim.setOnClickListener(v -> {
 
-            // Hide overlay.
             overlayDim.setVisibility(
                     View.GONE
             );
 
 
-            // Hide sheet.
             addDebtSheet.setVisibility(
                     View.GONE
             );
 
 
-            // Hide error.
             hideError();
         });
 
@@ -390,14 +358,12 @@ public class AdddeptActivity
 
         btnConfirm.setOnClickListener(v -> {
 
-            // Get name.
             String name =
                     etName.getText()
                             .toString()
                             .trim();
 
 
-            // Get phone.
             String phone =
                     etPhone.getText()
                             .toString()
@@ -473,41 +439,68 @@ public class AdddeptActivity
                 ).show();
 
 
-                // Send SMS.
+                // =================================================
+                // GET PERMANENT STORE NAME
+                // =================================================
+
+                String storeName =
+                        SettingsActivity.getStoreName(
+                                AdddeptActivity.this
+                        );
+
+
+                /*
+                 * Fallback only if the owner has
+                 * not entered a Store Name yet.
+                 */
+                if (storeName.isEmpty()) {
+
+                    storeName =
+                            "estor";
+                }
+
+
+                // =================================================
+                // SEND CUSTOMER ACCOUNT SMS
+                // =================================================
+
                 sendSms(
                         phone,
 
                         "Hello " +
                                 name +
-                                ", your customer account has been created in estor."
+                                ", your customer account has been created in " +
+                                storeName +
+                                "."
                 );
 
 
-                // Clear inputs.
+                // =================================================
+                // CLEAR INPUTS
+                // =================================================
+
                 etName.setText("");
 
                 etPhone.setText("");
 
 
-                // Refresh ListView.
+                // =================================================
+                // REFRESH LIST
+                // =================================================
+
                 loadCustomers();
 
-
-                // Refresh count.
                 updateCustomerCount();
 
 
-                // Hide error.
                 hideError();
 
 
-                // Hide overlay.
                 overlayDim.setVisibility(
                         View.GONE
                 );
 
 
-                // Hide bottom sheet.
                 addDebtSheet.setVisibility(
                         View.GONE
                 );
@@ -548,7 +541,6 @@ public class AdddeptActivity
 
         if (databaseHelper != null) {
 
-            // Refresh after returning from Adddept2Activity.
             loadCustomers();
 
             updateCustomerCount();
@@ -557,31 +549,20 @@ public class AdddeptActivity
 
 
     // =========================================================
-    // LOAD ALL CUSTOMERS
-    // =========================================================
-    //
-    // Important:
-    //
-    // Add Debt shows ALL registered customers.
-    //
-    // A customer with ₱0 remaining is still visible here.
-    //
+    // LOAD CUSTOMERS
     // =========================================================
 
     private void loadCustomers() {
 
-        // Remove old data.
         customerList.clear();
 
 
-        // Get all customers.
         Cursor cursor =
                 databaseHelper.getAllCustomers();
 
 
         if (cursor != null) {
 
-            // Column indexes.
             int idIndex =
                     cursor.getColumnIndex(
                             DatabaseHelper.COLUMN_ID
@@ -612,7 +593,6 @@ public class AdddeptActivity
                     );
 
 
-            // Read every customer.
             while (cursor.moveToNext()) {
 
                 String id = "";
@@ -626,7 +606,6 @@ public class AdddeptActivity
                 String time = "";
 
 
-                // Customer ID.
                 if (idIndex != -1 &&
                         !cursor.isNull(idIndex)) {
 
@@ -637,7 +616,6 @@ public class AdddeptActivity
                 }
 
 
-                // Customer name.
                 if (nameIndex != -1 &&
                         !cursor.isNull(nameIndex)) {
 
@@ -648,7 +626,6 @@ public class AdddeptActivity
                 }
 
 
-                // Customer phone.
                 if (phoneIndex != -1 &&
                         !cursor.isNull(phoneIndex)) {
 
@@ -659,7 +636,6 @@ public class AdddeptActivity
                 }
 
 
-                // Date.
                 if (dateIndex != -1 &&
                         !cursor.isNull(dateIndex)) {
 
@@ -670,7 +646,6 @@ public class AdddeptActivity
                 }
 
 
-                // Time.
                 if (timeIndex != -1 &&
                         !cursor.isNull(timeIndex)) {
 
@@ -681,7 +656,6 @@ public class AdddeptActivity
                 }
 
 
-                // Create customer map.
                 HashMap<String, String>
                         customer =
                         new HashMap<>();
@@ -717,19 +691,16 @@ public class AdddeptActivity
                 );
 
 
-                // Add customer to ListView.
                 customerList.add(
                         customer
                 );
             }
 
 
-            // Close cursor.
             cursor.close();
         }
 
 
-        // Refresh ListView.
         adapter.notifyDataSetChanged();
     }
 
@@ -737,57 +708,32 @@ public class AdddeptActivity
     // =========================================================
     // DELETE CUSTOMER DIALOG
     // =========================================================
-    //
-    // Called when the user long presses a customer.
-    //
-    // =========================================================
 
     private void showDeleteCustomerDialog(
             String customerId,
             String customerName
     ) {
 
-        // Create confirmation popup.
         new AlertDialog.Builder(
                 AdddeptActivity.this
         )
-
-                // ---------------------------------------------
-                // TITLE
-                // ---------------------------------------------
 
                 .setTitle(
                         "Delete Customer"
                 )
 
-
-                // ---------------------------------------------
-                // MESSAGE
-                // ---------------------------------------------
-
                 .setMessage(
                         "Are you sure you want to delete " +
                                 customerName +
                                 "?\n\n" +
-
                                 "This will also delete all debt " +
                                 "records belonging to this customer."
                 )
-
-
-                // ---------------------------------------------
-                // CANCEL
-                // ---------------------------------------------
 
                 .setNegativeButton(
                         "Cancel",
                         null
                 )
-
-
-                // ---------------------------------------------
-                // DELETE
-                // ---------------------------------------------
 
                 .setPositiveButton(
                         "Delete",
@@ -800,8 +746,6 @@ public class AdddeptActivity
                         }
                 )
 
-
-                // Show dialog.
                 .show();
     }
 
@@ -815,7 +759,6 @@ public class AdddeptActivity
             String customerName
     ) {
 
-        // Make sure ID exists.
         if (customerId == null ||
                 customerId.trim().isEmpty()) {
 
@@ -831,23 +774,17 @@ public class AdddeptActivity
 
         try {
 
-            // Convert ID to integer.
             int id =
                     Integer.parseInt(
                             customerId
                     );
 
 
-            // Delete from database.
             boolean deleted =
                     databaseHelper.deleteCustomer(
                             id
                     );
 
-
-            // =================================================
-            // DELETE SUCCESS
-            // =================================================
 
             if (deleted) {
 
@@ -859,11 +796,8 @@ public class AdddeptActivity
                 ).show();
 
 
-                // Refresh customer list.
                 loadCustomers();
 
-
-                // Refresh customer count.
                 updateCustomerCount();
 
 
@@ -894,7 +828,6 @@ public class AdddeptActivity
 
     private void updateCustomerCount() {
 
-        // Add Debt count = number of customers visible.
         txtCustomerCount.setText(
                 String.valueOf(
                         customerList.size()
@@ -911,7 +844,6 @@ public class AdddeptActivity
             String message
     ) {
 
-        // Cancel old timer.
         if (hideErrorRunnable != null) {
 
             errorHandler.removeCallbacks(
@@ -920,26 +852,22 @@ public class AdddeptActivity
         }
 
 
-        // Set message.
         txtError.setText(
                 message
         );
 
 
-        // Show error.
         txtError.setVisibility(
                 View.VISIBLE
         );
 
 
-        // Create hide action.
         hideErrorRunnable =
                 () -> txtError.setVisibility(
                         View.GONE
                 );
 
 
-        // Hide after 3 seconds.
         errorHandler.postDelayed(
                 hideErrorRunnable,
                 ERROR_DISPLAY_DURATION_MS
@@ -998,7 +926,6 @@ public class AdddeptActivity
             String message
     ) {
 
-        // Check permission.
         if (checkSelfPermission(
                 Manifest.permission.SEND_SMS
         ) != PackageManager.PERMISSION_GRANTED) {
@@ -1019,7 +946,6 @@ public class AdddeptActivity
                     SmsManager.getDefault();
 
 
-            // Send SMS.
             smsManager.sendTextMessage(
                     phoneNumber,
                     null,
@@ -1078,9 +1004,7 @@ public class AdddeptActivity
 
             super(
                     AdddeptActivity.this,
-
                     R.layout.item_customer,
-
                     customerList
             );
         }
@@ -1093,7 +1017,6 @@ public class AdddeptActivity
                 ViewGroup parent
         ) {
 
-            // Create row if needed.
             if (convertView == null) {
 
                 convertView =
@@ -1105,10 +1028,6 @@ public class AdddeptActivity
                                 );
             }
 
-
-            // =================================================
-            // FIND TEXTVIEWS
-            // =================================================
 
             TextView txtName =
                     convertView.findViewById(
@@ -1134,20 +1053,12 @@ public class AdddeptActivity
                     );
 
 
-            // =================================================
-            // GET CUSTOMER
-            // =================================================
-
             HashMap<String, String>
                     customer =
                     customerList.get(
                             position
                     );
 
-
-            // =================================================
-            // DISPLAY CUSTOMER
-            // =================================================
 
             txtName.setText(
                     customer.get(

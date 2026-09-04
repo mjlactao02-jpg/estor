@@ -445,9 +445,9 @@ public class TransactionActivity extends AppCompatActivity {
 
                 txtType.setTextColor(
                         android.graphics.Color.rgb(
-                                60,
-                                60,
-                                60
+                                180,
+                                0,
+                                0
                         )
                 );
 
@@ -484,9 +484,9 @@ public class TransactionActivity extends AppCompatActivity {
 
                 txtType.setTextColor(
                         android.graphics.Color.rgb(
-                                60,
-                                60,
-                                60
+                                0,
+                                180,
+                                0
                         )
                 );
 

@@ -1,204 +1,434 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     android:background="@color/screen_bg"
+
     tools:context=".MainActivity">
 
-    <!-- ============ HEADER (gradient block, ~28% of screen height) ============ -->
+
+    <!-- ================================================= -->
+    <!-- HEADER                                             -->
+    <!-- ================================================= -->
+
     <View
         android:id="@+id/header_bg"
+
         android:layout_width="0dp"
         android:layout_height="0dp"
+
         android:background="@drawable/bg_header_gradient"
+
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintHeight_percent="0.28" />
 
-    <!-- Lock icon circle, centered on the header/body seam -->
+
+    <!-- ================================================= -->
+    <!-- LOCK CIRCLE                                        -->
+    <!-- ================================================= -->
+
     <FrameLayout
         android:id="@+id/lock_circle"
+
         android:layout_width="0dp"
         android:layout_height="0dp"
+
         android:background="@drawable/bg_circle_white"
+
         android:elevation="6dp"
         android:outlineProvider="background"
+
         app:layout_constraintWidth_percent="0.22"
         app:layout_constraintDimensionRatio="1:1"
+
         app:layout_constraintTop_toBottomOf="@id/header_bg"
         app:layout_constraintBottom_toBottomOf="@id/header_bg"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
 
         <ImageView
             android:layout_width="36dp"
             android:layout_height="36dp"
+
             android:layout_gravity="center"
+
             android:src="@drawable/ic_lock"
+
             android:importantForAccessibility="no"
+
             android:contentDescription="@string/lock_icon_desc" />
+
     </FrameLayout>
 
-    <!-- ============ TITLE + SUBTITLE ============ -->
+
+    <!-- ================================================= -->
+    <!-- TITLE                                              -->
+    <!-- ================================================= -->
+
     <TextView
         android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
+
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginTop="20dp"
+
         android:text="@string/enter_pin_title"
+
         android:textColor="@color/title_text"
         android:textSize="28sp"
         android:textStyle="bold"
+
         android:fontFamily="sans-serif-medium"
+
+        android:gravity="center"
+
         app:layout_constraintTop_toBottomOf="@id/lock_circle"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <!-- ================================================= -->
+    <!-- SUBTITLE                                           -->
+    <!-- ================================================= -->
 
     <TextView
         android:id="@+id/tv_subtitle"
-        android:layout_width="wrap_content"
+
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
+
         android:text="@string/enter_pin_subtitle"
+
         android:textColor="@color/subtitle_text"
         android:textSize="15sp"
+
+        android:gravity="center"
+
         app:layout_constraintTop_toBottomOf="@id/tv_title"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- ============ PIN PROGRESS DOTS ============ -->
+
+    <!-- ================================================= -->
+    <!-- PIN PROGRESS DOTS                                  -->
+    <!-- ================================================= -->
+
     <LinearLayout
         android:id="@+id/dots_container"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:layout_marginTop="24dp"
+
         android:orientation="horizontal"
         android:gravity="center"
+
         app:layout_constraintTop_toBottomOf="@id/tv_subtitle"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+
         <View
             android:id="@+id/dot1"
+
             android:layout_width="14dp"
             android:layout_height="14dp"
+
             android:layout_marginHorizontal="10dp"
+
             android:background="@drawable/dot_empty" />
+
 
         <View
             android:id="@+id/dot2"
+
             android:layout_width="14dp"
             android:layout_height="14dp"
+
             android:layout_marginHorizontal="10dp"
+
             android:background="@drawable/dot_empty" />
+
 
         <View
             android:id="@+id/dot3"
+
             android:layout_width="14dp"
             android:layout_height="14dp"
+
             android:layout_marginHorizontal="10dp"
+
             android:background="@drawable/dot_empty" />
+
 
         <View
             android:id="@+id/dot4"
+
             android:layout_width="14dp"
             android:layout_height="14dp"
+
             android:layout_marginHorizontal="10dp"
+
             android:background="@drawable/dot_empty" />
 
     </LinearLayout>
 
-    <!-- ============ NUMERIC KEYPAD (responsive GridLayout, weighted 3x4) ============ -->
+
+    <!-- ================================================= -->
+    <!-- NUMERIC KEYPAD                                     -->
+    <!-- ================================================= -->
+
     <GridLayout
         android:id="@+id/keypad"
+
         android:layout_width="0dp"
         android:layout_height="0dp"
+
         android:layout_marginTop="28dp"
         android:layout_marginBottom="16dp"
+
         android:columnCount="3"
         android:rowCount="4"
+
         android:alignmentMode="alignBounds"
         android:useDefaultMargins="false"
+
         app:layout_constraintTop_toBottomOf="@id/dots_container"
+
         app:layout_constraintBottom_toTopOf="@id/tv_forgot_pin"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintWidth_percent="0.82"
+
         app:layout_constraintDimensionRatio="3:4"
+
         app:layout_constraintVertical_bias="0.45">
 
-        <!-- Row 1 -->
-        <TextView style="@style/PinKey" android:id="@+id/key1" android:text="1"
-            android:layout_row="0" android:layout_column="0" />
-        <TextView style="@style/PinKey" android:id="@+id/key2" android:text="2"
-            android:layout_row="0" android:layout_column="1" />
-        <TextView style="@style/PinKey" android:id="@+id/key3" android:text="3"
-            android:layout_row="0" android:layout_column="2" />
 
-        <!-- Row 2 -->
-        <TextView style="@style/PinKey" android:id="@+id/key4" android:text="4"
-            android:layout_row="1" android:layout_column="0" />
-        <TextView style="@style/PinKey" android:id="@+id/key5" android:text="5"
-            android:layout_row="1" android:layout_column="1" />
-        <TextView style="@style/PinKey" android:id="@+id/key6" android:text="6"
-            android:layout_row="1" android:layout_column="2" />
+        <!-- ================================================= -->
+        <!-- ROW 1                                             -->
+        <!-- ================================================= -->
 
-        <!-- Row 3 -->
-        <TextView style="@style/PinKey" android:id="@+id/key7" android:text="7"
-            android:layout_row="2" android:layout_column="0" />
-        <TextView style="@style/PinKey" android:id="@+id/key8" android:text="8"
-            android:layout_row="2" android:layout_column="1" />
-        <TextView style="@style/PinKey" android:id="@+id/key9" android:text="9"
-            android:layout_row="2" android:layout_column="2" />
+        <TextView
+            android:id="@+id/key1"
 
-        <!-- Row 4: backspace, 0, OK -->
+            style="@style/PinKey"
+
+            android:text="1"
+
+            android:layout_row="0"
+            android:layout_column="0" />
+
+
+        <TextView
+            android:id="@+id/key2"
+
+            style="@style/PinKey"
+
+            android:text="2"
+
+            android:layout_row="0"
+            android:layout_column="1" />
+
+
+        <TextView
+            android:id="@+id/key3"
+
+            style="@style/PinKey"
+
+            android:text="3"
+
+            android:layout_row="0"
+            android:layout_column="2" />
+
+
+        <!-- ================================================= -->
+        <!-- ROW 2                                             -->
+        <!-- ================================================= -->
+
+        <TextView
+            android:id="@+id/key4"
+
+            style="@style/PinKey"
+
+            android:text="4"
+
+            android:layout_row="1"
+            android:layout_column="0" />
+
+
+        <TextView
+            android:id="@+id/key5"
+
+            style="@style/PinKey"
+
+            android:text="5"
+
+            android:layout_row="1"
+            android:layout_column="1" />
+
+
+        <TextView
+            android:id="@+id/key6"
+
+            style="@style/PinKey"
+
+            android:text="6"
+
+            android:layout_row="1"
+            android:layout_column="2" />
+
+
+        <!-- ================================================= -->
+        <!-- ROW 3                                             -->
+        <!-- ================================================= -->
+
+        <TextView
+            android:id="@+id/key7"
+
+            style="@style/PinKey"
+
+            android:text="7"
+
+            android:layout_row="2"
+            android:layout_column="0" />
+
+
+        <TextView
+            android:id="@+id/key8"
+
+            style="@style/PinKey"
+
+            android:text="8"
+
+            android:layout_row="2"
+            android:layout_column="1" />
+
+
+        <TextView
+            android:id="@+id/key9"
+
+            style="@style/PinKey"
+
+            android:text="9"
+
+            android:layout_row="2"
+            android:layout_column="2" />
+
+
+        <!-- ================================================= -->
+        <!-- ROW 4                                             -->
+        <!-- ================================================= -->
+
+
+        <!-- BACKSPACE -->
+
         <ImageButton
             android:id="@+id/keyBackspace"
+
             style="@style/PinKeyBase"
+
             android:layout_row="3"
             android:layout_column="0"
+
             android:src="@drawable/ic_backspace"
+
             android:scaleType="centerInside"
+
             android:padding="20dp"
+
             android:backgroundTint="@null"
+
             android:contentDescription="@string/backspace_desc" />
 
-        <TextView style="@style/PinKey" android:id="@+id/key0" android:text="0"
-            android:layout_row="3" android:layout_column="1" />
+
+        <!-- ZERO -->
+
+        <TextView
+            android:id="@+id/key0"
+
+            style="@style/PinKey"
+
+            android:text="0"
+
+            android:layout_row="3"
+            android:layout_column="1" />
+
+
+        <!-- OK -->
 
         <TextView
             android:id="@+id/keyOk"
+
             style="@style/PinKeyBase"
+
             android:layout_row="3"
             android:layout_column="2"
+
             android:text="@string/ok_label"
+
             android:textColor="@color/key_text"
             android:textSize="18sp"
             android:textStyle="bold"
+
             android:gravity="center" />
 
     </GridLayout>
 
-    <!-- ============ FORGOT PIN LINK ============ -->
+
+    <!-- ================================================= -->
+    <!-- FORGOT PIN                                         -->
+    <!-- ================================================= -->
+
     <TextView
         android:id="@+id/tv_forgot_pin"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:layout_marginBottom="24dp"
+
         android:padding="8dp"
+
         android:text="@string/forgot_pin_label"
+
         android:textColor="@color/link_text"
         android:textSize="15sp"
+
         android:drawableEnd="@drawable/ic_chevron_right"
         android:drawablePadding="4dp"
+
         android:gravity="center"
+
         android:clickable="true"
         android:focusable="true"
+
         app:layout_constraintBottom_toBottomOf="parent"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

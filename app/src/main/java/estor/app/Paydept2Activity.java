@@ -27,281 +27,100 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 import java.util.Locale;
-
 public class Paydept2Activity extends AppCompatActivity {
-
     private int customerId;
-
     private String customerName;
-
     private String customerPhone;
-
     private DatabaseHelper databaseHelper;
-
     private TextView txtCustomerName;
-
     private TextView txtCustomerPhone;
-
     private TextView txtTotalDebt;
-
     private ListView listViewDebt;
-
     private ArrayList<DebtItem> debtItems;
-
     private DebtAdapter adapter;
-
     private EditText edtAmountToPay;
-
     private Button btnHalf;
-
     private Button btnFull;
-
     private Button btnPayDebt;
-
     private ImageButton btnBack;
-
     private LinearLayout paymentContainer;
-
     private static final int SMS_PERMISSION_CODE = 3;
-
     private int originalPaymentBottomMargin = 0;
 
-
-    // =========================================================
-    // ON CREATE
-    // =========================================================
-
     @Override
-    protected void onCreate(
-            Bundle savedInstanceState
-    ) {
-
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-        );
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        setContentView(R.layout.paydept2);
 
-
-        setContentView(
-                R.layout.paydept2
-        );
-
-
-        databaseHelper =
-                new DatabaseHelper(this);
-
+        databaseHelper = new DatabaseHelper(this);
 
         checkSmsPermission();
-
-
-        String id =
-                getIntent().getStringExtra(
-                        "customer_id"
-                );
-
+        String id = getIntent().getStringExtra("customer_id");
 
         if (id == null) {
-
-            Toast.makeText(
-                    this,
-                    "Customer information is missing",
-                    Toast.LENGTH_SHORT
-            ).show();
-
+            Toast.makeText(this, "Customer information is missing", Toast.LENGTH_SHORT).show();
             finish();
-
             return;
         }
-
-
-        try {
-
-            customerId =
-                    Integer.parseInt(id);
-
+        try {customerId = Integer.parseInt(id);
         } catch (NumberFormatException e) {
-
-            Toast.makeText(
-                    this,
-                    "Invalid customer ID",
-                    Toast.LENGTH_SHORT
-            ).show();
-
+            Toast.makeText(this, "Invalid customer ID", Toast.LENGTH_SHORT).show();
             finish();
-
             return;
         }
-
-
-        customerName =
-                getIntent().getStringExtra(
-                        "customer_name"
-                );
-
-
-        customerPhone =
-                getIntent().getStringExtra(
-                        "customer_phone"
-                );
-
-
-        txtCustomerName =
-                findViewById(
-                        R.id.txtCustomerName
-                );
-
-
-        txtCustomerPhone =
-                findViewById(
-                        R.id.txtCustomerPhone
-                );
-
-
-        txtTotalDebt =
-                findViewById(
-                        R.id.txtTotalDebt
-                );
-
-
-        listViewDebt =
-                findViewById(
-                        R.id.listViewDebt
-                );
-
-
-        edtAmountToPay =
-                findViewById(
-                        R.id.edtAmountToPay
-                );
-
-
-        btnHalf =
-                findViewById(
-                        R.id.btnHalf
-                );
-
-
-        btnFull =
-                findViewById(
-                        R.id.btnFull
-                );
-
-
-        btnPayDebt =
-                findViewById(
-                        R.id.btnPayDebt
-                );
-
-
-        btnBack =
-                findViewById(
-                        R.id.btnBack
-                );
-
-
-        paymentContainer =
-                findViewById(
-                        R.id.paymentContainer
-                );
-
-
+        customerName = getIntent().getStringExtra("customer_name");
+        customerPhone = getIntent().getStringExtra("customer_phone");
+        txtCustomerName = findViewById(R.id.txtCustomerName);
+        txtCustomerPhone = findViewById(R.id.txtCustomerPhone);
+        txtTotalDebt = findViewById(R.id.txtTotalDebt);
+        listViewDebt = findViewById(R.id.listViewDebt);
+        edtAmountToPay = findViewById(R.id.edtAmountToPay);
+        btnHalf = findViewById(R.id.btnHalf);
+        btnFull = findViewById(R.id.btnFull);
+        btnPayDebt = findViewById(R.id.btnPayDebt);
+        btnBack = findViewById(R.id.btnBack);
+        paymentContainer = findViewById(R.id.paymentContainer);
         setupKeyboardFix();
 
-
-        if (customerName != null &&
-                !customerName.trim().isEmpty()) {
-
-            txtCustomerName.setText(
-                    customerName
-            );
-
+        if (customerName != null && !customerName.trim().isEmpty()) {
+            txtCustomerName.setText(customerName);
         } else {
-
-            txtCustomerName.setText(
-                    "Unknown"
-            );
+            txtCustomerName.setText("Unknown");
         }
-
-
         if (customerPhone != null) {
-
             txtCustomerPhone.setText(
                     customerPhone
             );
 
         } else {
-
             txtCustomerPhone.setText(
                     ""
             );
         }
-
-
-        debtItems =
-                new ArrayList<>();
-
-
-        adapter =
-                new DebtAdapter(
-                        this,
-                        debtItems
-                );
-
-
-        listViewDebt.setAdapter(
-                adapter
-        );
-
-
+        debtItems = new ArrayList<>();
+        adapter = new DebtAdapter(this, debtItems);
+        listViewDebt.setAdapter(adapter);
         loadDebtItems();
-
-
         btnBack.setOnClickListener(v -> {
-
             finish();
-
         });
 
-
-        // =====================================================
         // HALF
-        // =====================================================
-
         btnHalf.setOnClickListener(v -> {
-
-            double total =
-                    databaseHelper
-                            .getCustomerTotalDebt(
-                                    customerId
-                            );
-
+            double total = databaseHelper.getCustomerTotalDebt(customerId);
 
             if (total <= 0.001) {
-
                 edtAmountToPay.setText("");
-
                 return;
             }
 
-
-            double half =
-                    total / 2.0;
-
-
-            edtAmountToPay.setText(
-                    String.format(
-                            Locale.getDefault(),
-                            "%.2f",
-                            half
-                    )
+            double half = total / 2.0;
+            edtAmountToPay.setText(String.format(Locale.getDefault(), "%.2f", half)
             );
 
-
-            edtAmountToPay.setSelection(
-                    edtAmountToPay.length()
-            );
+            edtAmountToPay.setSelection(edtAmountToPay.length());
         });
 
 

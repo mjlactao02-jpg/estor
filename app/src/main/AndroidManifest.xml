@@ -4,7 +4,6 @@
 
     <!-- ========================================================= -->
     <!-- SMS PERMISSION                                            -->
-    <!-- Required to send payment reminder SMS                     -->
     <!-- ========================================================= -->
 
     <uses-permission
@@ -12,8 +11,25 @@
 
 
     <!-- ========================================================= -->
-    <!-- SMS IS OPTIONAL                                            -->
-    <!-- Allows the app to run on tablets/Wi-Fi devices            -->
+    <!-- EXACT ALARM PERMISSION                                    -->
+    <!-- Required for scheduled payment reminders                 -->
+    <!-- ========================================================= -->
+
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+
+    <!-- ========================================================= -->
+    <!-- BOOT PERMISSION                                           -->
+    <!-- Allows reminders to be scheduled again after reboot      -->
+    <!-- ========================================================= -->
+
+    <uses-permission
+        android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+
+    <!-- ========================================================= -->
+    <!-- TELEPHONY IS OPTIONAL                                     -->
     <!-- ========================================================= -->
 
     <uses-feature
@@ -22,7 +38,7 @@
 
 
     <!-- ========================================================= -->
-    <!-- APPLICATION                                                -->
+    <!-- APPLICATION                                               -->
     <!-- ========================================================= -->
 
     <application
@@ -35,12 +51,12 @@
 
 
         <!-- ===================================================== -->
-        <!-- PIN ACTIVITY                                           -->
-        <!-- First screen when the app opens                       -->
+        <!-- SPLASH SCREEN                                         -->
+        <!-- This is now the FIRST screen when the app opens       -->
         <!-- ===================================================== -->
 
         <activity
-            android:name=".PinActivity"
+            android:name=".SplashActivity"
             android:exported="true">
 
             <intent-filter>
@@ -57,7 +73,16 @@
 
 
         <!-- ===================================================== -->
-        <!-- ADD DEBT                                               -->
+        <!-- PIN ACTIVITY                                          -->
+        <!-- ===================================================== -->
+
+        <activity
+            android:name=".PinActivity"
+            android:exported="false" />
+
+
+        <!-- ===================================================== -->
+        <!-- ADD DEBT                                              -->
         <!-- ===================================================== -->
 
         <activity
@@ -66,22 +91,22 @@
 
 
         <!-- ===================================================== -->
-        <!-- PAY DEBT                                               -->
+        <!-- PAY DEBT                                              -->
         <!-- ===================================================== -->
 
         <activity
             android:name=".PaydeptActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".Paydept2Activity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
 
 
         <!-- ===================================================== -->
-        <!-- TRANSACTIONS                                           -->
+        <!-- TRANSACTIONS                                          -->
         <!-- ===================================================== -->
 
         <activity
@@ -90,7 +115,7 @@
 
 
         <!-- ===================================================== -->
-        <!-- HISTORY                                                -->
+        <!-- HISTORY                                               -->
         <!-- ===================================================== -->
 
         <activity
@@ -99,7 +124,16 @@
 
 
         <!-- ===================================================== -->
-        <!-- ADD DEBT 2                                             -->
+        <!-- HISTORY 2                                             -->
+        <!-- ===================================================== -->
+
+        <activity
+            android:name=".History2Activity"
+            android:exported="false" />
+
+
+        <!-- ===================================================== -->
+        <!-- ADD DEBT 2                                            -->
         <!-- ===================================================== -->
 
         <activity
@@ -108,8 +142,7 @@
 
 
         <!-- ===================================================== -->
-        <!-- SETTINGS                                               -->
-        <!-- Change Recovery PIN / Payment Reminders               -->
+        <!-- SETTINGS                                              -->
         <!-- ===================================================== -->
 
         <activity
@@ -118,8 +151,7 @@
 
 
         <!-- ===================================================== -->
-        <!-- MAIN ACTIVITY                                          -->
-        <!-- Dashboard                                              -->
+        <!-- MAIN ACTIVITY                                         -->
         <!-- ===================================================== -->
 
         <activity
@@ -128,8 +160,7 @@
 
 
         <!-- ===================================================== -->
-        <!-- PAYMENT REMINDER RECEIVER                              -->
-        <!-- Receives the scheduled alarm and sends SMS reminders  -->
+        <!-- PAYMENT REMINDER RECEIVER                             -->
         <!-- ===================================================== -->
 
         <receiver
@@ -137,9 +168,25 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity
-            android:name=".History2Activity"
-            android:exported="false" />
+
+        <!-- ===================================================== -->
+        <!-- BOOT RECEIVER                                         -->
+        <!-- Re-schedules reminders after phone restart           -->
+        <!-- ===================================================== -->
+
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="false">
+
+            <intent-filter>
+
+                <action
+                    android:name="android.intent.action.BOOT_COMPLETED" />
+
+            </intent-filter>
+
+        </receiver>
 
 
     </application>

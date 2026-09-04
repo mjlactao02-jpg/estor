@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
 
     android:layout_width="match_parent"
-    android:layout_height="62dp"
+    android:layout_height="80dp"
 
     android:background="#FFFFFF"
 
@@ -28,7 +28,7 @@
         android:text="May 2, 2026 10:30PM"
 
         android:textColor="#555555"
-        android:textSize="8sp"
+        android:textSize="15sp"
 
         android:maxLines="1"
         android:ellipsize="end"
@@ -53,7 +53,7 @@
         android:text="Mary Jane Parker"
 
         android:textColor="#222222"
-        android:textSize="10sp"
+        android:textSize="23sp"
 
         android:maxLines="1"
         android:ellipsize="end"
@@ -72,14 +72,10 @@
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:layout_marginTop="1dp"
-
+        android:layout_marginTop="0dp"
         android:text="↓ Debt"
-
-        android:textColor="#333333"
-        android:textSize="8sp"
-
+        android:textColor="#F05B5B"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtTransactionName" />
 
@@ -93,17 +89,12 @@
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:text="-₱100.00"
-
         android:textColor="#FF0000"
-        android:textSize="12sp"
+        android:textSize="20sp"
         android:textStyle="bold"
-
         android:gravity="center_vertical"
-
         android:maxLines="1"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />

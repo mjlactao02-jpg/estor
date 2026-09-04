@@ -1,397 +1,339 @@
 package estor.app;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.Context;
+import android.app.AlarmManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.InputType;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.widget.AppCompatButton;
 
-
-/**
- * =============================================================
- * SETTINGS ACTIVITY
- * =============================================================
- *
- * This activity handles:
- *
- * 1. Change Recovery PIN
- * 2. Payment Reminders ON/OFF
- * 3. Reminder Frequency
- *
- * Settings are stored using SharedPreferences.
- *
- * =============================================================
- */
 public class SettingsActivity extends AppCompatActivity {
 
 
-    // =========================================================
-    // SHARED PREFERENCES
-    // =========================================================
+    // ============================================================
+    // PREFERENCES
+    // ============================================================
 
-    /*
-     * Name of the SharedPreferences file.
-     */
     private static final String SETTINGS_PREFS =
             "EstorSettings";
 
+    private static final String KEY_STORE_NAME =
+            "store_name";
 
-    /*
-     * Key used to store whether reminders
-     * are enabled or disabled.
-     */
     private static final String KEY_REMINDERS =
             "reminders_enabled";
 
-
-    /*
-     * Key used to store reminder frequency.
-     */
     private static final String KEY_FREQUENCY =
             "reminder_frequency";
 
 
-    // =========================================================
+    // ============================================================
     // PIN PREFERENCES
-    // =========================================================
+    // ============================================================
 
-    /*
-     * This must match the preference name
-     * used by PinActivity.
-     */
     private static final String PIN_PREFS =
             "EstorPinPrefs";
 
-
-    /*
-     * Key used to store the recovery PIN.
-     */
     private static final String KEY_RECOVERY_PIN =
             "recovery_pin";
 
 
-    // =========================================================
+    // ============================================================
     // SMS PERMISSION
-    // =========================================================
+    // ============================================================
 
-    /*
-     * Request code used when asking Android
-     * for SEND_SMS permission.
-     */
-    private static final int SMS_PERMISSION_REQUEST =
+    private static final int SMS_PERMISSION_REQUEST_CODE =
             100;
 
 
-    // =========================================================
-    // UI ELEMENTS
-    // =========================================================
+    // ============================================================
+    // VIEW VARIABLES
+    // ============================================================
 
-    /*
-     * Change Recovery PIN card.
-     */
+    private EditText editStoreName;
+
     private View cardChangePin;
 
-
-    /*
-     * Payment reminder switch.
-     */
     private Switch switchReminders;
 
-
-    /*
-     * Radio button group.
-     */
     private RadioGroup radioGroupFrequency;
 
-
-    /*
-     * Frequency radio buttons.
-     */
     private RadioButton radioDaily;
+
     private RadioButton radioTwiceWeek;
+
     private RadioButton radioThriceWeek;
+
     private RadioButton radioFourTimesWeek;
+
     private RadioButton radioFiveTimesWeek;
+
     private RadioButton radioEveryWeekend;
 
 
-    // =========================================================
-    // SHARED PREFERENCES OBJECT
-    // =========================================================
+    // ============================================================
+    // SHARED PREFERENCES
+    // ============================================================
 
-    private SharedPreferences settingsPreferences;
+    private SharedPreferences settingsPrefs;
 
 
-    // =========================================================
+    // ============================================================
     // ON CREATE
-    // =========================================================
+    // ============================================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-
-        // -----------------------------------------------------
-        // LOAD SETTINGS XML
-        // -----------------------------------------------------
-
-        setContentView(
-                R.layout.settings_main
-        );
+        setContentView(R.layout.settings_main);
 
 
-        // -----------------------------------------------------
-        // INITIALIZE SHARED PREFERENCES
-        // -----------------------------------------------------
+        // ========================================================
+        // GET PREFERENCES
+        // ========================================================
 
-        settingsPreferences =
+        settingsPrefs =
                 getSharedPreferences(
                         SETTINGS_PREFS,
                         MODE_PRIVATE
                 );
 
 
-        // -----------------------------------------------------
-        // INITIALIZE UI
-        // -----------------------------------------------------
+        // ========================================================
+        // INITIALIZE
+        // ========================================================
 
         initializeViews();
 
-
-        // -----------------------------------------------------
-        // LOAD SAVED SETTINGS
-        // -----------------------------------------------------
-
-        loadSavedSettings();
-
-
-        // -----------------------------------------------------
-        // BACK BUTTON
-        // -----------------------------------------------------
+        setupStoreName();
 
         setupBackButton();
 
-
-        // -----------------------------------------------------
-        // CHANGE RECOVERY PIN
-        // -----------------------------------------------------
-
         setupChangeRecoveryPin();
-
-
-        // -----------------------------------------------------
-        // PAYMENT REMINDERS
-        // -----------------------------------------------------
 
         setupReminderSwitch();
 
-
-        // -----------------------------------------------------
-        // FREQUENCY
-        // -----------------------------------------------------
-
         setupFrequency();
+
+        loadSavedSettings();
     }
 
 
-    // =========================================================
+    // ============================================================
     // INITIALIZE VIEWS
-    // =========================================================
+    // ============================================================
 
     private void initializeViews() {
 
-        /*
-         * Change Recovery PIN card.
-         */
+        editStoreName =
+                findViewById(R.id.editStoreName);
+
         cardChangePin =
-                findViewById(
-                        R.id.cardChangePin
-                );
+                findViewById(R.id.cardChangePin);
 
-
-        /*
-         * Payment reminder switch.
-         */
         switchReminders =
-                findViewById(
-                        R.id.switchReminders
-                );
+                findViewById(R.id.switchReminders);
 
-
-        /*
-         * Frequency group.
-         */
         radioGroupFrequency =
-                findViewById(
-                        R.id.radioGroupFrequency
-                );
+                findViewById(R.id.radioGroupFrequency);
 
-
-        /*
-         * Frequency choices.
-         */
         radioDaily =
-                findViewById(
-                        R.id.radioDaily
-                );
-
+                findViewById(R.id.radioDaily);
 
         radioTwiceWeek =
-                findViewById(
-                        R.id.radioTwiceWeek
-                );
-
+                findViewById(R.id.radioTwiceWeek);
 
         radioThriceWeek =
-                findViewById(
-                        R.id.radioThriceWeek
-                );
-
+                findViewById(R.id.radioThriceWeek);
 
         radioFourTimesWeek =
-                findViewById(
-                        R.id.radioFourTimesWeek
-                );
-
+                findViewById(R.id.radioFourTimesWeek);
 
         radioFiveTimesWeek =
-                findViewById(
-                        R.id.radioFiveTimesWeek
-                );
-
+                findViewById(R.id.radioFiveTimesWeek);
 
         radioEveryWeekend =
-                findViewById(
-                        R.id.radioEveryWeekend
-                );
+                findViewById(R.id.radioEveryWeekend);
     }
 
 
-    // =========================================================
+    // ============================================================
+    // STORE NAME
+    // ============================================================
+
+    private void setupStoreName() {
+
+        if (editStoreName == null) {
+            return;
+        }
+
+
+        editStoreName.setInputType(
+                InputType.TYPE_CLASS_TEXT |
+                        InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+        );
+
+
+        editStoreName.setSingleLine(true);
+
+
+        editStoreName.setImeOptions(
+                EditorInfo.IME_ACTION_DONE
+        );
+
+
+        editStoreName.setOnEditorActionListener(
+                (v, actionId, event) -> {
+
+                    if (actionId ==
+                            EditorInfo.IME_ACTION_DONE) {
+
+                        saveStoreName();
+
+                        return false;
+                    }
+
+                    return false;
+                }
+        );
+
+
+        editStoreName.setOnFocusChangeListener(
+                (v, hasFocus) -> {
+
+                    if (!hasFocus) {
+
+                        saveStoreName();
+                    }
+                }
+        );
+    }
+
+
+    // ============================================================
+    // SAVE STORE NAME
+    // ============================================================
+
+    private void saveStoreName() {
+
+        if (editStoreName == null) {
+            return;
+        }
+
+
+        String storeName =
+                editStoreName
+                        .getText()
+                        .toString()
+                        .trim();
+
+
+        settingsPrefs
+                .edit()
+                .putString(
+                        KEY_STORE_NAME,
+                        storeName
+                )
+                .apply();
+    }
+
+
+    // ============================================================
+    // GET STORE NAME
+    // ============================================================
+
+    public static String getStoreName(
+            android.content.Context context) {
+
+        SharedPreferences prefs =
+                context.getSharedPreferences(
+                        SETTINGS_PREFS,
+                        android.content.Context.MODE_PRIVATE
+                );
+
+
+        return prefs.getString(
+                KEY_STORE_NAME,
+                ""
+        );
+    }
+
+
+    // ============================================================
     // BACK BUTTON
-    // =========================================================
+    // ============================================================
 
     private void setupBackButton() {
 
-        View btnBack =
-                findViewById(
-                        R.id.btnBack
-                );
+        View backButton =
+                findViewById(R.id.btnBack);
 
+        if (backButton != null) {
 
-        btnBack.setOnClickListener(
-                v -> finish()
-        );
+            backButton.setOnClickListener(
+                    v -> {
+
+                        saveStoreName();
+
+                        finish();
+                    }
+            );
+        }
     }
 
 
-    // =========================================================
-    // LOAD SAVED SETTINGS
-    // =========================================================
-
-    private void loadSavedSettings() {
-
-        /*
-         * Get saved reminder status.
-         *
-         * Default is TRUE because your XML
-         * currently has android:checked="true".
-         */
-        boolean remindersEnabled =
-                settingsPreferences.getBoolean(
-                        KEY_REMINDERS,
-                        true
-                );
-
-
-        /*
-         * Set switch state.
-         */
-        switchReminders.setChecked(
-                remindersEnabled
-        );
-
-
-        /*
-         * Get saved frequency.
-         *
-         * Default = Daily.
-         */
-        String savedFrequency =
-                settingsPreferences.getString(
-                        KEY_FREQUENCY,
-                        "Daily"
-                );
-
-
-        /*
-         * Select the saved radio button.
-         */
-        selectFrequency(
-                savedFrequency
-        );
-
-
-        /*
-         * Enable or disable frequency choices.
-         */
-        setFrequencyEnabled(
-                remindersEnabled
-        );
-    }
-
-
-    // =========================================================
+    // ============================================================
     // CHANGE RECOVERY PIN
-    // =========================================================
+    // ============================================================
 
     private void setupChangeRecoveryPin() {
 
-        /*
-         * When the user clicks the
-         * Change Recovery PIN card,
-         * show the custom popup.
-         */
+        if (cardChangePin == null) {
+            return;
+        }
+
+
         cardChangePin.setOnClickListener(
-                v -> showChangeRecoveryPinDialog()
+                v -> {
+
+                    showChangePinDialog();
+                }
         );
     }
 
 
-    // =========================================================
-    // CHANGE RECOVERY PIN DIALOG
-    // =========================================================
+    // ============================================================
+    // CHANGE PIN DIALOG
+    //
+    // THIS USES YOUR XML RECOVERY PIN UI
+    // ============================================================
 
-    private void showChangeRecoveryPinDialog() {
+    private void showChangePinDialog() {
 
-        // -----------------------------------------------------
-        // CREATE ALERT DIALOG
-        // -----------------------------------------------------
-
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(this);
-
-
-        // -----------------------------------------------------
-        // LOAD CUSTOM XML
-        // -----------------------------------------------------
+        // ========================================================
+        // INFLATE YOUR CUSTOM XML
+        // ========================================================
 
         View dialogView =
                 getLayoutInflater().inflate(
@@ -400,75 +342,77 @@ public class SettingsActivity extends AppCompatActivity {
                 );
 
 
-        // Put custom layout inside dialog.
-        builder.setView(
-                dialogView
-        );
+        // ========================================================
+        // GET VIEWS FROM YOUR XML
+        // ========================================================
 
-
-        // Create dialog.
-        AlertDialog dialog =
-                builder.create();
-
-
-        // -----------------------------------------------------
-        // GET INPUT FIELDS
-        // -----------------------------------------------------
+        TextView txtDialogTitle =
+                dialogView.findViewById(
+                        R.id.txtDialogTitle
+                );
 
         EditText editPreviousPin =
                 dialogView.findViewById(
                         R.id.editPreviousPin
                 );
 
-
         EditText editNewPin =
                 dialogView.findViewById(
                         R.id.editNewPin
                 );
-
 
         EditText editConfirmPin =
                 dialogView.findViewById(
                         R.id.editConfirmPin
                 );
 
-
-        Button btnSave =
+        AppCompatButton btnSaveRecoveryPin =
                 dialogView.findViewById(
                         R.id.btnSaveRecoveryPin
                 );
 
 
-        // -----------------------------------------------------
+        // ========================================================
+        // TITLE
+        // ========================================================
+
+        if (txtDialogTitle != null) {
+
+            txtDialogTitle.setText(
+                    "Change Recovery PIN"
+            );
+        }
+
+
+        // ========================================================
+        // CREATE DIALOG
+        // ========================================================
+
+        AlertDialog dialog =
+                new AlertDialog.Builder(this)
+                        .setView(dialogView)
+                        .create();
+
+
+        // ========================================================
         // SAVE BUTTON
-        // -----------------------------------------------------
+        // ========================================================
 
-        btnSave.setOnClickListener(
-                v -> {
+        btnSaveRecoveryPin.setOnClickListener(
+                view -> {
 
-                    /*
-                     * Get previous PIN.
-                     */
                     String previousPin =
                             editPreviousPin
                                     .getText()
                                     .toString()
                                     .trim();
 
-
-                    /*
-                     * Get new PIN.
-                     */
                     String newPin =
                             editNewPin
                                     .getText()
                                     .toString()
                                     .trim();
 
-
-                    /*
-                     * Get confirmation PIN.
-                     */
                     String confirmPin =
                             editConfirmPin
                                     .getText()
@@ -476,50 +420,60 @@ public class SettingsActivity extends AppCompatActivity {
                                     .trim();
 
 
-                    // =================================================
-                    // GET SAVED RECOVERY PIN
-                    // =================================================
+                    // ====================================================
+                    // CHECK PREVIOUS PIN
+                    // ====================================================
 
-                    SharedPreferences pinPreferences =
+                    if (previousPin.length() != 4) {
+
+                        editPreviousPin.setError(
+                                "Enter your 4-digit PIN"
+                        );
+
+                        editPreviousPin.requestFocus();
+
+                        return;
+                    }
+
+
+                    // ====================================================
+                    // GET SAVED RECOVERY PIN
+                    // ====================================================
+
+                    SharedPreferences pinPrefs =
                             getSharedPreferences(
                                     PIN_PREFS,
                                     MODE_PRIVATE
                             );
 
-
                     String savedRecoveryPin =
-                            pinPreferences.getString(
+                            pinPrefs.getString(
                                     KEY_RECOVERY_PIN,
                                     ""
                             );
 
 
-                    // =================================================
+                    // ====================================================
                     // CHECK PREVIOUS PIN
-                    // =================================================
+                    // ====================================================
 
-                    if (previousPin.isEmpty()) {
+                    if (savedRecoveryPin.isEmpty()) {
 
-                        editPreviousPin.setError(
-                                "Enter your previous recovery PIN"
-                        );
-
-                        editPreviousPin.requestFocus();
+                        Toast.makeText(
+                                SettingsActivity.this,
+                                "No recovery PIN has been set.",
+                                Toast.LENGTH_LONG
+                        ).show();
 
                         return;
                     }
 
-
-                    // =================================================
-                    // VERIFY PREVIOUS PIN
-                    // =================================================
 
                     if (!previousPin.equals(
-                            savedRecoveryPin
-                    )) {
+                            savedRecoveryPin)) {
 
                         editPreviousPin.setError(
-                                "Incorrect recovery PIN"
+                                "Incorrect previous PIN"
                         );
 
                         editPreviousPin.requestFocus();
@@ -528,27 +482,14 @@ public class SettingsActivity extends AppCompatActivity {
                     }
 
 
-                    // =================================================
+                    // ====================================================
                     // CHECK NEW PIN
-                    // =================================================
+                    // ====================================================
 
-                    if (newPin.isEmpty()) {
-
-                        editNewPin.setError(
-                                "Enter a new PIN"
-                        );
-
-                        editNewPin.requestFocus();
-
-                        return;
-                    }
-
-
-                    // New PIN must be exactly 4 digits.
                     if (newPin.length() != 4) {
 
                         editNewPin.setError(
-                                "PIN must contain 4 digits"
+                                "PIN must be 4 digits"
                         );
 
                         editNewPin.requestFocus();
@@ -557,29 +498,11 @@ public class SettingsActivity extends AppCompatActivity {
                     }
 
 
-                    // =================================================
+                    // ====================================================
                     // CHECK CONFIRM PIN
-                    // =================================================
+                    // ====================================================
 
-                    if (confirmPin.isEmpty()) {
-
-                        editConfirmPin.setError(
-                                "Confirm your new PIN"
-                        );
-
-                        editConfirmPin.requestFocus();
-
-                        return;
-                    }
-
-
-                    // =================================================
-                    // COMPARE NEW PIN
-                    // =================================================
-
-                    if (!newPin.equals(
-                            confirmPin
-                    )) {
+                    if (!confirmPin.equals(newPin)) {
 
                         editConfirmPin.setError(
                                 "PINs do not match"
@@ -591,11 +514,11 @@ public class SettingsActivity extends AppCompatActivity {
                     }
 
 
-                    // =================================================
+                    // ====================================================
                     // SAVE NEW RECOVERY PIN
-                    // =================================================
+                    // ====================================================
 
-                    pinPreferences
+                    pinPrefs
                             .edit()
                             .putString(
                                     KEY_RECOVERY_PIN,
@@ -604,92 +527,84 @@ public class SettingsActivity extends AppCompatActivity {
                             .apply();
 
 
-                    // =================================================
+                    // ====================================================
                     // SUCCESS MESSAGE
-                    // =================================================
+                    // ====================================================
 
                     Toast.makeText(
                             SettingsActivity.this,
-                            "Recovery PIN changed successfully.",
+                            "Recovery PIN updated.",
                             Toast.LENGTH_SHORT
                     ).show();
 
 
-                    // Close dialog.
+                    // ====================================================
+                    // CLOSE DIALOG
+                    // ====================================================
+
                     dialog.dismiss();
                 }
         );
 
 
-        // =========================================================
+        // ========================================================
         // SHOW DIALOG
-        // =========================================================
+        // ========================================================
 
         dialog.show();
 
 
-        // =========================================================
-        // DIALOG SIZE
-        // =========================================================
+        // ========================================================
+        // MAKE DIALOG TRANSPARENT AROUND YOUR XML
+        // ========================================================
 
         Window window =
                 dialog.getWindow();
 
-
         if (window != null) {
 
-            /*
-             * Make default dialog background transparent.
-             */
             window.setBackgroundDrawableResource(
                     android.R.color.transparent
             );
 
 
-            /*
-             * Set dialog width.
-             *
-             * 90% of the screen width gives
-             * a similar appearance to your screenshot.
-             */
-            WindowManager.LayoutParams params =
-                    window.getAttributes();
+            // ====================================================
+            // DIALOG WIDTH
+            // ====================================================
+
+            int screenWidth =
+                    getResources()
+                            .getDisplayMetrics()
+                            .widthPixels;
 
 
-            params.width =
-                    (int) (
-                            getResources()
-                                    .getDisplayMetrics()
-                                    .widthPixels
-                                    * 0.90
-                    );
+            int dialogWidth =
+                    (int) (screenWidth * 0.90f);
 
 
-            params.height =
-                    WindowManager.LayoutParams.WRAP_CONTENT;
-
-
-            window.setAttributes(
-                    params
+            window.setLayout(
+                    dialogWidth,
+                    WindowManager.LayoutParams.WRAP_CONTENT
             );
         }
     }
 
 
-    // =========================================================
-    // PAYMENT REMINDER SWITCH
-    // =========================================================
+    // ============================================================
+    // REMINDER SWITCH
+    // ============================================================
 
     private void setupReminderSwitch() {
+
+        if (switchReminders == null) {
+            return;
+        }
+
 
         switchReminders.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {
 
-                    // =================================================
-                    // SAVE SWITCH STATUS
-                    // =================================================
-
-                    settingsPreferences
+                    settingsPrefs
                             .edit()
                             .putBoolean(
                                     KEY_REMINDERS,
@@ -698,76 +613,19 @@ public class SettingsActivity extends AppCompatActivity {
                             .apply();
 
 
-                    // =================================================
-                    // ENABLE / DISABLE FREQUENCY
-                    // =================================================
-
-                    setFrequencyEnabled(
-                            isChecked
-                    );
-
-
-                    // =================================================
-                    // REMINDERS ENABLED
-                    // =================================================
-
                     if (isChecked) {
 
-                        /*
-                         * Check SMS permission.
-                         */
-                        if (
-                                ContextCompat.checkSelfPermission(
-                                        SettingsActivity.this,
-                                        Manifest.permission.SEND_SMS
-                                )
-                                        != PackageManager.PERMISSION_GRANTED
-                        ) {
+                        enableReminderSystem();
 
-                            /*
-                             * Ask Android for SMS permission.
-                             */
-                            ActivityCompat.requestPermissions(
-                                    SettingsActivity.this,
-                                    new String[]{
-                                            Manifest.permission.SEND_SMS
-                                    },
-                                    SMS_PERMISSION_REQUEST
-                            );
+                    } else {
 
-                        } else {
-
-                            /*
-                             * Permission already exists.
-                             */
-                            Toast.makeText(
-                                    SettingsActivity.this,
-                                    "Payment reminders enabled.",
-                                    Toast.LENGTH_SHORT
-                            ).show();
+                        ReminderReceiver
+                                .cancelReminder(
+                                        SettingsActivity.this
+                                );
 
 
-                            /*
-                             * Schedule reminder.
-                             */
-                            scheduleReminder();
-                        }
-
-
-                    }
-
-                    // =================================================
-                    // REMINDERS DISABLED
-                    // =================================================
-
-                    else {
-
-                        /*
-                         * Cancel scheduled reminders.
-                         */
-                        ReminderReceiver.cancelReminder(
-                                SettingsActivity.this
-                        );
+                        setFrequencyEnabled(false);
 
 
                         Toast.makeText(
@@ -781,101 +639,100 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
 
-    // =========================================================
+    // ============================================================
+    // ENABLE REMINDER SYSTEM
+    // ============================================================
+
+    private void enableReminderSystem() {
+
+        setFrequencyEnabled(true);
+
+
+        // ========================================================
+        // SMS PERMISSION
+        // ========================================================
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (checkSelfPermission(
+                    Manifest.permission.SEND_SMS)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+
+                requestPermissions(
+                        new String[]{
+                                Manifest.permission.SEND_SMS
+                        },
+                        SMS_PERMISSION_REQUEST_CODE
+                );
+
+
+                Toast.makeText(
+                        this,
+                        "SMS permission is required for automatic reminders.",
+                        Toast.LENGTH_LONG
+                ).show();
+
+
+                return;
+            }
+        }
+
+
+        // ========================================================
+        // EXACT ALARM
+        // ========================================================
+
+        requestExactAlarmPermissionIfNeeded();
+
+
+        // ========================================================
+        // SCHEDULE
+        // ========================================================
+
+        ReminderReceiver.scheduleReminder(
+                SettingsActivity.this
+        );
+
+
+        Toast.makeText(
+                this,
+                "Payment reminders enabled.",
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+
+    // ============================================================
     // FREQUENCY
-    // =========================================================
+    // ============================================================
 
     private void setupFrequency() {
+
+        if (radioGroupFrequency == null) {
+            return;
+        }
+
 
         radioGroupFrequency.setOnCheckedChangeListener(
                 (group, checkedId) -> {
 
-                    String frequency;
+                    String frequency =
+                            getFrequencyFromId(
+                                    checkedId
+                            );
 
 
-                    // -------------------------------------------------
-                    // DAILY
-                    // -------------------------------------------------
-
-                    if (checkedId == R.id.radioDaily) {
-
-                        frequency =
-                                "Daily";
+                    if (frequency == null) {
+                        return;
                     }
 
 
-                    // -------------------------------------------------
-                    // TWICE A WEEK
-                    // -------------------------------------------------
-
-                    else if (
-                            checkedId ==
-                                    R.id.radioTwiceWeek
-                    ) {
-
-                        frequency =
-                                "Twice a week";
-                    }
-
-
-                    // -------------------------------------------------
-                    // THRICE A WEEK
-                    // -------------------------------------------------
-
-                    else if (
-                            checkedId ==
-                                    R.id.radioThriceWeek
-                    ) {
-
-                        frequency =
-                                "Thrice a week";
-                    }
-
-
-                    // -------------------------------------------------
-                    // FOUR TIMES A WEEK
-                    // -------------------------------------------------
-
-                    else if (
-                            checkedId ==
-                                    R.id.radioFourTimesWeek
-                    ) {
-
-                        frequency =
-                                "4 times a week";
-                    }
-
-
-                    // -------------------------------------------------
-                    // FIVE TIMES A WEEK
-                    // -------------------------------------------------
-
-                    else if (
-                            checkedId ==
-                                    R.id.radioFiveTimesWeek
-                    ) {
-
-                        frequency =
-                                "5 times a week";
-                    }
-
-
-                    // -------------------------------------------------
-                    // EVERY WEEKEND
-                    // -------------------------------------------------
-
-                    else {
-
-                        frequency =
-                                "Every weekend";
-                    }
-
-
-                    // =================================================
+                    // ============================================
                     // SAVE FREQUENCY
-                    // =================================================
+                    // ============================================
 
-                    settingsPreferences
+                    settingsPrefs
                             .edit()
                             .putString(
                                     KEY_FREQUENCY,
@@ -884,152 +741,353 @@ public class SettingsActivity extends AppCompatActivity {
                             .apply();
 
 
-                    // =================================================
+                    // ============================================
                     // RESCHEDULE
-                    // =================================================
+                    // ============================================
 
-                    if (
-                            switchReminders.isChecked()
-                    ) {
+                    boolean remindersEnabled =
+                            settingsPrefs.getBoolean(
+                                    KEY_REMINDERS,
+                                    false
+                            );
 
-                        scheduleReminder();
+
+                    if (remindersEnabled) {
+
+                        if (hasSmsPermission()) {
+
+                            requestExactAlarmPermissionIfNeeded();
+
+                            ReminderReceiver
+                                    .scheduleReminder(
+                                            SettingsActivity.this
+                                    );
+
+
+                            Toast.makeText(
+                                    SettingsActivity.this,
+                                    "Reminder frequency changed to " +
+                                            frequency,
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
                     }
                 }
         );
     }
 
 
-    // =========================================================
-    // SELECT FREQUENCY
-    // =========================================================
+    // ============================================================
+    // GET FREQUENCY FROM RADIO BUTTON
+    // ============================================================
 
-    private void selectFrequency(
-            String frequency
-    ) {
+    private String getFrequencyFromId(
+            int checkedId) {
 
-        if (
-                frequency.equals("Daily")
-        ) {
+        if (checkedId ==
+                R.id.radioDaily) {
 
-            radioDaily.setChecked(
-                    true
+            return "Daily";
+        }
+
+
+        if (checkedId ==
+                R.id.radioTwiceWeek) {
+
+            return "Twice a week";
+        }
+
+
+        if (checkedId ==
+                R.id.radioThriceWeek) {
+
+            return "Thrice a week";
+        }
+
+
+        if (checkedId ==
+                R.id.radioFourTimesWeek) {
+
+            return "4 times a week";
+        }
+
+
+        if (checkedId ==
+                R.id.radioFiveTimesWeek) {
+
+            return "5 times a week";
+        }
+
+
+        if (checkedId ==
+                R.id.radioEveryWeekend) {
+
+            return "Every weekend";
+        }
+
+
+        return null;
+    }
+
+
+    // ============================================================
+    // ENABLE / DISABLE FREQUENCY OPTIONS
+    // ============================================================
+
+    private void setFrequencyEnabled(
+            boolean enabled) {
+
+        if (radioDaily != null) {
+            radioDaily.setEnabled(enabled);
+        }
+
+        if (radioTwiceWeek != null) {
+            radioTwiceWeek.setEnabled(enabled);
+        }
+
+        if (radioThriceWeek != null) {
+            radioThriceWeek.setEnabled(enabled);
+        }
+
+        if (radioFourTimesWeek != null) {
+            radioFourTimesWeek.setEnabled(enabled);
+        }
+
+        if (radioFiveTimesWeek != null) {
+            radioFiveTimesWeek.setEnabled(enabled);
+        }
+
+        if (radioEveryWeekend != null) {
+            radioEveryWeekend.setEnabled(enabled);
+        }
+    }
+
+
+    // ============================================================
+    // LOAD SAVED SETTINGS
+    // ============================================================
+
+    private void loadSavedSettings() {
+
+        boolean remindersEnabled =
+                settingsPrefs.getBoolean(
+                        KEY_REMINDERS,
+                        false
+                );
+
+
+        String frequency =
+                settingsPrefs.getString(
+                        KEY_FREQUENCY,
+                        "Daily"
+                );
+
+
+        // ========================================================
+        // STORE NAME
+        // ========================================================
+
+        String storeName =
+                settingsPrefs.getString(
+                        KEY_STORE_NAME,
+                        ""
+                );
+
+
+        if (editStoreName != null) {
+
+            editStoreName.setText(
+                    storeName
             );
+        }
 
-        } else if (
-                frequency.equals("Twice a week")
-        ) {
 
-            radioTwiceWeek.setChecked(
-                    true
+        // ========================================================
+        // REMINDER SWITCH
+        // ========================================================
+
+        if (switchReminders != null) {
+
+            switchReminders.setChecked(
+                    remindersEnabled
             );
+        }
 
-        } else if (
-                frequency.equals("Thrice a week")
-        ) {
 
-            radioThriceWeek.setChecked(
-                    true
-            );
+        // ========================================================
+        // FREQUENCY ENABLE/DISABLE
+        // ========================================================
 
-        } else if (
-                frequency.equals("4 times a week")
-        ) {
+        setFrequencyEnabled(
+                remindersEnabled
+        );
 
-            radioFourTimesWeek.setChecked(
-                    true
-            );
 
-        } else if (
-                frequency.equals("5 times a week")
-        ) {
+        // ========================================================
+        // SELECT FREQUENCY
+        // ========================================================
 
-            radioFiveTimesWeek.setChecked(
-                    true
-            );
+        if (radioGroupFrequency != null) {
 
-        } else {
+            if (frequency.equals("Daily")) {
 
-            radioEveryWeekend.setChecked(
-                    true
+                radioGroupFrequency.check(
+                        R.id.radioDaily
+                );
+
+            } else if (
+                    frequency.equals(
+                            "Twice a week"
+                    )) {
+
+                radioGroupFrequency.check(
+                        R.id.radioTwiceWeek
+                );
+
+            } else if (
+                    frequency.equals(
+                            "Thrice a week"
+                    )) {
+
+                radioGroupFrequency.check(
+                        R.id.radioThriceWeek
+                );
+
+            } else if (
+                    frequency.equals(
+                            "4 times a week"
+                    )) {
+
+                radioGroupFrequency.check(
+                        R.id.radioFourTimesWeek
+                );
+
+            } else if (
+                    frequency.equals(
+                            "5 times a week"
+                    )) {
+
+                radioGroupFrequency.check(
+                        R.id.radioFiveTimesWeek
+                );
+
+            } else if (
+                    frequency.equals(
+                            "Every weekend"
+                    )) {
+
+                radioGroupFrequency.check(
+                        R.id.radioEveryWeekend
+                );
+            }
+        }
+
+
+        // ========================================================
+        // RESCHEDULE WHEN SETTINGS ARE LOADED
+        // ========================================================
+
+        if (remindersEnabled &&
+                hasSmsPermission()) {
+
+            requestExactAlarmPermissionIfNeeded();
+
+            ReminderReceiver.scheduleReminder(
+                    SettingsActivity.this
             );
         }
     }
 
 
-    // =========================================================
-    // ENABLE / DISABLE FREQUENCY
-    // =========================================================
+    // ============================================================
+    // CHECK SMS PERMISSION
+    // ============================================================
 
-    private void setFrequencyEnabled(
-            boolean enabled
-    ) {
+    private boolean hasSmsPermission() {
 
-        /*
-         * Enable or disable every
-         * frequency radio button.
-         */
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
 
-        radioDaily.setEnabled(
-                enabled
-        );
+            return true;
+        }
 
 
-        radioTwiceWeek.setEnabled(
-                enabled
-        );
-
-
-        radioThriceWeek.setEnabled(
-                enabled
-        );
-
-
-        radioFourTimesWeek.setEnabled(
-                enabled
-        );
-
-
-        radioFiveTimesWeek.setEnabled(
-                enabled
-        );
-
-
-        radioEveryWeekend.setEnabled(
-                enabled
-        );
+        return checkSelfPermission(
+                Manifest.permission.SEND_SMS
+        ) == PackageManager.PERMISSION_GRANTED;
     }
 
 
-    // =========================================================
-    // SCHEDULE REMINDER
-    // =========================================================
+    // ============================================================
+    // EXACT ALARM PERMISSION
+    // ============================================================
 
-    private void scheduleReminder() {
+    private void requestExactAlarmPermissionIfNeeded() {
 
-        /*
-         * Call ReminderReceiver.
-         *
-         * ReminderReceiver is responsible for
-         * checking the database and sending
-         * payment reminder SMS.
-         */
+        if (Build.VERSION.SDK_INT <
+                Build.VERSION_CODES.S) {
 
-        ReminderReceiver.scheduleReminder(
-                SettingsActivity.this
-        );
+            return;
+        }
+
+
+        AlarmManager alarmManager =
+                (AlarmManager)
+                        getSystemService(
+                                ALARM_SERVICE
+                        );
+
+
+        if (alarmManager == null) {
+            return;
+        }
+
+
+        if (alarmManager.canScheduleExactAlarms()) {
+
+            return;
+        }
+
+
+        try {
+
+            Intent intent =
+                    new Intent(
+                            Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                    );
+
+
+            intent.setData(
+                    Uri.parse(
+                            "package:" +
+                                    getPackageName()
+                    )
+            );
+
+
+            startActivity(intent);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            Toast.makeText(
+                    this,
+                    "Please allow Estor to set alarms and reminders in Android Settings.",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
     }
 
 
-    // =========================================================
+    // ============================================================
     // SMS PERMISSION RESULT
-    // =========================================================
+    // ============================================================
 
     @Override
     public void onRequestPermissionsResult(
             int requestCode,
             @NonNull String[] permissions,
-            @NonNull int[] grantResults
-    ) {
+            @NonNull int[] grantResults) {
 
         super.onRequestPermissionsResult(
                 requestCode,
@@ -1038,75 +1096,52 @@ public class SettingsActivity extends AppCompatActivity {
         );
 
 
-        // =====================================================
-        // CHECK OUR REQUEST
-        // =====================================================
-
-        if (
-                requestCode ==
-                        SMS_PERMISSION_REQUEST
-        ) {
+        if (requestCode ==
+                SMS_PERMISSION_REQUEST_CODE) {
 
 
-            // =================================================
-            // PERMISSION GRANTED
-            // =================================================
-
-            if (
-                    grantResults.length > 0 &&
-                            grantResults[0] ==
-                                    PackageManager.PERMISSION_GRANTED
-            ) {
-
-                /*
-                 * Make sure switch stays ON.
-                 */
-                switchReminders.setChecked(
-                        true
-                );
-
-
-                /*
-                 * Schedule reminder.
-                 */
-                scheduleReminder();
+            if (grantResults.length > 0 &&
+                    grantResults[0] ==
+                            PackageManager.PERMISSION_GRANTED) {
 
 
                 Toast.makeText(
-                        SettingsActivity.this,
-                        "Payment reminders enabled.",
+                        this,
+                        "SMS permission granted.",
                         Toast.LENGTH_SHORT
                 ).show();
-            }
 
 
-            // =================================================
-            // PERMISSION DENIED
-            // =================================================
+                // ================================================
+                // NOW SCHEDULE THE REMINDER
+                // ================================================
 
-            else {
+                requestExactAlarmPermissionIfNeeded();
 
-                /*
-                 * Turn switch OFF because
-                 * SMS permission was denied.
-                 */
-                switchReminders.setChecked(
-                        false
+
+                ReminderReceiver.scheduleReminder(
+                        SettingsActivity.this
                 );
 
 
-                /*
-                 * Disable frequency options.
-                 */
-                setFrequencyEnabled(
-                        false
-                );
+            } else {
+
+                Toast.makeText(
+                        this,
+                        "SMS permission is required for payment reminders.",
+                        Toast.LENGTH_LONG
+                ).show();
 
 
-                /*
-                 * Save OFF state.
-                 */
-                settingsPreferences
+                if (switchReminders != null) {
+
+                    switchReminders.setChecked(
+                            false
+                    );
+                }
+
+
+                settingsPrefs
                         .edit()
                         .putBoolean(
                                 KEY_REMINDERS,
@@ -1115,35 +1150,76 @@ public class SettingsActivity extends AppCompatActivity {
                         .apply();
 
 
-                Toast.makeText(
-                        SettingsActivity.this,
-                        "SMS permission is required for payment reminders.",
-                        Toast.LENGTH_LONG
-                ).show();
+                ReminderReceiver.cancelReminder(
+                        SettingsActivity.this
+                );
+
+
+                setFrequencyEnabled(false);
             }
         }
     }
 
 
-    // =========================================================
-    // DP TO PX
-    // =========================================================
+    // ============================================================
+    // ON PAUSE
+    // ============================================================
 
-    private int dpToPx(
-            int dp
-    ) {
+    @Override
+    protected void onPause() {
 
-        /*
-         * Convert dp to pixels.
-         */
-        float density =
-                getResources()
-                        .getDisplayMetrics()
-                        .density;
+        super.onPause();
+
+        saveStoreName();
+    }
 
 
-        return (int) (
-                dp * density + 0.5f
-        );
+    // ============================================================
+    // ON RESUME
+    // ============================================================
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+
+        // ========================================================
+        // Re-check reminder after returning from Android's
+        // "Alarms & reminders" settings.
+        // ========================================================
+
+        if (settingsPrefs == null) {
+            return;
+        }
+
+
+        boolean remindersEnabled =
+                settingsPrefs.getBoolean(
+                        KEY_REMINDERS,
+                        false
+                );
+
+
+        if (remindersEnabled &&
+                hasSmsPermission()) {
+
+            ReminderReceiver.scheduleReminder(
+                    SettingsActivity.this
+            );
+        }
+    }
+
+
+    // ============================================================
+    // BACK PRESSED
+    // ============================================================
+
+    @Override
+    public void onBackPressed() {
+
+        saveStoreName();
+
+        super.onBackPressed();
     }
 }

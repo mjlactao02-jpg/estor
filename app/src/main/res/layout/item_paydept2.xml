@@ -38,7 +38,7 @@
             android:layout_weight="1"
             android:text="Lucky Me Pancit Canton"
             android:textColor="#222222"
-            android:textSize="21sp"
+            android:textSize="22sp"
             android:maxLines="1"
             android:ellipsize="end" />
 
@@ -47,14 +47,14 @@
 
         <TextView
             android:id="@+id/txtAmount"
-            android:layout_width="75dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:gravity="start"
             android:text="₱ 45.00"
-            android:textColor="#222222"
+            android:textColor="#F05B5B"
             android:textSize="19sp"
             android:textStyle="bold"
-            android:maxLines="1" />
+            android:maxLines="4" />
 
     </LinearLayout>
 
@@ -68,11 +68,9 @@
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:text="Qty 3"
-
         android:textColor="#222222"
-        android:textSize="20sp"
+        android:textSize="18sp"
 
         android:layout_marginTop="1dp" />
 
