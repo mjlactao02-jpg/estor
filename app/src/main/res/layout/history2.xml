@@ -60,7 +60,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/customerInfoCard"
             android:layout_width="0dp"
-            android:layout_height="115dp"
+            android:layout_height="128dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="10dp"
@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:text="Juan Dela Cruz"
                 android:textColor="#FFFFFF"
-                android:textSize="14sp"
+                android:textSize="23sp"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:includeFontPadding="false"
@@ -106,7 +106,7 @@
                 android:layout_marginTop="3dp"
                 android:text="0987 654 3201"
                 android:textColor="#FFFFFF"
-                android:textSize="10sp"
+                android:textSize="17sp"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:includeFontPadding="false"
@@ -139,7 +139,7 @@
                         android:layout_height="wrap_content"
                         android:text="₱0.00"
                         android:textColor="#5870D9"
-                        android:textSize="14sp"
+                        android:textSize="20sp"
                         android:textStyle="bold"
                         android:gravity="center"
                         android:maxLines="1"
@@ -150,7 +150,7 @@
                         android:layout_height="wrap_content"
                         android:text="Total Borrowed"
                         android:textColor="#999999"
-                        android:textSize="8sp"
+                        android:textSize="13sp"
                         android:gravity="center"
                         android:maxLines="1" />
                 </LinearLayout>
@@ -167,7 +167,7 @@
                         android:layout_height="wrap_content"
                         android:text="₱0.00"
                         android:textColor="#35B96B"
-                        android:textSize="14sp"
+                        android:textSize="20sp"
                         android:textStyle="bold"
                         android:gravity="center"
                         android:maxLines="1"
@@ -178,7 +178,7 @@
                         android:layout_height="wrap_content"
                         android:text="Total Paid"
                         android:textColor="#999999"
-                        android:textSize="8sp"
+                        android:textSize="13sp"
                         android:gravity="center"
                         android:maxLines="1" />
                 </LinearLayout>
@@ -189,24 +189,25 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center">
+
                     <TextView
                         android:id="@+id/txtCurrentDebt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="₱0.00"
-                        android:textColor="#F05B5B"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
+                        android:ellipsize="end"
                         android:gravity="center"
                         android:maxLines="1"
-                        android:ellipsize="end" />
+                        android:text="₱0.00"
+                        android:textColor="#F05B5B"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
                     <TextView
                         android:id="@+id/txtDebtLabel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Current Debt"
                         android:textColor="#999999"
-                        android:textSize="8sp"
+                        android:textSize="13sp"
                         android:gravity="center"
                         android:maxLines="1" />
                 </LinearLayout>

@@ -18,10 +18,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         android:fillViewport="true"
         android:clipToPadding="false"
-
         android:paddingBottom="16dp">
 
 
@@ -42,23 +40,13 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="190dp"
-
                 android:background="@drawable/bg_wallet"
-
                 android:clipToOutline="true">
 
 
                 <!-- ================================================= -->
                 <!-- WALLET PICTURE                                   -->
                 <!-- ================================================= -->
-                <!--
-                    Put wallet.png inside:
-
-                    app/src/main/res/drawable/wallet.png
-
-                    The image should preferably have a
-                    transparent background.
-                -->
 
                 <ImageView
                     android:id="@+id/imgWalletDecoration"
@@ -91,16 +79,12 @@
                     <!-- SETTINGS                                       -->
                     <!-- ============================================= -->
 
-
-                    <!-- ============================================= -->
-                    <!-- TOTAL DEBT LABEL                              -->
-                    <!-- ============================================= -->
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="45dp"
                         android:gravity="end|center_vertical"
                         android:orientation="horizontal">
+
 
                         <ImageButton
                             android:id="@+id/btnSettings"
@@ -116,18 +100,18 @@
 
                     </LinearLayout>
 
+
+                    <!-- ============================================= -->
+                    <!-- TOTAL DEBT LABEL                              -->
+                    <!-- ============================================= -->
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:layout_marginTop="4dp"
-
                         android:text="Total debt:"
-
                         android:textColor="#DDE7FF"
-
                         android:textSize="20sp"
-
                         android:textStyle="bold" />
 
 
@@ -145,7 +129,9 @@
                         android:textColor="#FFFFFF"
                         android:textSize="40sp"
                         android:textStyle="bold" />
+
                 </LinearLayout>
+
             </FrameLayout>
 
 
@@ -158,6 +144,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="26dp"
                 android:orientation="horizontal">
+
+
                 <!-- ================================================= -->
                 <!-- UNPAID CUSTOMER                                  -->
                 <!-- ================================================= -->
@@ -165,31 +153,78 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:minHeight="140dp"
                     android:layout_weight="1"
+                    android:minHeight="140dp"
                     android:orientation="vertical"
                     android:padding="16dp"
                     android:background="@drawable/bg_unpaid">
 
 
-                    <!-- TITLE -->
+                    <!-- ============================================= -->
+                    <!-- TITLE ROW                                    -->
+                    <!-- ============================================= -->
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-
-                        android:text="Unpaid Customer"
-
-                        android:textColor="#172033"
-
-                        android:textSize="15sp"
-
-                        android:textStyle="bold"
-
-                        android:maxLines="2" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
 
-                    <!-- CUSTOMER COUNT -->
+                        <!-- ========================================= -->
+                        <!-- BLANK CIRCLE + YOUR IMAGE                 -->
+                        <!-- ========================================= -->
+
+                        <FrameLayout
+                            android:layout_width="42dp"
+                            android:layout_height="42dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/bg_unpaid_icon">
+
+
+                            <!--
+                                PUT YOUR OWN ICON HERE
+
+                                Example:
+                                res/drawable/ic_unpaid_customer.png
+
+                                You can replace the PNG with your
+                                own image without changing this layout.
+                            -->
+
+                            <ImageView
+                                android:id="@+id/imgUnpaidCustomer"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_unpaid_customer"
+                                android:scaleType="centerInside"
+                                android:contentDescription="Unpaid Customer icon" />
+
+                        </FrameLayout>
+
+
+                        <!-- ========================================= -->
+                        <!-- TITLE                                     -->
+                        <!-- ========================================= -->
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Unpaid Customer"
+                            android:textColor="#172033"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:maxLines="2"
+                            android:ellipsize="end" />
+
+                    </LinearLayout>
+
+
+                    <!-- ============================================= -->
+                    <!-- CUSTOMER COUNT                                -->
+                    <!-- ============================================= -->
 
                     <TextView
                         android:id="@+id/txtUnpaidCount"
@@ -201,7 +236,9 @@
                         android:textSize="16sp" />
 
 
-                    <!-- UNPAID AMOUNT -->
+                    <!-- ============================================= -->
+                    <!-- UNPAID AMOUNT                                 -->
+                    <!-- ============================================= -->
 
                     <TextView
                         android:id="@+id/txtUnpaidAmount"
@@ -232,36 +269,78 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-
-                    android:minHeight="140dp"
-
                     android:layout_weight="1"
-
+                    android:minHeight="140dp"
                     android:orientation="vertical"
-
                     android:padding="16dp"
-
                     android:background="@drawable/bg_partial">
 
 
-                    <!-- TITLE -->
+                    <!-- ============================================= -->
+                    <!-- TITLE ROW                                    -->
+                    <!-- ============================================= -->
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-
-                        android:text="Partial Customer"
-
-                        android:textColor="#172033"
-
-                        android:textSize="15sp"
-
-                        android:textStyle="bold"
-
-                        android:maxLines="2" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
 
-                    <!-- CUSTOMER COUNT -->
+                        <!-- ========================================= -->
+                        <!-- BLANK CIRCLE + YOUR IMAGE                 -->
+                        <!-- ========================================= -->
+
+                        <FrameLayout
+                            android:layout_width="42dp"
+                            android:layout_height="42dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/bg_partial_icon">
+
+
+                            <!--
+                                PUT YOUR OWN ICON HERE
+
+                                Example:
+                                res/drawable/ic_partial_customer.png
+
+                                You can replace the PNG with your
+                                own image without changing this layout.
+                            -->
+
+                            <ImageView
+                                android:id="@+id/imgPartialCustomer"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_partial_customer"
+                                android:scaleType="centerInside"
+                                android:contentDescription="Partial Customer icon" />
+
+                        </FrameLayout>
+
+
+                        <!-- ========================================= -->
+                        <!-- TITLE                                     -->
+                        <!-- ========================================= -->
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Partial Customer"
+                            android:textColor="#172033"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:maxLines="2"
+                            android:ellipsize="end" />
+
+                    </LinearLayout>
+
+
+                    <!-- ============================================= -->
+                    <!-- CUSTOMER COUNT                                -->
+                    <!-- ============================================= -->
 
                     <TextView
                         android:id="@+id/txtPartialCount"
@@ -272,7 +351,10 @@
                         android:textColor="#149447"
                         android:textSize="16sp" />
 
-                    <!-- PARTIAL AMOUNT -->
+
+                    <!-- ============================================= -->
+                    <!-- PARTIAL AMOUNT                                 -->
+                    <!-- ============================================= -->
 
                     <TextView
                         android:id="@+id/txtPartialAmount"
@@ -306,74 +388,49 @@
 
                 <LinearLayout
                     android:id="@+id/btnAddDebt"
-
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-
                     android:layout_weight="1"
-
                     android:orientation="vertical"
-
                     android:gravity="center"
-
                     android:padding="8dp"
-
                     android:clickable="true"
                     android:focusable="true"
-
                     android:background="@drawable/bg_add_debt">
 
-
-                    <!-- WHITE CIRCLE -->
 
                     <FrameLayout
                         android:layout_width="64dp"
                         android:layout_height="64dp"
-
                         android:background="@drawable/bg_white_circle"
-
                         android:elevation="4dp">
 
 
                         <ImageView
                             android:id="@+id/imgAddDebt"
-
                             android:layout_width="45dp"
                             android:layout_height="45dp"
-
                             android:layout_gravity="center"
-
                             android:src="@drawable/ic_adddept"
-
                             android:contentDescription="Add Debt"
-
                             android:scaleType="centerInside" />
 
                     </FrameLayout>
 
 
-                    <!-- ADD DEBT TEXT -->
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:layout_marginTop="8dp"
-
                         android:text="Add Debt"
-
                         android:textColor="#FFFFFF"
-
                         android:textSize="17sp"
-
                         android:textStyle="bold" />
 
                 </LinearLayout>
 
 
-                <!-- ================================================= -->
-                <!-- SPACE                                             -->
-                <!-- ================================================= -->
+                <!-- SPACE -->
 
                 <Space
                     android:layout_width="10dp"
@@ -386,66 +443,43 @@
 
                 <LinearLayout
                     android:id="@+id/btnPayDebt"
-
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-
                     android:layout_weight="1"
-
                     android:orientation="vertical"
-
                     android:gravity="center"
-
                     android:padding="8dp"
-
                     android:clickable="true"
                     android:focusable="true"
-
                     android:background="@drawable/bg_add_debt">
 
-
-                    <!-- WHITE CIRCLE -->
 
                     <FrameLayout
                         android:layout_width="64dp"
                         android:layout_height="64dp"
-
                         android:background="@drawable/bg_white_circle"
-
                         android:elevation="4dp">
 
 
                         <ImageView
                             android:id="@+id/imgPayDebt"
-
                             android:layout_width="45dp"
                             android:layout_height="45dp"
-
                             android:layout_gravity="center"
-
                             android:src="@drawable/ic_paydept"
-
                             android:contentDescription="Pay Debt"
-
                             android:scaleType="centerInside" />
 
                     </FrameLayout>
 
 
-                    <!-- PAY DEBT TEXT -->
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:layout_marginTop="8dp"
-
                         android:text="Pay Debt"
-
                         android:textColor="#FFFFFF"
-
                         android:textSize="17sp"
-
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -460,9 +494,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-
                 android:layout_marginTop="10dp"
-
                 android:orientation="horizontal">
 
 
@@ -472,25 +504,16 @@
 
                 <LinearLayout
                     android:id="@+id/btnTransaction"
-
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-
                     android:layout_weight="1"
-
                     android:orientation="vertical"
-
                     android:gravity="center"
-
                     android:padding="8dp"
-
                     android:clickable="true"
                     android:focusable="true"
-
                     android:background="@drawable/bg_add_debt">
 
-
-                    <!-- WHITE CIRCLE -->
 
                     <FrameLayout
                         android:layout_width="64dp"
@@ -501,43 +524,29 @@
 
                         <ImageView
                             android:id="@+id/imgTransaction"
-
                             android:layout_width="45dp"
                             android:layout_height="45dp"
-
                             android:layout_gravity="center"
-
                             android:src="@drawable/ic_transaction"
-
                             android:contentDescription="Transaction"
-
                             android:scaleType="centerInside" />
 
                     </FrameLayout>
 
 
-                    <!-- TRANSACTION TEXT -->
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:layout_marginTop="8dp"
-
                         android:text="Transaction"
-
                         android:textColor="#FFFFFF"
-
                         android:textSize="17sp"
-
                         android:textStyle="bold" />
 
                 </LinearLayout>
 
 
-                <!-- ================================================= -->
-                <!-- SPACE                                             -->
-                <!-- ================================================= -->
+                <!-- SPACE -->
 
                 <Space
                     android:layout_width="10dp"
@@ -550,66 +559,43 @@
 
                 <LinearLayout
                     android:id="@+id/btnHistory"
-
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-
                     android:layout_weight="1"
-
                     android:orientation="vertical"
-
                     android:gravity="center"
-
                     android:padding="8dp"
-
                     android:clickable="true"
                     android:focusable="true"
-
                     android:background="@drawable/bg_add_debt">
 
-
-                    <!-- WHITE CIRCLE -->
 
                     <FrameLayout
                         android:layout_width="64dp"
                         android:layout_height="64dp"
-
                         android:background="@drawable/bg_white_circle"
-
                         android:elevation="4dp">
 
 
                         <ImageView
                             android:id="@+id/imgHistory"
-
                             android:layout_width="45dp"
                             android:layout_height="45dp"
-
                             android:layout_gravity="center"
-
                             android:src="@drawable/ic_history"
-
                             android:contentDescription="History"
-
                             android:scaleType="centerInside" />
 
                     </FrameLayout>
 
 
-                    <!-- HISTORY TEXT -->
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-
                         android:layout_marginTop="8dp"
-
                         android:text="History"
-
                         android:textColor="#FFFFFF"
-
                         android:textSize="17sp"
-
                         android:textStyle="bold" />
 
                 </LinearLayout>

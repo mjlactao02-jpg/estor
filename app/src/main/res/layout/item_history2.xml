@@ -61,7 +61,6 @@
             android:text="Lucky Me Pancit Canton"
             android:textColor="#222222"
             android:textSize="23sp"
-            android:textStyle="bold"
             android:maxLines="1"
             android:ellipsize="end"
             android:includeFontPadding="false"
