@@ -949,11 +949,6 @@ public class Paydept2Activity extends AppCompatActivity {
                             R.id.txtAmount
                     );
 
-            TextView txtDueDate =
-                    convertView.findViewById(
-                            R.id.txtDueDate
-                    );
-
 
             DebtItem item =
                     debtItems.get(
@@ -980,27 +975,6 @@ public class Paydept2Activity extends AppCompatActivity {
                                     item.getRemainingAmount()
                             )
             );
-
-            String dueIso = item.getDueDateIso();
-            if (dueIso != null && !dueIso.trim().isEmpty()) {
-                String display = DueDateUtils.formatForDisplay(dueIso);
-                txtDueDate.setVisibility(View.VISIBLE);
-                if (DueDateUtils.isOverdue(dueIso)) {
-                    txtDueDate.setText("Due: " + display + " • OVERDUE");
-                    txtDueDate.setTextColor(0xFFF05B5B);
-                } else if (DueDateUtils.isDueToday(dueIso)) {
-                    txtDueDate.setText("Due: " + display + " • Today");
-                    txtDueDate.setTextColor(0xFFE6A000);
-                } else if (DueDateUtils.isDueSoon(dueIso, 3)) {
-                    txtDueDate.setText("Due: " + display + " • Due soon");
-                    txtDueDate.setTextColor(0xFFE6A000);
-                } else {
-                    txtDueDate.setText("Due: " + display);
-                    txtDueDate.setTextColor(0xFF6C63FF);
-                }
-            } else {
-                txtDueDate.setVisibility(View.GONE);
-            }
 
             return convertView;
         }

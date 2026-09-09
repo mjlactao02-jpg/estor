@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/historyItemCard"
         android:layout_width="0dp"
-        android:layout_height="90dp"
+        android:layout_height="100dp"
         android:background="@drawable/bg_history_customer"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
