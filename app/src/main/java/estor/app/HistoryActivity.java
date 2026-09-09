@@ -120,10 +120,7 @@ public class HistoryActivity extends AppCompatActivity {
         adapter =
                 new HistoryAdapter();
 
-
-        listCustomers.setAdapter(
-                adapter
-        );
+        listCustomers.setAdapter(adapter);
 
 
         loadHistory();
@@ -353,27 +350,10 @@ public class HistoryActivity extends AppCompatActivity {
                                 totalPaid;
 
 
-                // -------------------------------------------------
-                // OVERDUE CHECK (if still owing and due date passed)
-                // -------------------------------------------------
-                String dueIso = null;
-                boolean isOverdue = false;
-                try {
-                    dueIso = databaseHelper.getEarliestDueDate(customerId);
-                    if (remaining > 0.001 && dueIso != null && !dueIso.trim().isEmpty()) {
-                        isOverdue = DueDateUtils.isOverdue(dueIso);
-                    }
-                } catch (Exception ignored) {}
-
                 String status;
 
-                // -------------------------------------------------
-                // STATUS (Overdue takes priority over Unpaid/Partial)
-                // -------------------------------------------------
-
-                if (isOverdue) {
-                    status = "Overdue";
-                } else if (remaining <= 0.001) {
+                // keep Paid/Partial/Unpaid for filter logic; overdue flagged separately
+                if (remaining <= 0.001) {
                     status = "Paid";
                 } else if (totalPaid > 0.001) {
                     status = "Partially Paid";
@@ -381,6 +361,7 @@ public class HistoryActivity extends AppCompatActivity {
                     status = "Unpaid";
                 }
 
+                // due/overdue resolved after cursor closed
 
                 allCustomers.add(
                         new HistoryItem(
@@ -391,8 +372,8 @@ public class HistoryActivity extends AppCompatActivity {
                                 totalPaid,
                                 remaining,
                                 status,
-                                isOverdue,
-                                dueIso
+                                false,
+                                null
                         )
                 );
             }
@@ -400,6 +381,19 @@ public class HistoryActivity extends AppCompatActivity {
         } finally {
 
             cursor.close();
+        }
+
+        // Resolve overdue after cursor closed
+        for (HistoryItem h : allCustomers) {
+            if (h.remaining > 0.001) {
+                try {
+                    String dueIso = databaseHelper.getEarliestDueDate(h.customerId);
+                    h.dueDateIso = dueIso;
+                    if (dueIso != null && !dueIso.trim().isEmpty()) {
+                        h.isOverdue = DueDateUtils.isOverdue(dueIso);
+                    }
+                } catch (Exception ignored) {}
+            }
         }
 
 
@@ -445,9 +439,6 @@ public class HistoryActivity extends AppCompatActivity {
             ) {
 
                 partialCount++;
-            } else if ("Overdue".equalsIgnoreCase(item.status)) {
-                // overdue already counted but don't double count as unpaid/partial
-                // keep separate
             }
         }
 
@@ -596,7 +587,6 @@ public class HistoryActivity extends AppCompatActivity {
                         displayedCustomers.size()
                 )
         );
-
 
         adapter.notifyDataSetChanged();
     }
@@ -780,30 +770,10 @@ public class HistoryActivity extends AppCompatActivity {
 
 
             // -------------------------------------------------
-            // OVERDUE (priority)
+            // UNPAID
             // -------------------------------------------------
 
-            if ("Overdue".equalsIgnoreCase(
-                    item.status
-            )) {
-
-                txtStatus.setTextColor(
-                        Color.rgb(
-                                229,
-                                138,
-                                0
-                        )
-                );
-
-                txtStatus.setBackgroundResource(
-                        R.drawable.bg_filter_overdue
-                );
-
-                // -------------------------------------------------
-                // UNPAID
-                // -------------------------------------------------
-
-            } else if ("Unpaid".equalsIgnoreCase(
+            if ("Unpaid".equalsIgnoreCase(
                     item.status
             )) {
 
