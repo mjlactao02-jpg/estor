@@ -20,7 +20,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import android.app.DatePickerDialog;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class Adddept2Activity extends AppCompatActivity {
@@ -28,6 +32,7 @@ public class Adddept2Activity extends AppCompatActivity {
     private EditText edtProduct;
     private EditText edtQuantity;
     private EditText edtAmount;
+    private EditText edtDate;
 
     private Button btnAddDebt;
     private Button btnConfirm;
@@ -102,6 +107,11 @@ public class Adddept2Activity extends AppCompatActivity {
         edtAmount =
                 findViewById(
                         R.id.edtAmount
+                );
+
+        edtDate =
+                findViewById(
+                        R.id.edtDate
                 );
 
 
@@ -192,6 +202,7 @@ public class Adddept2Activity extends AppCompatActivity {
 
         checkSmsPermission();
 
+        setupDueDatePicker();
 
         btnBack.setOnClickListener(v -> {
 
@@ -340,6 +351,20 @@ public class Adddept2Activity extends AppCompatActivity {
             return;
         }
 
+        // Due date REQUIRED
+        String dueDateRaw = edtDate != null ? edtDate.getText().toString().trim() : "";
+        if (dueDateRaw.isEmpty()) {
+            edtDate.setError("Due date is required");
+            edtDate.requestFocus();
+            return;
+        }
+        String dueValidate = DueDateUtils.validate(dueDateRaw);
+        if (dueValidate != null) {
+            edtDate.setError(dueValidate);
+            edtDate.requestFocus();
+            return;
+        }
+
 
         DebtItem item =
                 new DebtItem(
@@ -376,6 +401,46 @@ public class Adddept2Activity extends AppCompatActivity {
         ).show();
     }
 
+
+    // =========================================================
+    // DUE DATE PICKER
+    // =========================================================
+
+    private void setupDueDatePicker() {
+        if (edtDate == null) return;
+
+        edtDate.setOnClickListener(v -> showDatePicker());
+        // clickable icon (drawableEnd) - focus change also opens
+        edtDate.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) showDatePicker();
+        });
+    }
+
+    private void showDatePicker() {
+        Calendar cal = Calendar.getInstance();
+        // if already has valid date, set picker to that date
+        String existingIso = DueDateUtils.parseToIso(edtDate.getText().toString());
+        if (existingIso != null) {
+            try {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                Date d = sdf.parse(existingIso);
+                cal.setTime(d);
+            } catch (Exception ignored) {}
+        }
+        new DatePickerDialog(
+                this,
+                (view, year, month, day) -> {
+                    Calendar c = Calendar.getInstance();
+                    c.set(year, month, day);
+                    java.text.SimpleDateFormat out = new java.text.SimpleDateFormat("MM/dd/yyyy", Locale.US);
+                    edtDate.setText(out.format(c.getTime()));
+                    edtDate.setError(null);
+                },
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
+        ).show();
+    }
 
     // =========================================================
     // UPDATE TOTAL
@@ -527,6 +592,29 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
+        // VALIDATE DUE DATE REQUIRED (batch due date from edtDate)
+        // =====================================================
+
+        String batchDueRaw = edtDate != null ? edtDate.getText().toString().trim() : "";
+        if (batchDueRaw.isEmpty()) {
+            edtDate.setError("Due date is required");
+            edtDate.requestFocus();
+            return;
+        }
+        String batchDueValidate = DueDateUtils.validate(batchDueRaw);
+        if (batchDueValidate != null) {
+            edtDate.setError(batchDueValidate);
+            edtDate.requestFocus();
+            return;
+        }
+        String batchDueIso = DueDateUtils.parseToIso(batchDueRaw);
+        if (batchDueIso == null || batchDueIso.trim().isEmpty()) {
+            edtDate.setError("Due date is required");
+            edtDate.requestFocus();
+            return;
+        }
+
+        // =====================================================
         // SAVE DEBT ITEMS
         // =====================================================
 
@@ -562,7 +650,9 @@ public class Adddept2Activity extends AppCompatActivity {
 
                                 item.getQuantity(),
 
-                                lineTotal
+                                lineTotal,
+
+                                batchDueIso
                         );
 
 
@@ -639,12 +729,13 @@ public class Adddept2Activity extends AppCompatActivity {
 
 
         // =====================================================
-        // SEND SMS
+        // SEND SMS (include due date)
         // =====================================================
 
         sendDebtSms(
                 customerPhone,
-                debtItems
+                debtItems,
+                batchDueIso
         );
 
 
@@ -657,6 +748,8 @@ public class Adddept2Activity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
 
         updateTotalDisplay();
+
+        if (edtDate != null) edtDate.setText("");
 
 
         finish();
@@ -694,7 +787,8 @@ public class Adddept2Activity extends AppCompatActivity {
 
     private void sendDebtSms(
             String phoneNumber,
-            ArrayList<DebtItem> items
+            ArrayList<DebtItem> items,
+            String dueDateIso
     ) {
 
         if (phoneNumber == null ||
@@ -772,6 +866,11 @@ public class Adddept2Activity extends AppCompatActivity {
                                 total
                         )
                 );
+
+        if (dueDateIso != null && !dueDateIso.trim().isEmpty()) {
+            message.append("\nDue: ")
+                    .append(DueDateUtils.formatForDisplay(dueDateIso));
+        }
 
 
         try {

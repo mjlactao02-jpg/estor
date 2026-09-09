@@ -18,8 +18,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "estor.db";
 
-    // Version 6 = transactions table
-    private static final int DATABASE_VERSION = 7;
+    // Version 8 = due_date column
+    private static final int DATABASE_VERSION = 8;
 
 
     // =========================================================
@@ -51,6 +51,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DEBT_PAID = "paid";
     public static final String COLUMN_DEBT_DATE = "debt_date";
     public static final String COLUMN_DEBT_TIME = "debt_time";
+    public static final String COLUMN_DEBT_DUE_DATE = "due_date";
 
 
     // =========================================================
@@ -147,6 +148,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         COLUMN_DEBT_DATE +
                         " TEXT, " +
                         COLUMN_DEBT_TIME +
+                        " TEXT, " +
+                        COLUMN_DEBT_DUE_DATE +
                         " TEXT" +
                         ")"
         );
@@ -289,6 +292,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (oldVersion < 7) {
             db.execSQL("ALTER TABLE " + TABLE_DEBTS + " ADD COLUMN " + COLUMN_DEBT_DATE + " TEXT");
             db.execSQL("ALTER TABLE " + TABLE_DEBTS + " ADD COLUMN " + COLUMN_DEBT_TIME + " TEXT");
+        }
+
+        // -----------------------------------------------------
+        // VERSION 7 -> 8
+        // Add due_date column for payment deadline.
+        // -----------------------------------------------------
+        if (oldVersion < 8) {
+            db.execSQL("ALTER TABLE " + TABLE_DEBTS + " ADD COLUMN " + COLUMN_DEBT_DUE_DATE + " TEXT");
         }
     }
 
@@ -471,6 +482,90 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_DEBT_TIME,
                 new SimpleDateFormat("h:mm a", Locale.getDefault()).format(new Date())
         );
+
+        long result =
+                db.insert(
+                        TABLE_DEBTS,
+                        null,
+                        values
+                );
+
+        db.close();
+
+        return result;
+    }
+
+    // =========================================================
+    // INSERT DEBT WITH DUE DATE
+    // =========================================================
+
+    public long insertDebt(
+            int customerId,
+            String name,
+            String phone,
+            String item,
+            int quantity,
+            double amount,
+            String dueDateIso
+    ) {
+
+        SQLiteDatabase db =
+                this.getWritableDatabase();
+
+        ContentValues values =
+                new ContentValues();
+
+        values.put(
+                COLUMN_DEBT_CUSTOMER_ID,
+                customerId
+        );
+
+        values.put(
+                COLUMN_DEBT_CUSTOMER_NAME,
+                name
+        );
+
+        values.put(
+                COLUMN_DEBT_CUSTOMER_PHONE,
+                phone
+        );
+
+        values.put(
+                COLUMN_DEBT_ITEM,
+                item
+        );
+
+        values.put(
+                COLUMN_DEBT_QUANTITY,
+                quantity
+        );
+
+        values.put(
+                COLUMN_DEBT_AMOUNT,
+                amount
+        );
+
+        values.put(
+                COLUMN_DEBT_PAID,
+                0
+        );
+
+        values.put(
+                COLUMN_DEBT_DATE,
+                new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(new Date())
+        );
+
+        values.put(
+                COLUMN_DEBT_TIME,
+                new SimpleDateFormat("h:mm a", Locale.getDefault()).format(new Date())
+        );
+
+        if (dueDateIso != null && !dueDateIso.trim().isEmpty()) {
+            values.put(
+                    COLUMN_DEBT_DUE_DATE,
+                    dueDateIso.trim()
+            );
+        }
 
         long result =
                 db.insert(
@@ -858,7 +953,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         COLUMN_DEBT_ITEM + ", " +
                         COLUMN_DEBT_QUANTITY + ", " +
                         COLUMN_DEBT_AMOUNT + ", " +
-                        COLUMN_DEBT_PAID +
+                        COLUMN_DEBT_PAID + ", " +
+                        COLUMN_DEBT_DUE_DATE + ", " +
+                        COLUMN_DEBT_DATE + ", " +
+                        COLUMN_DEBT_TIME +
 
                         " FROM " +
                         TABLE_DEBTS +
@@ -874,6 +972,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         ") > 0 " +
 
                         " ORDER BY " +
+                        "CASE WHEN " + COLUMN_DEBT_DUE_DATE + " IS NULL THEN 1 ELSE 0 END, " +
+                        COLUMN_DEBT_DUE_DATE + " ASC, " +
                         COLUMN_DEBT_ID +
                         " ASC";
 
@@ -883,6 +983,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         String.valueOf(customerId)
                 }
         );
+    }
+
+    // =========================================================
+    // GET CUSTOMER EARLIEST DUE DATE (unpaid only)
+    // =========================================================
+
+    public String getEarliestDueDate(int customerId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT " + COLUMN_DEBT_DUE_DATE +
+                        " FROM " + TABLE_DEBTS +
+                        " WHERE " + COLUMN_DEBT_CUSTOMER_ID + " = ?" +
+                        " AND (" + COLUMN_DEBT_AMOUNT + " - " + COLUMN_DEBT_PAID + ") > 0" +
+                        " AND " + COLUMN_DEBT_DUE_DATE + " IS NOT NULL" +
+                        " ORDER BY " + COLUMN_DEBT_DUE_DATE + " ASC LIMIT 1",
+                new String[]{String.valueOf(customerId)}
+        );
+        String due = null;
+        if (cursor.moveToFirst()) {
+            due = cursor.getString(0);
+        }
+        cursor.close();
+        return due;
     }
 
 
@@ -1497,7 +1620,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         COLUMN_DEBT_AMOUNT + ", " +
                         COLUMN_DEBT_PAID + ", " +
                         COLUMN_DEBT_DATE + ", " +
-                        COLUMN_DEBT_TIME +
+                        COLUMN_DEBT_TIME + ", " +
+                        COLUMN_DEBT_DUE_DATE +
                         " FROM " + TABLE_DEBTS +
                         " WHERE " + COLUMN_DEBT_CUSTOMER_ID + " = ? " +
                         " ORDER BY " + COLUMN_DEBT_ID + " DESC";
@@ -1542,6 +1666,66 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         "WHERE d." + COLUMN_DEBT_CUSTOMER_ID + " = c." + COLUMN_ID + ") " +
                         "ORDER BY latest_activity DESC, c." + COLUMN_ID + " DESC";
 
+        return db.rawQuery(query, null);
+    }
+
+    // =========================================================
+    // OVERDUE CUSTOMER COUNT (due_date < today and remaining >0)
+    // =========================================================
+
+    public int getOverdueCustomerCount() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String today = DueDateUtils.todayIso();
+        Cursor cursor = db.rawQuery(
+                "SELECT COUNT(DISTINCT " + COLUMN_DEBT_CUSTOMER_ID + ") FROM " + TABLE_DEBTS +
+                        " WHERE " + COLUMN_DEBT_DUE_DATE + " IS NOT NULL" +
+                        " AND " + COLUMN_DEBT_DUE_DATE + " < ?" +
+                        " AND (" + COLUMN_DEBT_AMOUNT + " - " + COLUMN_DEBT_PAID + ") > 0",
+                new String[]{today}
+        );
+        int count = 0;
+        if (cursor.moveToFirst()) count = cursor.getInt(0);
+        cursor.close();
+        return count;
+    }
+
+    // =========================================================
+    // OVERDUE AMOUNT
+    // =========================================================
+
+    public double getOverdueAmount() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String today = DueDateUtils.todayIso();
+        Cursor cursor = db.rawQuery(
+                "SELECT COALESCE(SUM(" + COLUMN_DEBT_AMOUNT + " - " + COLUMN_DEBT_PAID + "),0) FROM " + TABLE_DEBTS +
+                        " WHERE " + COLUMN_DEBT_DUE_DATE + " IS NOT NULL" +
+                        " AND " + COLUMN_DEBT_DUE_DATE + " < ?" +
+                        " AND (" + COLUMN_DEBT_AMOUNT + " - " + COLUMN_DEBT_PAID + ") > 0",
+                new String[]{today}
+        );
+        double amt = 0;
+        if (cursor.moveToFirst()) amt = cursor.getDouble(0);
+        cursor.close();
+        return amt;
+    }
+
+    // =========================================================
+    // DUE SOON CUSTOMERS (nearest due_date first)
+    // =========================================================
+
+    public Cursor getDueSoonCustomers(int limit) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query =
+                "SELECT c." + COLUMN_ID + " AS customer_id, " +
+                        "c." + COLUMN_NAME + " AS customer_name, " +
+                        "c." + COLUMN_PHONE + " AS customer_phone, " +
+                        "MIN(d." + COLUMN_DEBT_DUE_DATE + ") AS earliest_due, " +
+                        "COALESCE(SUM(CASE WHEN (d." + COLUMN_DEBT_AMOUNT + " - d." + COLUMN_DEBT_PAID + ") > 0 THEN (d." + COLUMN_DEBT_AMOUNT + " - d." + COLUMN_DEBT_PAID + ") ELSE 0 END),0) AS total_debt " +
+                        "FROM " + TABLE_CUSTOMERS + " c INNER JOIN " + TABLE_DEBTS + " d ON c." + COLUMN_ID + " = d." + COLUMN_DEBT_CUSTOMER_ID + " " +
+                        "WHERE d." + COLUMN_DEBT_DUE_DATE + " IS NOT NULL AND (d." + COLUMN_DEBT_AMOUNT + " - d." + COLUMN_DEBT_PAID + ") > 0 " +
+                        "GROUP BY c." + COLUMN_ID + ", c." + COLUMN_NAME + ", c." + COLUMN_PHONE + " " +
+                        "HAVING SUM(CASE WHEN (d." + COLUMN_DEBT_AMOUNT + " - d." + COLUMN_DEBT_PAID + ") > 0 THEN (d." + COLUMN_DEBT_AMOUNT + " - d." + COLUMN_DEBT_PAID + ") ELSE 0 END) > 0 " +
+                        "ORDER BY earliest_due ASC LIMIT " + limit;
         return db.rawQuery(query, null);
     }
 

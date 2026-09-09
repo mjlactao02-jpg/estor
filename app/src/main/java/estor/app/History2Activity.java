@@ -137,6 +137,7 @@ public class History2Activity extends AppCompatActivity {
                 int paidIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DEBT_PAID);
                 int dateIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DEBT_DATE);
                 int timeIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DEBT_TIME);
+                int dueDateIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DEBT_DUE_DATE);
 
                 while (cursor.moveToNext()) {
                     String item = itemIndex >= 0 && !cursor.isNull(itemIndex)
@@ -163,13 +164,18 @@ public class History2Activity extends AppCompatActivity {
                             ? cursor.getString(timeIndex)
                             : "";
 
+                    String dueDate = dueDateIndex >= 0 && !cursor.isNull(dueDateIndex)
+                            ? cursor.getString(dueDateIndex)
+                            : null;
+
                     historyItems.add(new HistoryItem(
                             item,
                             quantity,
                             amount,
                             paid,
                             date,
-                            time
+                            time,
+                            dueDate
                     ));
                 }
             } finally {
@@ -191,6 +197,7 @@ public class History2Activity extends AppCompatActivity {
         double paid;
         String date;
         String time;
+        String dueDateIso;
 
         HistoryItem(
                 String item,
@@ -198,7 +205,8 @@ public class History2Activity extends AppCompatActivity {
                 double amount,
                 double paid,
                 String date,
-                String time
+                String time,
+                String dueDateIso
         ) {
             this.item = item;
             this.quantity = quantity;
@@ -206,6 +214,7 @@ public class History2Activity extends AppCompatActivity {
             this.paid = paid;
             this.date = date;
             this.time = time;
+            this.dueDateIso = dueDateIso;
         }
     }
 
@@ -242,6 +251,7 @@ public class History2Activity extends AppCompatActivity {
             TextView txtQuantity = convertView.findViewById(R.id.txtHistoryQuantity);
             TextView txtAmount = convertView.findViewById(R.id.txtHistoryAmount);
             TextView txtStatus = convertView.findViewById(R.id.txtHistoryStatus);
+            TextView txtDueDate = convertView.findViewById(R.id.txtHistoryDueDate);
 
             HistoryItem item = historyItems.get(position);
 
@@ -264,6 +274,26 @@ public class History2Activity extends AppCompatActivity {
 
             double remaining = Math.max(0, item.amount - item.paid);
 
+            // Due date: hide if none, color if overdue
+            if (item.dueDateIso != null && !item.dueDateIso.trim().isEmpty()) {
+                String disp = DueDateUtils.formatForDisplay(item.dueDateIso);
+                if (remaining > 0.001 && DueDateUtils.isOverdue(item.dueDateIso)) {
+                    txtDueDate.setText("Due: " + disp + " • OVERDUE");
+                    txtDueDate.setTextColor(android.graphics.Color.rgb(240, 91, 91));
+                    txtDueDate.setVisibility(View.VISIBLE);
+                } else if (remaining > 0.001 && DueDateUtils.isDueSoon(item.dueDateIso, 3)) {
+                    txtDueDate.setText("Due: " + disp);
+                    txtDueDate.setTextColor(android.graphics.Color.rgb(230, 160, 0));
+                    txtDueDate.setVisibility(View.VISIBLE);
+                } else {
+                    txtDueDate.setText("Due: " + disp);
+                    txtDueDate.setTextColor(android.graphics.Color.rgb(108, 99, 255));
+                    txtDueDate.setVisibility(View.VISIBLE);
+                }
+            } else {
+                txtDueDate.setVisibility(View.GONE);
+            }
+
             if (remaining <= 0.001) {
                 txtStatus.setText("Paid");
                 txtStatus.setTextColor(android.graphics.Color.rgb(53, 185, 107));
@@ -273,7 +303,12 @@ public class History2Activity extends AppCompatActivity {
                 txtStatus.setTextColor(android.graphics.Color.rgb(240, 91, 91));
                 txtStatus.setBackgroundResource(R.drawable.bg_history_status);
             } else {
-                txtStatus.setText("Unpaid");
+                // Unpaid but check overdue for status text
+                if (item.dueDateIso != null && remaining > 0.001 && DueDateUtils.isOverdue(item.dueDateIso)) {
+                    txtStatus.setText("Overdue");
+                } else {
+                    txtStatus.setText("Unpaid");
+                }
                 txtStatus.setTextColor(android.graphics.Color.rgb(240, 91, 91));
                 txtStatus.setBackgroundResource(R.drawable.bg_history_status);
             }

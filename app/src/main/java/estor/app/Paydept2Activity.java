@@ -358,6 +358,11 @@ public class Paydept2Activity extends AppCompatActivity {
                             DatabaseHelper.COLUMN_DEBT_PAID
                     );
 
+            int dueDateIndex =
+                    cursor.getColumnIndex(
+                            DatabaseHelper.COLUMN_DEBT_DUE_DATE
+                    );
+
 
             while (cursor.moveToNext()) {
 
@@ -394,6 +399,11 @@ public class Paydept2Activity extends AppCompatActivity {
                 double remaining =
                         amount - paid;
 
+                String dueDate = null;
+                if (dueDateIndex != -1 && !cursor.isNull(dueDateIndex)) {
+                    dueDate = cursor.getString(dueDateIndex);
+                }
+
 
                 if (remaining > 0.001) {
 
@@ -402,7 +412,8 @@ public class Paydept2Activity extends AppCompatActivity {
                                     debtId,
                                     product,
                                     quantity,
-                                    remaining
+                                    remaining,
+                                    dueDate
                             )
                     );
                 }
@@ -796,12 +807,15 @@ public class Paydept2Activity extends AppCompatActivity {
 
         private final double remainingAmount;
 
+        private final String dueDateIso;
+
 
         DebtItem(
                 long debtId,
                 String product,
                 int quantity,
-                double remainingAmount
+                double remainingAmount,
+                String dueDateIso
         ) {
 
             this.debtId =
@@ -815,6 +829,9 @@ public class Paydept2Activity extends AppCompatActivity {
 
             this.remainingAmount =
                     remainingAmount;
+
+            this.dueDateIso =
+                    dueDateIso;
         }
 
 
@@ -833,6 +850,10 @@ public class Paydept2Activity extends AppCompatActivity {
         double getRemainingAmount() {
 
             return remainingAmount;
+        }
+
+        String getDueDateIso() {
+            return dueDateIso;
         }
     }
 
@@ -928,6 +949,11 @@ public class Paydept2Activity extends AppCompatActivity {
                             R.id.txtAmount
                     );
 
+            TextView txtDueDate =
+                    convertView.findViewById(
+                            R.id.txtDueDate
+                    );
+
 
             DebtItem item =
                     debtItems.get(
@@ -954,6 +980,27 @@ public class Paydept2Activity extends AppCompatActivity {
                                     item.getRemainingAmount()
                             )
             );
+
+            String dueIso = item.getDueDateIso();
+            if (dueIso != null && !dueIso.trim().isEmpty()) {
+                String display = DueDateUtils.formatForDisplay(dueIso);
+                txtDueDate.setVisibility(View.VISIBLE);
+                if (DueDateUtils.isOverdue(dueIso)) {
+                    txtDueDate.setText("Due: " + display + " • OVERDUE");
+                    txtDueDate.setTextColor(0xFFF05B5B);
+                } else if (DueDateUtils.isDueToday(dueIso)) {
+                    txtDueDate.setText("Due: " + display + " • Today");
+                    txtDueDate.setTextColor(0xFFE6A000);
+                } else if (DueDateUtils.isDueSoon(dueIso, 3)) {
+                    txtDueDate.setText("Due: " + display + " • Due soon");
+                    txtDueDate.setTextColor(0xFFE6A000);
+                } else {
+                    txtDueDate.setText("Due: " + display);
+                    txtDueDate.setTextColor(0xFF6C63FF);
+                }
+            } else {
+                txtDueDate.setVisibility(View.GONE);
+            }
 
             return convertView;
         }

@@ -81,6 +81,19 @@
             app:layout_constraintTop_toBottomOf="@id/txtHistoryProduct" />
 
         <TextView
+            android:id="@+id/txtHistoryDueDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text=""
+            android:textColor="#6C63FF"
+            android:textSize="11sp"
+            android:includeFontPadding="false"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtHistoryQuantity" />
+
+        <TextView
             android:id="@+id/txtHistoryAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

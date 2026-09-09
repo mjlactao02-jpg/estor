@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <solid android:color="#EEF1FF" />
+    <!-- PRESSED -->
+    <item android:state_pressed="true">
 
-    <corners android:radius="20dp" />
+        <shape android:shape="rectangle">
 
-</shape>
+            <solid android:color="#B1C0FF" />
+
+            <corners android:radius="20dp" />
+
+        </shape>
+
+    </item>
+
+
+    <!-- NORMAL -->
+    <item>
+
+        <shape android:shape="rectangle">
+
+            <solid android:color="#EEF1FF" />
+
+            <corners android:radius="20dp" />
+
+        </shape>
+
+    </item>
+
+</selector>

@@ -368,6 +368,16 @@ public class PaydeptActivity
                         )
                 );
 
+                // earliest due date for this customer
+                String earliestDue = databaseHelper.getEarliestDueDate(
+                        id.isEmpty() ? -1 : Integer.parseInt(id)
+                );
+                if (earliestDue != null) {
+                    customer.put("due_date", earliestDue);
+                } else {
+                    customer.put("due_date", "");
+                }
+
 
                 customerList.add(
                         customer
@@ -451,6 +461,11 @@ public class PaydeptActivity
                             R.id.txtTotalDebt
                     );
 
+            TextView txtDueDate =
+                    convertView.findViewById(
+                            R.id.txtDueDate
+                    );
+
 
             HashMap<String, String>
                     customer =
@@ -479,6 +494,22 @@ public class PaydeptActivity
                                     "total_debt"
                             )
             );
+
+            String dueIso = customer.get("due_date");
+            if (dueIso != null && !dueIso.trim().isEmpty()) {
+                String disp = DueDateUtils.formatForDisplay(dueIso);
+                if (DueDateUtils.isOverdue(dueIso)) {
+                    txtDueDate.setText("Due: " + disp + " • OVERDUE");
+                    txtDueDate.setTextColor(0xFFF05B5B);
+                    txtDueDate.setVisibility(View.VISIBLE);
+                } else {
+                    txtDueDate.setText("Due: " + disp);
+                    txtDueDate.setTextColor(0xFF6C63FF);
+                    txtDueDate.setVisibility(View.VISIBLE);
+                }
+            } else {
+                txtDueDate.setVisibility(View.GONE);
+            }
 
 
             return convertView;

@@ -50,6 +50,17 @@
         android:textColor="#222222"
         android:textSize="14sp" />
 
+    <!-- Due date (shown if set) -->
+    <TextView
+        android:id="@+id/txtDueDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text=""
+        android:textColor="#6C63FF"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
 
     <!-- Divider -->
     <View

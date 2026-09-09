@@ -204,8 +204,28 @@ public class ReminderReceiver extends BroadcastReceiver {
 
 
                 // =================================================
-                // SMS MESSAGE
+                // DUE DATE (earliest unpaid)
                 // =================================================
+
+                String dueIso = null;
+                try {
+                    dueIso = dbHelper.getEarliestDueDate(customerId);
+                } catch (Exception ignored) {}
+
+                // =================================================
+                // SMS MESSAGE (enriched with due date)
+                // =================================================
+
+                String duePart = "";
+                if (dueIso != null && !dueIso.trim().isEmpty()) {
+                    String disp = DueDateUtils.formatForDisplay(dueIso);
+                    if (DueDateUtils.isOverdue(dueIso)) {
+                        long days = DueDateUtils.daysOverdue(dueIso);
+                        duePart = " It was due on " + disp + " (" + days + " day" + (days==1?"":"s") + " overdue). Please pay immediately.";
+                    } else {
+                        duePart = " Due on " + disp + ".";
+                    }
+                }
 
                 String message =
                         "Hello " +
@@ -214,7 +234,8 @@ public class ReminderReceiver extends BroadcastReceiver {
                                 storeName +
                                 ". Your remaining debt is ₱" +
                                 formattedDebt +
-                                ". Please settle your balance. Thank you.";
+                                "." + duePart +
+                                " Please settle your balance. Thank you.";
 
 
                 // =================================================
