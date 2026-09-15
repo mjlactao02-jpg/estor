@@ -73,6 +73,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     private View cardChangePin;
 
+    private View cardHelpSupport;
+
     private Switch switchReminders;
 
     private RadioGroup radioGroupFrequency;
@@ -136,6 +138,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         setupFrequency();
 
+        setupHelpSupport();
+
         loadSavedSettings();
     }
 
@@ -175,6 +179,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         radioEveryWeekend =
                 findViewById(R.id.radioEveryWeekend);
+
+        cardHelpSupport =
+                findViewById(R.id.cardHelpSupport);
     }
 
 
@@ -318,6 +325,30 @@ public class SettingsActivity extends AppCompatActivity {
                 v -> {
 
                     showChangePinDialog();
+                }
+        );
+    }
+
+
+    // ============================================================
+    // HELP & SUPPORT
+    // ============================================================
+
+    private void setupHelpSupport() {
+
+        if (cardHelpSupport == null) {
+            return;
+        }
+
+        cardHelpSupport.setOnClickListener(
+                v -> {
+                    Intent intent =
+                            new Intent(
+                                    SettingsActivity.this,
+                                    HelpSupportActivity.class
+                            );
+
+                    startActivity(intent);
                 }
         );
     }
@@ -626,13 +657,6 @@ public class SettingsActivity extends AppCompatActivity {
 
 
                         setFrequencyEnabled(false);
-
-
-                        Toast.makeText(
-                                SettingsActivity.this,
-                                "Payment reminders disabled.",
-                                Toast.LENGTH_SHORT
-                        ).show();
                     }
                 }
         );
@@ -693,13 +717,6 @@ public class SettingsActivity extends AppCompatActivity {
         ReminderReceiver.scheduleReminder(
                 SettingsActivity.this
         );
-
-
-        Toast.makeText(
-                this,
-                "Payment reminders enabled.",
-                Toast.LENGTH_SHORT
-        ).show();
     }
 
 
@@ -762,14 +779,6 @@ public class SettingsActivity extends AppCompatActivity {
                                     .scheduleReminder(
                                             SettingsActivity.this
                                     );
-
-
-                            Toast.makeText(
-                                    SettingsActivity.this,
-                                    "Reminder frequency changed to " +
-                                            frequency,
-                                    Toast.LENGTH_SHORT
-                            ).show();
                         }
                     }
                 }

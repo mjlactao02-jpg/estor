@@ -2,11 +2,11 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- WHEN RADIO BUTTON IS SELECTED -->
+    <!-- WHEN RADIO BUTTON IS SELECTED - match settings icon bg #EDEBFF -->
     <item android:state_checked="true">
         <shape android:shape="rectangle">
 
-            <solid android:color="#D1D5F0" />
+            <solid android:color="@color/primary_light" />
 
             <corners android:radius="14dp" />
 

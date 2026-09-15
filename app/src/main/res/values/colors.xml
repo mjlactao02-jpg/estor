@@ -15,4 +15,13 @@
     <color name="title_text">#1A1F36</color>
     <color name="subtitle_text">#8A93A6</color>
     <color name="link_text">#3B6BFF</color>
+
+    <!-- Estor theme - header #6E84EF, icons #6C63FF / #EDEBFF -->
+    <color name="primary">#6E84EF</color>
+    <color name="primary_dark">#5A6FD6</color>
+    <color name="primary_light">#EDEBFF</color>
+    <color name="primary_checked_bg">#EDEBFF</color>
+    <color name="icon_tint">#6C63FF</color>
+    <color name="track_unchecked">#E0E0E0</color>
+    <color name="switch_thumb">#FFFFFF</color>
 </resources>

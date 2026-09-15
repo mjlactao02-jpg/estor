@@ -6,4 +6,25 @@
     <string name="forgot_pin_label">Forgot PIN</string>
     <string name="lock_icon_desc">Lock icon</string>
     <string name="backspace_desc">Delete last digit</string>
+
+    <!-- Help & Support -->
+    <string name="help_support_title">Help &amp; Support</string>
+    <string name="help_support_subtitle">FAQ, guides and contact</string>
+    <string name="help_search_hint">Search help...</string>
+    <string name="help_category_getting_started">Getting Started</string>
+    <string name="help_category_getting_started_desc">What Estor is, dashboard &amp; store name</string>
+    <string name="help_category_debts">Debts &amp; Customers</string>
+    <string name="help_category_debts_desc">Add debt, view &amp; manage customers</string>
+    <string name="help_category_payments">Payments &amp; History</string>
+    <string name="help_category_payments_desc">Pay debt, transactions &amp; history</string>
+    <string name="help_category_reminders">Reminders</string>
+    <string name="help_category_reminders_desc">SMS reminders &amp; frequency</string>
+    <string name="help_category_security">Account &amp; Security</string>
+    <string name="help_category_security_desc">PIN &amp; Recovery PIN</string>
+    <string name="help_faq_title">Frequently Asked Questions</string>
+    <string name="help_contact_title">Contact Support</string>
+    <string name="help_contact_email">support@estor.app</string>
+    <string name="help_contact_phone">+63 900 000 0000</string>
+    <string name="help_email_subject">Estor Support Request</string>
+    <string name="help_no_results">No results found.</string>
 </resources>

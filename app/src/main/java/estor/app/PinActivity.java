@@ -3,8 +3,12 @@ package estor.app;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +57,8 @@ public class PinActivity extends AppCompatActivity {
     private ImageButton keyBackspace;
 
     private TextView tvForgotPin;
+
+    private LinearLayout dotsContainer;
 
 
     // =========================================================
@@ -186,6 +192,8 @@ public class PinActivity extends AppCompatActivity {
         keyBackspace = findViewById(R.id.keyBackspace);
 
         tvForgotPin = findViewById(R.id.tv_forgot_pin);
+
+        dotsContainer = findViewById(R.id.dots_container);
     }
 
 
@@ -418,6 +426,36 @@ public class PinActivity extends AppCompatActivity {
 
 
     // =========================================================
+    // SHOW ERROR - red dots + shake
+    // =========================================================
+
+    private void showPinError() {
+
+        // Make all dots red
+        dot1.setBackgroundResource(R.drawable.dot_error);
+        dot2.setBackgroundResource(R.drawable.dot_error);
+        dot3.setBackgroundResource(R.drawable.dot_error);
+        dot4.setBackgroundResource(R.drawable.dot_error);
+
+        // Shake dots container
+        if (dotsContainer != null) {
+            dotsContainer.startAnimation(
+                    AnimationUtils.loadAnimation(
+                            this,
+                            R.anim.shake
+                    )
+            );
+        }
+
+        // Reset after 600ms
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            enteredPin = "";
+            updateDots();
+        }, 600);
+    }
+
+
+    // =========================================================
     // PROCESS INPUT
     // =========================================================
 
@@ -426,11 +464,7 @@ public class PinActivity extends AppCompatActivity {
         // Must contain 4 digits
         if (enteredPin.length() != 4) {
 
-            Toast.makeText(
-                    this,
-                    "Please enter 4 digits.",
-                    Toast.LENGTH_SHORT
-            ).show();
+            showPinError();
 
             return;
         }
@@ -496,20 +530,9 @@ public class PinActivity extends AppCompatActivity {
 
             } else {
 
-                // PIN doesn't match
-                Toast.makeText(
-                        this,
-                        "PINs do not match.",
-                        Toast.LENGTH_SHORT
-                ).show();
-
-
-                enteredPin = "";
+                showPinError();
 
                 firstPin = "";
-
-                updateDots();
-
 
                 currentMode =
                         MODE_SET_PIN;
@@ -585,19 +608,9 @@ public class PinActivity extends AppCompatActivity {
 
             } else {
 
-                Toast.makeText(
-                        this,
-                        "Recovery PINs do not match.",
-                        Toast.LENGTH_SHORT
-                ).show();
-
-
-                enteredPin = "";
+                showPinError();
 
                 firstPin = "";
-
-                updateDots();
-
 
                 currentMode =
                         MODE_SET_RECOVERY;
@@ -642,16 +655,7 @@ public class PinActivity extends AppCompatActivity {
 
             } else {
 
-                Toast.makeText(
-                        this,
-                        "Incorrect PIN.",
-                        Toast.LENGTH_SHORT
-                ).show();
-
-
-                enteredPin = "";
-
-                updateDots();
+                showPinError();
             }
 
             return;
@@ -708,16 +712,7 @@ public class PinActivity extends AppCompatActivity {
 
             } else {
 
-                Toast.makeText(
-                        this,
-                        "Incorrect recovery PIN.",
-                        Toast.LENGTH_SHORT
-                ).show();
-
-
-                enteredPin = "";
-
-                updateDots();
+                showPinError();
             }
 
             return;
@@ -782,19 +777,9 @@ public class PinActivity extends AppCompatActivity {
 
             } else {
 
-                Toast.makeText(
-                        this,
-                        "PINs do not match.",
-                        Toast.LENGTH_SHORT
-                ).show();
-
-
-                enteredPin = "";
+                showPinError();
 
                 firstPin = "";
-
-                updateDots();
-
 
                 currentMode =
                         MODE_NEW_PIN;

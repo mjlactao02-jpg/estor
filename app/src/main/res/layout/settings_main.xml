@@ -368,8 +368,8 @@
                     android:checked="true"
                     android:scaleX="1.15"
                     android:scaleY="1.15"
-                    android:thumbTint="#FFFFFF"
-                    android:trackTint="#6C63FF"
+                    android:thumbTint="@color/switch_thumb"
+                    android:trackTint="@color/switch_track_color"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/iconBellBg"
                     app:layout_constraintBottom_toBottomOf="@id/iconBellBg" />
@@ -447,7 +447,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:background="@drawable/bg_frequency_item"
-                        android:buttonTint="#6E84EF"
+                        android:buttonTint="@color/radio_button_color"
                         android:gravity="center_vertical"
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
@@ -463,7 +463,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:background="@drawable/bg_frequency_item"
-                        android:buttonTint="#6E84EF"
+                        android:buttonTint="@color/radio_button_color"
                         android:gravity="center_vertical"
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
@@ -479,7 +479,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:background="@drawable/bg_frequency_item"
-                        android:buttonTint="#6E84EF"
+                        android:buttonTint="@color/radio_button_color"
                         android:gravity="center_vertical"
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
@@ -495,7 +495,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:background="@drawable/bg_frequency_item"
-                        android:buttonTint="#6E84EF"
+                        android:buttonTint="@color/radio_button_color"
                         android:gravity="center_vertical"
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
@@ -511,7 +511,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:background="@drawable/bg_frequency_item"
-                        android:buttonTint="#6E84EF"
+                        android:buttonTint="@color/radio_button_color"
                         android:gravity="center_vertical"
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
@@ -520,6 +520,97 @@
                         android:textSize="18sp" />
 
                 </RadioGroup>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- HELP & SUPPORT LABEL -->
+            <TextView
+                android:id="@+id/lblHelpSupport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="20dp"
+                android:letterSpacing="0.05"
+                android:text="HELP &amp; SUPPORT"
+                android:textColor="#999999"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <!-- HELP & SUPPORT CARD -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cardHelpSupport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="105dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_input_field"
+                android:backgroundTint="#FFFFFF"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="16dp">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/iconHelpBg"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    app:cardBackgroundColor="#EDEBFF"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+                    <ImageView
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_help"
+                        app:tint="#6C63FF" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/txtHelpSupportTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/help_support_title"
+                    android:textColor="#222222"
+                    android:textSize="19sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/imgChevronHelp"
+                    app:layout_constraintStart_toEndOf="@id/iconHelpBg"
+                    app:layout_constraintTop_toTopOf="@id/iconHelpBg" />
+
+                <TextView
+                    android:id="@+id/txtHelpSupportSubtitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="4dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="@string/help_support_subtitle"
+                    android:textColor="#888888"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@id/iconHelpBg"
+                    app:layout_constraintEnd_toStartOf="@id/imgChevronHelp"
+                    app:layout_constraintStart_toEndOf="@id/iconHelpBg"
+                    app:layout_constraintTop_toBottomOf="@id/txtHelpSupportTitle" />
+
+                <ImageView
+                    android:id="@+id/imgChevronHelp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="#BBBBBB"
+                    app:layout_constraintBottom_toBottomOf="@id/iconHelpBg"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/iconHelpBg" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

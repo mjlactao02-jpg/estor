@@ -18,11 +18,11 @@
         <item name="android:focusable">true</item>
     </style>
 
-    <!-- Number keys (0-9): centered bold digit -->
+    <!-- Number keys (0-9): centered digit - increased for readability -->
     <style name="PinKey" parent="PinKeyBase">
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/key_text</item>
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">26sp</item>
         <item name="android:textStyle">normal</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:clickable">true</item>
