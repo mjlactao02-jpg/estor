@@ -22,6 +22,8 @@ public class TransactionActivity extends AppCompatActivity {
 
     private TextView txtCustomerCount;
 
+    private TextView txtEmptyState;
+
     private ImageButton btnBack;
 
     private DatabaseHelper databaseHelper;
@@ -58,6 +60,12 @@ public class TransactionActivity extends AppCompatActivity {
         txtCustomerCount =
                 findViewById(
                         R.id.txtCustomerCount
+                );
+
+
+        txtEmptyState =
+                findViewById(
+                        R.id.txtEmptyState
                 );
 
 
@@ -134,6 +142,8 @@ public class TransactionActivity extends AppCompatActivity {
         if (cursor == null) {
 
             adapter.notifyDataSetChanged();
+
+            updateEmptyState();
 
             return;
         }
@@ -241,6 +251,15 @@ public class TransactionActivity extends AppCompatActivity {
 
 
         adapter.notifyDataSetChanged();
+
+        updateEmptyState();
+    }
+
+    private void updateEmptyState() {
+        if (txtEmptyState == null || listCustomers == null) return;
+        boolean empty = transactionList.isEmpty();
+        txtEmptyState.setVisibility(empty ? View.VISIBLE : View.GONE);
+        listCustomers.setVisibility(empty ? View.GONE : View.VISIBLE);
     }
 
 
@@ -257,6 +276,8 @@ public class TransactionActivity extends AppCompatActivity {
         txtCustomerCount.setText(
                 String.valueOf(count)
         );
+
+        updateEmptyState();
     }
 
 

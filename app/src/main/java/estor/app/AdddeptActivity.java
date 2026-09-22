@@ -36,6 +36,8 @@ public class AdddeptActivity
 
     private TextView txtCustomerCount;
 
+    private TextView txtEmptyState;
+
     private Button btnAddDebt;
 
     private ImageButton btnBack;
@@ -124,6 +126,12 @@ public class AdddeptActivity
         txtCustomerCount =
                 findViewById(
                         R.id.txtCustomerCount
+                );
+
+
+        txtEmptyState =
+                findViewById(
+                        R.id.txtEmptyState
                 );
 
 
@@ -702,6 +710,15 @@ public class AdddeptActivity
 
 
         adapter.notifyDataSetChanged();
+
+        updateEmptyState();
+    }
+
+    private void updateEmptyState() {
+        if (txtEmptyState == null || listCustomers == null) return;
+        boolean empty = customerList.isEmpty();
+        txtEmptyState.setVisibility(empty ? View.VISIBLE : View.GONE);
+        listCustomers.setVisibility(empty ? View.GONE : View.VISIBLE);
     }
 
 
@@ -833,6 +850,8 @@ public class AdddeptActivity
                         customerList.size()
                 )
         );
+
+        updateEmptyState();
     }
 
 

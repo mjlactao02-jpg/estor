@@ -50,6 +50,7 @@ public class History2Activity extends AppCompatActivity {
     private HistoryAdapter adapter;
 
     private HistoryItem pendingSmsItem;
+    private boolean pendingSendAll = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +95,8 @@ public class History2Activity extends AppCompatActivity {
                     Toast.makeText(this, "No debts to send", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                // Send latest item via header icon
-                handleSmsForItem(historyItems.get(0));
+                // Send ALL items in the list view
+                handleSmsForAll();
             });
         }
 
@@ -376,8 +377,28 @@ public class History2Activity extends AppCompatActivity {
     }
 
     // =========================================================
-    // SMS - handle per-item and header
+    // SMS - handle per-item and header (ALL)
     // =========================================================
+
+    private void handleSmsForAll() {
+        if (customerPhone == null || customerPhone.trim().isEmpty()) {
+            Toast.makeText(this, "No phone number for this customer", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (historyItems.isEmpty()) {
+            Toast.makeText(this, "No debts to send", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+                pendingSendAll = true;
+                pendingSmsItem = null;
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, SMS_PERMISSION_CODE);
+                return;
+            }
+        }
+        sendSmsForAllItems();
+    }
 
     private void handleSmsForItem(HistoryItem item) {
         if (customerPhone == null || customerPhone.trim().isEmpty()) {
@@ -387,6 +408,7 @@ public class History2Activity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
                 pendingSmsItem = item;
+                pendingSendAll = false;
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, SMS_PERMISSION_CODE);
                 return;
             }
@@ -451,17 +473,101 @@ public class History2Activity extends AppCompatActivity {
         }
     }
 
+    private void sendSmsForAllItems() {
+        if (customerPhone == null || customerPhone.trim().isEmpty()) {
+            Toast.makeText(this, "No phone number", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (historyItems.isEmpty()) {
+            Toast.makeText(this, "No debts to send", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String storeName = SettingsActivity.getStoreName(this);
+        if (storeName == null || storeName.trim().isEmpty()) storeName = "Estor";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Hello ").append(customerName != null ? customerName : "Customer").append(",\n\n");
+        sb.append("From ").append(storeName).append(":\n");
+        sb.append("Customer: ").append(customerName != null ? customerName : "Customer");
+        if (customerPhone != null && !customerPhone.trim().isEmpty()) {
+            sb.append(" (").append(customerPhone.trim()).append(")");
+        }
+        sb.append("\n\n");
+        sb.append("Summary:\n");
+        sb.append("Total Borrowed: ").append(formatMoney(totalBorrowed)).append("\n");
+        sb.append("Total Paid: ").append(formatMoney(totalPaid)).append("\n");
+        sb.append("Current Debt: ").append(formatMoney(currentDebt)).append("\n\n");
+        sb.append("Debts (").append(historyItems.size()).append("):\n");
+
+        for (int i = 0; i < historyItems.size(); i++) {
+            HistoryItem item = historyItems.get(i);
+            double remaining = Math.max(0, item.amount - item.paid);
+            String status;
+            if (remaining <= 0.001) status = "Paid";
+            else if (item.paid > 0.001) status = "Partial";
+            else {
+                if (item.dueDateIso != null && DueDateUtils.isOverdue(item.dueDateIso)) status = "Overdue";
+                else status = "Unpaid";
+            }
+
+            String debtDate = item.date != null ? item.date : "";
+            if (item.time != null && !item.time.trim().isEmpty()) {
+                if (!debtDate.isEmpty()) debtDate += " " + item.time;
+                else debtDate = item.time;
+            }
+            if (debtDate.trim().isEmpty()) debtDate = "N/A";
+
+            String dueDisp = "N/A";
+            if (item.dueDateIso != null && !item.dueDateIso.trim().isEmpty()) {
+                dueDisp = DueDateUtils.formatForDisplay(item.dueDateIso);
+                if (remaining > 0.001 && DueDateUtils.isOverdue(item.dueDateIso)) {
+                    dueDisp += " (OVERDUE " + DueDateUtils.daysOverdue(item.dueDateIso) + "d)";
+                }
+            }
+
+            sb.append(i + 1).append(". ")
+                    .append(item.item)
+                    .append(" x").append(item.quantity)
+                    .append(" - ").append(formatMoney(item.amount));
+            if (item.paid > 0.001) {
+                sb.append(" (Paid ").append(formatMoney(item.paid))
+                        .append(" Rem ").append(formatMoney(remaining)).append(")");
+            }
+            sb.append(" - ").append(status);
+            sb.append("\n   Date: ").append(debtDate);
+            sb.append(" | Due: ").append(dueDisp);
+            if (i < historyItems.size() - 1) sb.append("\n");
+        }
+
+        sb.append("\n\nThank you.");
+
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            String message = sb.toString();
+            java.util.ArrayList<String> parts = smsManager.divideMessage(message);
+            smsManager.sendMultipartTextMessage(customerPhone.trim(), null, parts, null, null);
+            Toast.makeText(this, "SMS with " + historyItems.size() + " items sent to " + customerPhone, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Failed to send SMS", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == SMS_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (pendingSmsItem != null) {
+                if (pendingSendAll) {
+                    pendingSendAll = false;
+                    sendSmsForAllItems();
+                } else if (pendingSmsItem != null) {
                     sendSmsForItem(pendingSmsItem);
                     pendingSmsItem = null;
                 }
             } else {
                 Toast.makeText(this, "SMS permission required", Toast.LENGTH_SHORT).show();
+                pendingSendAll = false;
             }
         }
     }

@@ -28,6 +28,8 @@ public class HistoryActivity extends AppCompatActivity {
 
     private TextView txtCustomerCount;
 
+    private TextView txtEmptyState;
+
     private Button btnAll;
     private Button btnUnpaid;
     private Button btnPartiallyPaid;
@@ -77,6 +79,12 @@ public class HistoryActivity extends AppCompatActivity {
         txtCustomerCount =
                 findViewById(
                         R.id.txtCustomerCount
+                );
+
+
+        txtEmptyState =
+                findViewById(
+                        R.id.txtEmptyState
                 );
 
 
@@ -645,6 +653,15 @@ public class HistoryActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
 
         updateFilterVisuals();
+
+        updateEmptyState();
+    }
+
+    private void updateEmptyState() {
+        if (txtEmptyState == null || listCustomers == null) return;
+        boolean empty = displayedCustomers.isEmpty();
+        txtEmptyState.setVisibility(empty ? View.VISIBLE : View.GONE);
+        listCustomers.setVisibility(empty ? View.GONE : View.VISIBLE);
     }
 
 

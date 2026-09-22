@@ -27,4 +27,10 @@
     <string name="help_contact_phone">+63 900 000 0000</string>
     <string name="help_email_subject">Estor Support Request</string>
     <string name="help_no_results">No results found.</string>
+
+    <!-- Empty states -->
+    <string name="empty_add_debt">No customers yet</string>
+    <string name="empty_pay_debt">No debts to pay</string>
+    <string name="empty_transactions">No transactions yet</string>
+    <string name="empty_history">No history yet</string>
 </resources>
