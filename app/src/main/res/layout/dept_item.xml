@@ -1,72 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:minHeight="72dp"
+    android:background="@drawable/bg_debt_item"
     android:paddingStart="15dp"
     android:paddingEnd="15dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp"
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="4dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp">
 
-    <!-- Product name and amount -->
+    <!-- Left: product info -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/leftContainer"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:orientation="vertical"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/rightContainer"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        android:gravity="start">
 
-        <!-- Product name -->
         <TextView
             android:id="@+id/txtProduct"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Lucky Me Pancit Canton"
             android:textColor="#222222"
-            android:textSize="17sp" />
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="end" />
 
-        <!-- Amount on the right -->
         <TextView
-            android:id="@+id/txtAmount"
-            android:layout_width="wrap_content"
+            android:id="@+id/txtQuantity"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:text="₱ 45.00"
-            android:textColor="#222222"
-            android:textSize="23sp" />
+            android:layout_marginTop="4dp"
+            android:text="Qty: 3"
+            android:textColor="#666666"
+            android:textSize="13sp"
+            android:maxLines="1" />
+
+        <TextView
+            android:id="@+id/txtDueDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text=""
+            android:textColor="#6C63FF"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
     </LinearLayout>
 
-
-    <!-- Quantity -->
-    <TextView
-        android:id="@+id/txtQuantity"
-        android:layout_width="match_parent"
+    <!-- Right: amount + minus vertically centered -->
+    <LinearLayout
+        android:id="@+id/rightContainer"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:text="Qty: 3"
-        android:textColor="#222222"
-        android:textSize="14sp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <!-- Due date (shown if set) -->
-    <TextView
-        android:id="@+id/txtDueDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:text=""
-        android:textColor="#6C63FF"
-        android:textSize="12sp"
-        android:visibility="gone" />
+        <TextView
+            android:id="@+id/txtAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:text="₱ 45.00"
+            android:textColor="#F05B5B"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
+        <ImageButton
+            android:id="@+id/btnRemove"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Remove"
+            android:src="@drawable/ic_minus"
+            android:scaleType="fitCenter"
+            android:padding="4dp" />
 
-    <!-- Divider -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="6dp"
-        android:background="#999999" />
+    </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

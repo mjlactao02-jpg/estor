@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D3D3D3">
+    android:background="#F2F2F7">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/mainContainer"
@@ -20,7 +20,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/header"
             android:layout_width="0dp"
-            android:layout_height="88dp"
+            android:layout_height="90dp"
             android:background="@drawable/bg_header"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -28,17 +28,17 @@
 
             <ImageButton
                 android:id="@+id/btnBack"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginStart="4dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="Back"
-                android:padding="10dp"
+                android:padding="9dp"
                 android:src="@drawable/ic_arrow_back"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintVertical_bias="0.72" />
+                app:layout_constraintVertical_bias="0.872" />
 
             <TextView
                 android:id="@+id/txtTitle"
@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:text="History"
                 android:textColor="#FFFFFF"
-                android:textSize="25sp"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:maxLines="1"
@@ -54,21 +54,22 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintVertical_bias="0.72" />
+                app:layout_constraintVertical_bias="0.872" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/customerInfoCard"
             android:layout_width="0dp"
-            android:layout_height="128dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_height="wrap_content"
+            android:minHeight="128dp"
+            android:layout_marginStart="9dp"
+            android:layout_marginEnd="9dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_history2_customer"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="7dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
             app:layout_constraintTop_toBottomOf="@id/header"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -79,19 +80,37 @@
                 android:layout_height="wrap_content"
                 android:text="Juan Dela Cruz"
                 android:textColor="#FFFFFF"
-                android:textSize="23sp"
-                android:maxLines="1"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:maxLines="2"
                 android:ellipsize="end"
                 android:includeFontPadding="false"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnHeaderSms"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btnHeaderSms"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_white_circle"
+                android:contentDescription="Send SMS"
+                android:padding="8dp"
+                android:src="@drawable/ic_sms"
+                android:scaleType="fitCenter"
+                android:tint="#6E84EF"
+                android:elevation="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/txtCustomerName"
+                app:layout_constraintVertical_bias="0.0" />
 
             <ImageView
                 android:id="@+id/imgPhone"
                 android:layout_width="15dp"
                 android:layout_height="15dp"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="6dp"
                 android:contentDescription="Phone"
                 android:src="@drawable/ic_phone"
                 android:scaleType="centerInside"
@@ -102,11 +121,11 @@
                 android:id="@+id/txtCustomerPhone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="3dp"
-                android:layout_marginTop="3dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="6dp"
                 android:text="0987 654 3201"
                 android:textColor="#FFFFFF"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:includeFontPadding="false"
@@ -117,19 +136,22 @@
             <LinearLayout
                 android:id="@+id/summaryContainer"
                 android:layout_width="0dp"
-                android:layout_height="58dp"
+                android:layout_height="wrap_content"
+                android:minHeight="68dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:background="@drawable/bg_history2_summary"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtCustomerPhone"
                 app:layout_constraintBottom_toBottomOf="parent">
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center">
@@ -139,7 +161,7 @@
                         android:layout_height="wrap_content"
                         android:text="₱0.00"
                         android:textColor="#5870D9"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:gravity="center"
                         android:maxLines="1"
@@ -149,15 +171,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Total Borrowed"
-                        android:textColor="#999999"
-                        android:textSize="13sp"
+                        android:textColor="#666666"
+                        android:textSize="12sp"
                         android:gravity="center"
                         android:maxLines="1" />
                 </LinearLayout>
 
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="32dp"
+                    android:background="#EEEEEE" />
+
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center">
@@ -167,7 +194,7 @@
                         android:layout_height="wrap_content"
                         android:text="₱0.00"
                         android:textColor="#35B96B"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:gravity="center"
                         android:maxLines="1"
@@ -177,15 +204,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Total Paid"
-                        android:textColor="#999999"
-                        android:textSize="13sp"
+                        android:textColor="#666666"
+                        android:textSize="12sp"
                         android:gravity="center"
                         android:maxLines="1" />
                 </LinearLayout>
 
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="32dp"
+                    android:background="#EEEEEE" />
+
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center">
@@ -199,28 +231,42 @@
                         android:maxLines="1"
                         android:text="₱0.00"
                         android:textColor="#F05B5B"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
                     <TextView
                         android:id="@+id/txtDebtLabel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Current Debt"
-                        android:textColor="#999999"
-                        android:textSize="13sp"
+                        android:textColor="#666666"
+                        android:textSize="12sp"
                         android:gravity="center"
                         android:maxLines="1" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <TextView
+            android:id="@+id/txtEmptyHistory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="No debts yet"
+            android:textColor="#999999"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/customerInfoCard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <ListView
             android:id="@+id/listHistory"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginStart="9dp"
+            android:layout_marginEnd="9dp"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="5dp"
             android:background="@android:color/transparent"
             android:clipToPadding="false"
@@ -236,4 +282,5 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

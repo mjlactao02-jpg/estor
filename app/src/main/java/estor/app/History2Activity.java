@@ -1,7 +1,11 @@
 package estor.app;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +13,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -24,12 +32,24 @@ public class History2Activity extends AppCompatActivity {
     private TextView txtTotalPaid;
     private TextView txtCurrentDebt;
     private ListView listHistory;
+    private TextView txtEmptyHistory;
+    private ImageButton btnHeaderSms;
 
     private DatabaseHelper databaseHelper;
     private int customerId = -1;
+    private String customerName;
+    private String customerPhone;
+
+    private double totalBorrowed;
+    private double totalPaid;
+    private double currentDebt;
+
+    private static final int SMS_PERMISSION_CODE = 101;
 
     private final ArrayList<HistoryItem> historyItems = new ArrayList<>();
     private HistoryAdapter adapter;
+
+    private HistoryItem pendingSmsItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +65,13 @@ public class History2Activity extends AppCompatActivity {
         txtTotalPaid = findViewById(R.id.txtTotalPaid);
         txtCurrentDebt = findViewById(R.id.txtCurrentDebt);
         listHistory = findViewById(R.id.listHistory);
+        txtEmptyHistory = findViewById(R.id.txtEmptyHistory);
+        btnHeaderSms = findViewById(R.id.btnHeaderSms);
 
         customerId = getIntent().getIntExtra("customer_id", -1);
 
-        String customerName = getIntent().getStringExtra("customer_name");
-        String customerPhone = getIntent().getStringExtra("customer_phone");
+        customerName = getIntent().getStringExtra("customer_name");
+        customerPhone = getIntent().getStringExtra("customer_phone");
 
         txtCustomerName.setText(
                 customerName == null || customerName.trim().isEmpty()
@@ -65,6 +87,17 @@ public class History2Activity extends AppCompatActivity {
         listHistory.setAdapter(adapter);
 
         btnBack.setOnClickListener(v -> finish());
+
+        if (btnHeaderSms != null) {
+            btnHeaderSms.setOnClickListener(v -> {
+                if (historyItems.isEmpty()) {
+                    Toast.makeText(this, "No debts to send", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // Send latest item via header icon
+                handleSmsForItem(historyItems.get(0));
+            });
+        }
 
         loadHistory();
     }
@@ -117,7 +150,9 @@ public class History2Activity extends AppCompatActivity {
             }
         }
 
-        double currentDebt = Math.max(0, totalBorrowed - totalPaid);
+        currentDebt = Math.max(0, totalBorrowed - totalPaid);
+        this.totalBorrowed = totalBorrowed;
+        this.totalPaid = totalPaid;
 
         txtTotalBorrowed.setText(formatMoney(totalBorrowed));
         txtTotalPaid.setText(formatMoney(totalPaid));
@@ -183,6 +218,9 @@ public class History2Activity extends AppCompatActivity {
             }
         }
 
+        boolean empty = historyItems.isEmpty();
+        if (txtEmptyHistory != null) txtEmptyHistory.setVisibility(empty ? View.VISIBLE : View.GONE);
+        listHistory.setVisibility(empty ? View.GONE : View.VISIBLE);
         adapter.notifyDataSetChanged();
     }
 
@@ -218,6 +256,15 @@ public class History2Activity extends AppCompatActivity {
         }
     }
 
+    private static class ViewHolder {
+            TextView txtDateTime;
+            TextView txtProduct;
+            TextView txtQuantity;
+            TextView txtAmount;
+            TextView txtStatus;
+            TextView txtDueDate;
+        }
+
     private class HistoryAdapter extends BaseAdapter {
 
         @Override
@@ -241,17 +288,28 @@ public class History2Activity extends AppCompatActivity {
                 View convertView,
                 ViewGroup parent
         ) {
+            ViewHolder holder;
             if (convertView == null) {
                 convertView = LayoutInflater.from(History2Activity.this)
                         .inflate(R.layout.item_history2, parent, false);
+                holder = new ViewHolder();
+                holder.txtDateTime = convertView.findViewById(R.id.txtHistoryDateTime);
+                holder.txtProduct = convertView.findViewById(R.id.txtHistoryProduct);
+                holder.txtQuantity = convertView.findViewById(R.id.txtHistoryQuantity);
+                holder.txtAmount = convertView.findViewById(R.id.txtHistoryAmount);
+                holder.txtStatus = convertView.findViewById(R.id.txtHistoryStatus);
+                holder.txtDueDate = convertView.findViewById(R.id.txtHistoryDueDate);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
             }
 
-            TextView txtDateTime = convertView.findViewById(R.id.txtHistoryDateTime);
-            TextView txtProduct = convertView.findViewById(R.id.txtHistoryProduct);
-            TextView txtQuantity = convertView.findViewById(R.id.txtHistoryQuantity);
-            TextView txtAmount = convertView.findViewById(R.id.txtHistoryAmount);
-            TextView txtStatus = convertView.findViewById(R.id.txtHistoryStatus);
-            TextView txtDueDate = convertView.findViewById(R.id.txtHistoryDueDate);
+            TextView txtDateTime = holder.txtDateTime;
+            TextView txtProduct = holder.txtProduct;
+            TextView txtQuantity = holder.txtQuantity;
+            TextView txtAmount = holder.txtAmount;
+            TextView txtStatus = holder.txtStatus;
+            TextView txtDueDate = holder.txtDueDate;
 
             HistoryItem item = historyItems.get(position);
 
@@ -314,6 +372,97 @@ public class History2Activity extends AppCompatActivity {
             }
 
             return convertView;
+        }
+    }
+
+    // =========================================================
+    // SMS - handle per-item and header
+    // =========================================================
+
+    private void handleSmsForItem(HistoryItem item) {
+        if (customerPhone == null || customerPhone.trim().isEmpty()) {
+            Toast.makeText(this, "No phone number for this customer", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+                pendingSmsItem = item;
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, SMS_PERMISSION_CODE);
+                return;
+            }
+        }
+        sendSmsForItem(item);
+    }
+
+    private void sendSmsForItem(HistoryItem item) {
+        if (customerPhone == null || customerPhone.trim().isEmpty()) {
+            Toast.makeText(this, "No phone number", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double remaining = Math.max(0, item.amount - item.paid);
+        String status;
+        if (remaining <= 0.001) status = "Paid";
+        else if (item.paid > 0.001) status = "Partial";
+        else {
+            if (item.dueDateIso != null && DueDateUtils.isOverdue(item.dueDateIso)) status = "Overdue";
+            else status = "Unpaid";
+        }
+
+        String debtDate = item.date != null ? item.date : "";
+        if (item.time != null && !item.time.trim().isEmpty()) {
+            if (!debtDate.isEmpty()) debtDate += " " + item.time;
+            else debtDate = item.time;
+        }
+        if (debtDate.trim().isEmpty()) debtDate = "N/A";
+
+        String dueDisp = "N/A";
+        if (item.dueDateIso != null && !item.dueDateIso.trim().isEmpty()) {
+            dueDisp = DueDateUtils.formatForDisplay(item.dueDateIso);
+            if (remaining > 0.001 && DueDateUtils.isOverdue(item.dueDateIso)) {
+                dueDisp += " (OVERDUE " + DueDateUtils.daysOverdue(item.dueDateIso) + "d)";
+            }
+        }
+
+        String storeName = SettingsActivity.getStoreName(this);
+        if (storeName == null || storeName.trim().isEmpty()) storeName = "Estor";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Hello ").append(customerName != null ? customerName : "Customer").append(",\n\n");
+        sb.append("From ").append(storeName).append(":\n");
+        sb.append("Item: ").append(item.item).append("\n");
+        sb.append("Qty: ").append(item.quantity).append("\n");
+        sb.append("Amount: ").append(formatMoney(item.amount)).append("\n");
+        sb.append("Debt Date: ").append(debtDate).append("\n");
+        sb.append("Due Date: ").append(dueDisp).append("\n");
+        sb.append("Status: ").append(status).append("\n");
+        sb.append("Current Debt: ").append(formatMoney(currentDebt)).append("\n");
+        sb.append("Total Paid: ").append(formatMoney(totalPaid)).append("\n");
+        sb.append("Total Borrowed: ").append(formatMoney(totalBorrowed));
+
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            String message = sb.toString();
+            java.util.ArrayList<String> parts = smsManager.divideMessage(message);
+            smsManager.sendMultipartTextMessage(customerPhone.trim(), null, parts, null, null);
+            Toast.makeText(this, "SMS sent to " + customerPhone, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Failed to send SMS", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == SMS_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (pendingSmsItem != null) {
+                    sendSmsForItem(pendingSmsItem);
+                    pendingSmsItem = null;
+                }
+            } else {
+                Toast.makeText(this, "SMS permission required", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

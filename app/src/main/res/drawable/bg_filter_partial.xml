@@ -2,31 +2,29 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- SELECTED - active filter -->
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#35B96B" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+
     <!-- PRESSED -->
     <item android:state_pressed="true">
-
         <shape android:shape="rectangle">
-
             <solid android:color="#AAFFC2" />
-
             <corners android:radius="20dp" />
-
         </shape>
-
     </item>
 
 
     <!-- NORMAL -->
     <item>
-
         <shape android:shape="rectangle">
-
             <solid android:color="#EFFFF4" />
-
             <corners android:radius="20dp" />
-
         </shape>
-
     </item>
 
 </selector>

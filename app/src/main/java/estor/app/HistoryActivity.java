@@ -466,6 +466,60 @@ public class HistoryActivity extends AppCompatActivity {
                             overdueCount
             );
         }
+
+        updateFilterVisuals();
+    }
+
+
+    // =========================================================
+    // UPDATE FILTER VISUALS - selected color + inchance
+    // =========================================================
+
+    private void updateFilterVisuals() {
+
+        boolean isAll = "ALL".equals(currentFilter);
+        boolean isUnpaid = "UNPAID".equals(currentFilter);
+        boolean isPartial = "PARTIAL".equals(currentFilter);
+        boolean isOverdue = "OVERDUE".equals(currentFilter);
+
+        // Selected state drives background selector
+        btnAll.setSelected(isAll);
+        btnUnpaid.setSelected(isUnpaid);
+        btnPartiallyPaid.setSelected(isPartial);
+        if (btnOverdue != null) btnOverdue.setSelected(isOverdue);
+
+        // Text color: white when selected, original when not
+        btnAll.setTextColor(isAll ? Color.WHITE : Color.rgb(88, 112, 217));
+        btnUnpaid.setTextColor(isUnpaid ? Color.WHITE : Color.rgb(240, 91, 91));
+        btnPartiallyPaid.setTextColor(isPartial ? Color.WHITE : Color.rgb(53, 185, 107));
+        if (btnOverdue != null) {
+            btnOverdue.setTextColor(isOverdue ? Color.WHITE : Color.rgb(229, 138, 0));
+        }
+
+        // Bold + elevation for selected (no scaling to keep size stable)
+        btnAll.setTypeface(null, isAll ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
+        btnUnpaid.setTypeface(null, isUnpaid ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
+        btnPartiallyPaid.setTypeface(null, isPartial ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
+        if (btnOverdue != null) {
+            btnOverdue.setTypeface(null, isOverdue ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
+        }
+
+        // Reset scale to avoid size change on selection
+        btnAll.setScaleX(1.0f);
+        btnAll.setScaleY(1.0f);
+        btnUnpaid.setScaleX(1.0f);
+        btnUnpaid.setScaleY(1.0f);
+        btnPartiallyPaid.setScaleX(1.0f);
+        btnPartiallyPaid.setScaleY(1.0f);
+        if (btnOverdue != null) {
+            btnOverdue.setScaleX(1.0f);
+            btnOverdue.setScaleY(1.0f);
+        }
+
+        btnAll.setElevation(isAll ? 6f : 0f);
+        btnUnpaid.setElevation(isUnpaid ? 6f : 0f);
+        btnPartiallyPaid.setElevation(isPartial ? 6f : 0f);
+        if (btnOverdue != null) btnOverdue.setElevation(isOverdue ? 6f : 0f);
     }
 
 
@@ -589,6 +643,8 @@ public class HistoryActivity extends AppCompatActivity {
         );
 
         adapter.notifyDataSetChanged();
+
+        updateFilterVisuals();
     }
 
 

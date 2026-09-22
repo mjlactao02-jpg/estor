@@ -446,7 +446,7 @@ public class Adddept2Activity extends AppCompatActivity {
     // UPDATE TOTAL
     // =========================================================
 
-    private void updateTotalDisplay() {
+    public void updateTotalDisplay() {
 
         double total = 0;
 
@@ -1050,6 +1050,11 @@ public class Adddept2Activity extends AppCompatActivity {
                             R.id.txtAmount
                     );
 
+            android.widget.ImageButton btnRemove =
+                    convertView.findViewById(
+                            R.id.btnRemove
+                    );
+
 
             DebtItem item =
                     debtItems.get(
@@ -1076,6 +1081,16 @@ public class Adddept2Activity extends AppCompatActivity {
                                     item.getAmount()
                             )
             );
+
+            if (btnRemove != null) {
+                btnRemove.setOnClickListener(v -> {
+                    debtItems.remove(position);
+                    notifyDataSetChanged();
+                    if (context instanceof Adddept2Activity) {
+                        ((Adddept2Activity) context).updateTotalDisplay();
+                    }
+                });
+            }
 
 
             return convertView;
