@@ -20,11 +20,9 @@
     <string name="help_category_reminders">Reminders</string>
     <string name="help_category_reminders_desc">SMS reminders &amp; frequency</string>
     <string name="help_category_security">Account &amp; Security</string>
-    <string name="help_category_security_desc">PIN &amp; Recovery PIN</string>
+    <string name="help_category_security_desc">PIN &amp; Recovery PIN management. Open Settings to change your Recovery PIN.</string>
     <string name="help_faq_title">Frequently Asked Questions</string>
-    <string name="help_contact_title">Contact Support</string>
-    <string name="help_contact_email">support@estor.app</string>
-    <string name="help_contact_phone">+63 900 000 0000</string>
+
     <string name="help_email_subject">Estor Support Request</string>
     <string name="help_no_results">No results found.</string>
 

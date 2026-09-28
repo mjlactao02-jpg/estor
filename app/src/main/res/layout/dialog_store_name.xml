@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+
+    android:layout_height="wrap_content"
+
+    android:orientation="vertical"
+
+    android:paddingStart="24dp"
+
+    android:paddingEnd="24dp"
+
+    android:paddingTop="22dp"
+
+    android:paddingBottom="24dp"
+
+    android:background="@drawable/bg_recovery_dialog">
+
+
+    <!-- ===================================================== -->
+    <!-- TITLE -->
+    <!-- ===================================================== -->
+
+    <TextView
+        android:id="@+id/txtDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Store Name"
+        android:textColor="#111111"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+
+    <!-- ===================================================== -->
+    <!-- STORE NAME LABEL -->
+    <!-- ===================================================== -->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:text="Enter your sari-sari store name"
+
+        android:textColor="#222222"
+
+        android:textSize="14sp"
+
+        android:layout_marginBottom="5dp" />
+
+
+    <!-- ===================================================== -->
+    <!-- STORE NAME -->
+    <!-- ===================================================== -->
+
+    <EditText
+        android:id="@+id/editStoreNameDialog"
+
+        android:layout_width="match_parent"
+
+        android:layout_height="48dp"
+
+        android:inputType="textCapWords"
+
+        android:maxLines="1"
+
+        android:textSize="16sp"
+
+        android:textColor="#222222"
+
+        android:background="@drawable/bg_recovery_input"
+
+        android:paddingStart="12dp"
+
+        android:paddingEnd="12dp"
+
+        android:importantForAutofill="no" />
+
+
+    <!-- ===================================================== -->
+    <!-- SAVE BUTTON -->
+    <!-- ===================================================== -->
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnSaveStoreName"
+
+        android:layout_width="match_parent"
+
+        android:layout_height="48dp"
+
+        android:layout_marginTop="16dp"
+
+        android:text="Save"
+
+        android:textColor="#FFFFFF"
+
+        android:textSize="14sp"
+
+        android:textStyle="normal"
+
+        android:background="@drawable/bg_recovery_save_button"
+
+        android:textAllCaps="false" />
+</LinearLayout>

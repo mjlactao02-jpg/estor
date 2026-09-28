@@ -47,7 +47,6 @@ public class HelpSupportActivity extends AppCompatActivity {
         setupSearch();
         setupFaqList();
         setupCategories();
-        setupContact();
         setupAppInfo();
     }
 
@@ -200,34 +199,6 @@ public class HelpSupportActivity extends AppCompatActivity {
                 .setMessage(message)
                 .setPositiveButton("OK", null)
                 .show();
-    }
-
-    private void setupContact() {
-        View email = findViewById(R.id.cardEmail);
-        View phone = findViewById(R.id.cardPhone);
-
-        if (email != null) email.setOnClickListener(v -> {
-            try {
-                String addr = getString(R.string.help_contact_email);
-                String subject = getString(R.string.help_email_subject);
-                String body = "App: estor v" + getVersionName() + "\nDevice: " + android.os.Build.MODEL + "\nAndroid: " + android.os.Build.VERSION.RELEASE + "\n\nDescribe your issue:\n";
-                Intent intent = new Intent(Intent.ACTION_SENDTO);
-                intent.setData(Uri.parse("mailto:" + addr + "?subject=" + Uri.encode(subject) + "&body=" + Uri.encode(body)));
-                startActivity(intent);
-            } catch (Exception e) {
-                Toast.makeText(this, "No email app found.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        if (phone != null) phone.setOnClickListener(v -> {
-            try {
-                String tel = getString(R.string.help_contact_phone);
-                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + tel));
-                startActivity(intent);
-            } catch (Exception e) {
-                Toast.makeText(this, "No dialer app found.", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void setupAppInfo() {
