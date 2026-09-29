@@ -26,6 +26,18 @@
     <string name="help_email_subject">Estor Support Request</string>
     <string name="help_no_results">No results found.</string>
 
+    <!-- Onboarding -->
+    <string name="onboarding_title_1">Welcome to Estor</string>
+    <string name="onboarding_description_1">Manage your sari-sari store\'s debts and payments in one place</string>
+    <string name="onboarding_title_2">Add Debts</string>
+    <string name="onboarding_description_2">Record what your customers owe you with optional due dates</string>
+    <string name="onboarding_title_3">Make Payments</string>
+    <string name="onboarding_description_3">Track payments and view transaction history</string>
+    <string name="onboarding_title_4">Settings</string>
+    <string name="onboarding_description_4">Set PIN security, change recovery PIN, and enable payment reminders</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_done">Get Started</string>
+
     <!-- Empty states -->
     <string name="empty_add_debt">No customers yet</string>
     <string name="empty_pay_debt">No debts to pay</string>
