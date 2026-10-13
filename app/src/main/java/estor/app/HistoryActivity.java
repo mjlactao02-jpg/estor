@@ -825,12 +825,22 @@ public class HistoryActivity extends AppCompatActivity {
 
 
             // -------------------------------------------------
-            // PHONE
+            // PHONE - Optional
             // -------------------------------------------------
 
-            txtPhone.setText(
-                    item.customerPhone
-            );
+            if (item.customerPhone == null ||
+                    item.customerPhone.trim().isEmpty()) {
+
+                txtPhone.setText(
+                        "No phone number"
+                );
+
+            } else {
+
+                txtPhone.setText(
+                        item.customerPhone
+                );
+            }
 
 
             // -------------------------------------------------

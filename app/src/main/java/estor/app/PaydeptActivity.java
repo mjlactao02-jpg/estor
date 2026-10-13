@@ -500,11 +500,24 @@ public class PaydeptActivity
             );
 
 
-            txtPhone.setText(
+            String listPhone =
                     customer.get(
                             "phone"
-                    )
-            );
+                    );
+
+            if (listPhone == null ||
+                    listPhone.trim().isEmpty()) {
+
+                txtPhone.setText(
+                        "No phone number"
+                );
+
+            } else {
+
+                txtPhone.setText(
+                        listPhone
+                );
+            }
 
 
             txtTotalDebt.setText(

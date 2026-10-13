@@ -81,7 +81,9 @@ public class History2Activity extends AppCompatActivity {
         );
 
         txtCustomerPhone.setText(
-                customerPhone == null ? "" : customerPhone
+                customerPhone == null || customerPhone.trim().isEmpty()
+                        ? "No phone number"
+                        : customerPhone
         );
 
         adapter = new HistoryAdapter();

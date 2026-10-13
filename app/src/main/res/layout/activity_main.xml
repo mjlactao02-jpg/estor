@@ -16,6 +16,7 @@
     <!-- ================================================= -->
 
     <ScrollView
+        android:id="@+id/mainScroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
@@ -38,6 +39,7 @@
             <!-- ================================================= -->
 
             <FrameLayout
+                android:id="@+id/cardWallet"
                 android:layout_width="match_parent"
                 android:layout_height="190dp"
                 android:background="@drawable/bg_wallet"

@@ -20,8 +20,6 @@ public class TransactionActivity extends AppCompatActivity {
 
     private ListView listCustomers;
 
-    private TextView txtCustomerCount;
-
     private TextView txtEmptyState;
 
     private ImageButton btnBack;
@@ -54,12 +52,6 @@ public class TransactionActivity extends AppCompatActivity {
         listCustomers =
                 findViewById(
                         R.id.listCustomers
-                );
-
-
-        txtCustomerCount =
-                findViewById(
-                        R.id.txtCustomerCount
                 );
 
 
@@ -268,14 +260,6 @@ public class TransactionActivity extends AppCompatActivity {
     // =========================================================
 
     private void updateCustomerCount() {
-
-        int count =
-                databaseHelper.getCustomerCount();
-
-
-        txtCustomerCount.setText(
-                String.valueOf(count)
-        );
 
         updateEmptyState();
     }

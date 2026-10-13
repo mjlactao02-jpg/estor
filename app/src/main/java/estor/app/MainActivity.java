@@ -7,6 +7,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout cardOverdue;
     LinearLayout dueSoonContainer;
     TextView txtDueSoonEmpty;
+
+    ScrollView mainScroll;
+    View cardWallet;
 
 
     // Database
@@ -107,6 +111,14 @@ public class MainActivity extends AppCompatActivity {
 
         txtDueSoonEmpty =
                 findViewById(R.id.txtDueSoonEmpty);
+
+
+        mainScroll =
+                findViewById(R.id.mainScroll);
+
+
+        cardWallet =
+                findViewById(R.id.cardWallet);
 
 
         // =====================================================
@@ -205,6 +217,64 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             });
         }
+
+        // =====================================================
+        // FIRST-TIME COACH TOUR
+        // =====================================================
+
+        if (!CoachTour.isDone(this) && mainScroll != null) {
+            mainScroll.postDelayed(
+                    this::startCoachTour, 600);
+        }
+    }
+
+
+    // =========================================================
+    // COACH TOUR — dashboard walkthrough
+    // =========================================================
+
+    private void startCoachTour() {
+        if (isFinishing() || isDestroyed()) return;
+
+        View addDebtTarget = button2;
+        if (addDebtTarget == null) {
+            addDebtTarget = findViewById(R.id.btnAddDebt);
+        }
+
+        new CoachTour(this, mainScroll)
+                .add(new CoachTour.Step(
+                        null,
+                        "Welcome to estor!",
+                        "Your smart utang tracker for your store. "
+                                + "Let's take a quick tour of the main screen."))
+                .add(new CoachTour.Step(
+                        cardWallet != null
+                                ? cardWallet
+                                : txtBalance,
+                        "Your dashboard",
+                        "The wallet card shows your Total debt at a glance. "
+                                + "Unpaid, Partial and Overdue cards below break it down by status."))
+                .add(new CoachTour.Step(
+                        addDebtTarget,
+                        "Primary action: Add Debt",
+                        "Tap Add Debt to create a customer and record items, "
+                                + "amounts and due dates. This is where most visits start."))
+                .add(new CoachTour.Step(
+                        cardOverdue,
+                        "Alerts & updates",
+                        "Overdue and Due Soon cards warn you about late and upcoming payments, "
+                                + "so you never miss a collection. Tap one to act on it."))
+                .add(new CoachTour.Step(
+                        button1,
+                        "Settings & personalization",
+                        "Tap the gear to set your store name, change your PIN, "
+                                + "manage SMS reminders and open Help & Support."))
+                .add(new CoachTour.Step(
+                        null,
+                        "You're ready!",
+                        "Use Pay Debt to collect, Transaction and History to review every peso. "
+                                + "Tap Finish to start using estor."))
+                .start();
     }
 
 

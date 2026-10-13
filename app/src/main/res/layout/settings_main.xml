@@ -594,7 +594,7 @@
                     android:layout_marginTop="4dp"
                     android:ellipsize="end"
                     android:maxLines="2"
-                    android:text="@string/help_support_subtitle"
+                    android:text="FAQ and guide"
                     android:textColor="#888888"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="@id/iconHelpBg"

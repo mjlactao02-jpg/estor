@@ -379,14 +379,13 @@ public class AdddeptActivity
 
 
             // =================================================
-            // EMPTY CHECK
+            // EMPTY CHECK - Name only, phone is optional
             // =================================================
 
-            if (name.isEmpty() ||
-                    phone.isEmpty()) {
+            if (name.isEmpty()) {
 
                 showError(
-                        "Please fill in all fields"
+                        "Please enter a name"
                 );
 
                 return;
@@ -408,12 +407,13 @@ public class AdddeptActivity
 
 
             // =================================================
-            // PHONE VALIDATION
+            // PHONE VALIDATION - Optional, validate only if provided
             // =================================================
 
-            if (!phone.matches(
-                    "^09\\d{9}$"
-            )) {
+            if (!phone.isEmpty() &&
+                    !phone.matches(
+                            "^09\\d{9}$"
+                    )) {
 
                 showError(
                         "Enter a valid phone number"
@@ -469,18 +469,21 @@ public class AdddeptActivity
 
 
                 // =================================================
-                // SEND CUSTOMER ACCOUNT SMS
+                // SEND CUSTOMER ACCOUNT SMS - Only if phone provided
                 // =================================================
 
-                sendSms(
-                        phone,
+                if (!phone.isEmpty()) {
 
-                        "Hello " +
-                                name +
-                                ", your customer account has been created in " +
-                                storeName +
-                                "."
-                );
+                    sendSms(
+                            phone,
+
+                            "Hello " +
+                                    name +
+                                    ", your customer account has been created in " +
+                                    storeName +
+                                    "."
+                    );
+                }
 
 
                 // =================================================
@@ -1086,11 +1089,24 @@ public class AdddeptActivity
             );
 
 
-            txtPhone.setText(
+            String listPhone =
                     customer.get(
                             "phone"
-                    )
-            );
+                    );
+
+            if (listPhone == null ||
+                    listPhone.trim().isEmpty()) {
+
+                txtPhone.setText(
+                        "No phone number"
+                );
+
+            } else {
+
+                txtPhone.setText(
+                        listPhone
+                );
+            }
 
 
             txtDate.setText(

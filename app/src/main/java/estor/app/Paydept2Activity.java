@@ -89,14 +89,14 @@ public class Paydept2Activity extends AppCompatActivity {
         } else {
             txtCustomerName.setText("Unknown");
         }
-        if (customerPhone != null) {
+        if (customerPhone != null && !customerPhone.trim().isEmpty()) {
             txtCustomerPhone.setText(
                     customerPhone
             );
 
         } else {
             txtCustomerPhone.setText(
-                    ""
+                    "No phone number"
             );
         }
         debtItems = new ArrayList<>();

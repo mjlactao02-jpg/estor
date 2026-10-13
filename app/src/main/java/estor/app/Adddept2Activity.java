@@ -167,7 +167,8 @@ public class Adddept2Activity extends AppCompatActivity {
         }
 
 
-        if (customerPhone != null) {
+        if (customerPhone != null &&
+                !customerPhone.trim().isEmpty()) {
 
             txtCustomerPhone.setText(
                     customerPhone
@@ -176,7 +177,7 @@ public class Adddept2Activity extends AppCompatActivity {
         } else {
 
             txtCustomerPhone.setText(
-                    ""
+                    "No phone number"
             );
         }
 
